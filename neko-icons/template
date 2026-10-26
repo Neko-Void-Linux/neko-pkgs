@@ -1,5 +1,5 @@
 pkgname=neko-icons
-version=6.5
+version=7.8
 revision=1
 archs=x86_64
 wrksrc="neko-icons"
