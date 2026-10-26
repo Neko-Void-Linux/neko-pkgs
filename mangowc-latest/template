@@ -1,5 +1,5 @@
 pkgname=mangowc-latest
-version=0.18.2
+version=0.18.3
 revision=3
 conf_files="/etc/mango/config.conf"
 build_style=meson
