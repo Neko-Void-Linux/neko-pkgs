@@ -4,12 +4,14 @@ revision=1
 archs=x86_64
 wrksrc="neko-icons"
 short_desc="Colección de iconos Neko"
+makedepends="git"
 maintainer="JavierC"
 license="GPL-3.0-or-later"
-homepage="https://codeberg.org/Neko-Void/icons"
-distfiles="https://codeberg.org/Neko-Void/neko-icons/archive/${version}.tar.gz"
-checksum=4255609ae0a35b34eb3ca831044bf3e7ccf0ed46ab09a2878072733e255213c0
-
+homepage="https://github.com/Neko-Void-Linux/neko-icons"
+do_build(){
+    cd $wrksrc
+    git clone --depth 1 https://github.com/Neko-Void-Linux/neko-icons.git .
+}
 do_install() {
     vcopy usr/share usr
 }
