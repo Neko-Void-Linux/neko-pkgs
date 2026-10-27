@@ -17,7 +17,6 @@ do_build(){
     cp -rfv tmp/pixelitos-light usr/share/icons/
     cp -rfv tmp2/pixora-accent usr/share/icons/
     cp -rfv tmp2/pixora-dark usr/share/icons/
-    
 }
 do_install() {
     vcopy usr/share usr
