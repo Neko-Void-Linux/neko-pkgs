@@ -6,6 +6,12 @@ example
 ``` 
 sudo xbps-install  -S --repository=https://github.com/Neko-Void-Linux/repo-neko/releases/download/stable steam-nk
 ```
+
+### You can add the repo of neko void with: 
+
+```
+echo "repository=https://github.com/Neko-Void-Linux/repo-neko/releases/download/stable" | sudo tee /etc/xbps.d/nekovoid.conf
+``` 
 ### Run on void-packages for compile (goverlay-bin and mangowc-latest)
 ```
 sh -c "cat << EOF >> common/shlibs
