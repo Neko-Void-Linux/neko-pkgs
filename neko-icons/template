@@ -12,7 +12,8 @@ do_build(){
     cd $wrksrc
     git clone --depth 1 https://github.com/ItsZariep/pixelitos-icon-theme.git tmp
     git clone --depth 1 https://github.com/tsora1603/pixora-icons.git tmp2
-    git clone --depth 1 https://github.com/Neko-Void-Linux/neko-icons.git .
+    git clone --depth 1 https://github.com/Neko-Void-Linux/neko-icons.git icons
+    cp -rfv icons/* .
     cp -rfv tmp/pixelitos-dark usr/share/icons/
     cp -rfv tmp/pixelitos-light usr/share/icons/
     cp -rfv tmp2/pixora-accent usr/share/icons/
