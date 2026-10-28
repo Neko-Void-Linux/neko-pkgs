@@ -1,6 +1,6 @@
 pkgname=neko-icons
 version=7.8
-revision=4
+revision=6
 archs=x86_64
 wrksrc="neko-icons"
 short_desc="Colección de iconos Neko"
@@ -13,11 +13,13 @@ do_build(){
     git clone --depth 1 https://github.com/ItsZariep/pixelitos-icon-theme.git tmp
     git clone --depth 1 https://github.com/tsora1603/pixora-icons.git tmp2
     git clone --depth 1 https://github.com/Neko-Void-Linux/neko-icons.git icons
-    cp -rfv icons/* .
-    cp -rfv tmp/pixelitos-dark usr/share/icons/
-    cp -rfv tmp/pixelitos-light usr/share/icons/
-    cp -rfv tmp2/pixora-accent usr/share/icons/
-    cp -rfv tmp2/pixora-dark usr/share/icons/
+    
+    mkdir -p usr/share/icons
+    cp -a icons/* .
+    cp -a tmp/pixelitos-dark usr/share/icons/
+    cp -a tmp/pixelitos-light usr/share/icons/
+    cp -a tmp2/pixora-accent usr/share/icons/
+    cp -a tmp2/pixora-dark usr/share/icons/
 }
 do_install() {
     vcopy usr/share usr
