@@ -20,5 +20,5 @@ do_extract() {
 }
 
 do_install() {
-    tar xf data.tar.xz -C ${DESTDIR}
+    tar xf data.tar.gz -C ${DESTDIR}
 }
