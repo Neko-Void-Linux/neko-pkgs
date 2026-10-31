@@ -11,8 +11,8 @@ homepage="http://www.tracktion.com"
 nostrip=yes
 
 do_fetch(){
-  cd ${XBPS_SRCDISTDIR}/${pkgname}-${version}
-  wget -O tracktion_download_manager_v1.5.3.deb https://downloads.tracktion.com/download-mgr/153/tracktion_download_manager_v1.5.3.deb
+  mkdir -p ${XBPS_SRCDISTDIR}/${pkgname}-${version}
+  wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb https://downloads.tracktion.com/download-mgr/153/tracktion_download_manager_v1.5.3.deb
 }
 do_extract() {
     mkdir -p ${DESTDIR}
