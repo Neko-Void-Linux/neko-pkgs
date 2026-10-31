@@ -52,3 +52,7 @@ do_install() {
 	vmkdir usr/share/applications
 	vinstall "${FILESDIR}/brave-origin.desktop" 644 usr/share/applications
 }
+
+# Due to copyright matters, the following is added; they requested it. <3
+# Copyright (c) 2026 voiders.dev 
+# SPDX-License-Identifier: MIT
