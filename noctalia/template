@@ -1,6 +1,6 @@
 pkgname=noctalia
-version=5.41.0
-revision=11
+version=5.41.1
+revision=12
 build_style=meson
 configure_args="-Dnative_optimizations=false -Db_sanitize=none"
 hostmakedepends="pkg-config git cmake wayland-devel wayland-protocols"
