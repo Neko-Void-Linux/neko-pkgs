@@ -20,3 +20,7 @@ git clone https://github.com/Neko-Void-Linux/noctalia-greeter.git "${pkgname}-${
 post_install() {
 	vlicense LICENSE
 }
+
+# Due to copyright matters, the following is added; they requested it.
+# Copyright (c) 2026 voiders.dev 
+# SPDX-License-Identifier: MIT
