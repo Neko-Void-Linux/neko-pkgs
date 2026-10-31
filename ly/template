@@ -5,7 +5,7 @@ hostmakedepends="pkg-config zig-nk"
 makedepends="libxcb-devel pam-devel"
 depends="brightnessctl xauth"
 short_desc="Lightweight TUI display manager"
-maintainer="Haris <plavpxl@proton.me>"
+maintainer="Javierc <javiercyt@atomicmail.io>"
 license="WTFPL"
 homepage="https://codeberg.org/fairyglade/ly"
 distfiles="https://github.com/javiercplus/ly-xbps/releases/download/1.5.0.1/ly-v1.5.0-rc1.tar.gz"
@@ -49,3 +49,7 @@ do_install() {
 post_install() {
     vlicense license.md
 }
+
+# Due to copyright matters, the following is added; they requested it.
+# Copyright (c) 2026 voiders.dev 
+# SPDX-License-Identifier: MIT
