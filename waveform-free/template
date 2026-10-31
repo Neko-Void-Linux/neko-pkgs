@@ -1,0 +1,23 @@
+pkgname=waveform-free
+version=2026.10
+revision=1
+only_for_archs="x86_64"
+short_desc="Tracktion Download Manager"
+maintainer="JavierC"
+hostmakedepends="tar xz wget"
+depends="curl alsa-lib"
+license="Propietary"
+homepage="http://www.tracktion.com"
+nostrip=yes
+
+do_fetch(){
+  wget -O  ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb https://downloads.tracktion.com/download-mgr/153/tracktion_download_manager_v1.5.3.deb
+}
+do_extract() {
+    mkdir -p ${DESTDIR}
+    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb
+}
+
+do_install() {
+    tar xf data.tar.xz -C ${DESTDIR}
+}
