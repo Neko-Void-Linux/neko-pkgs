@@ -1,8 +1,8 @@
 pkgname=waveform-free
 version=2026.10
-revision=1
+revision=2
 only_for_archs="x86_64"
-short_desc="Tracktion Download Manager"
+short_desc="DAW WAVEFORM FREE"
 maintainer="JavierC"
 hostmakedepends="tar xz wget"
 depends="curl alsa-lib xprop"
@@ -12,11 +12,11 @@ nostrip=yes
 
 do_fetch(){
   mkdir -p ${XBPS_SRCDISTDIR}/${pkgname}-${version}
-  wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb https://downloads.tracktion.com/download-mgr/153/tracktion_download_manager_v1.5.3.deb
+  wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/debs/waveform14_14.1.23_amd64.deb
 }
 do_extract() {
     mkdir -p ${DESTDIR}
-    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb
+    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb
 }
 
 do_install() {
