@@ -1,19 +1,24 @@
 pkgname=waterfox
-version=6.7.3
+version=6.7.7
 revision=1
 archs="x86_64"
+makedepends="bzip2 wget tar"
 short_desc="Fast and Private Web Browser"
 maintainer="Seremegu <Sere@sere.nekoweb.org>"
 license="MPL-2.0"
 homepage="https://www.waterfox.net/"
-changelog="https://www.waterfox.net/docs/releases/G${version}/?update"
-distfiles="https://cdn1.waterfox.net/waterfox/releases/${version}/Linux_x86_64/waterfox-${version}.tar.bz2"
-checksum=d8f77d34394764358b4ac365473389b46b80aef59156bf9e0f72b9f61cacd22f
 nopie=yes
+wrksrc="waterfox"
 
-
+do_fetch(){
+	cd $wrksrc
+	wget -O waterfox.tar.bz2 https://cdn.waterfox.com/waterfox/releases/${version}/Linux_x86_64/waterfox-${version}.tar.bz2
+}
 do_install() {
+	cd $wrksrc
+	tar -xjf waterfox.tar.bz2
 	vmkdir opt/waterfox
+	cd waterfox
 	vcopy "*" opt/waterfox
 	vmkdir usr/bin
 	ln -s /opt/waterfox/waterfox "${DESTDIR}/usr/bin/waterfox"
