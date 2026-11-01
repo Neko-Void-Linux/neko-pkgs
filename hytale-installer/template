@@ -1,10 +1,9 @@
+# Template file for 'hytale-installer'
 pkgname=hytale-installer
 version=0.1.3
-revision=1
+revision=2
 archs="x86_64"
-wrksrc="Hytale-Installer-${version}"
-build_style=fetch
-short_desc="Free GPL-3 wrapper that downloads, updates and launches the official Hytale launcher"
+short_desc="Free GPL-3 wrapper to install and launch the Hytale launcher"
 maintainer="Dicov <srdicov@gmail.com>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/SrDicov/Hytale-Installer"
@@ -14,18 +13,10 @@ distfiles="https://github.com/SrDicov/Hytale-Installer/archive/refs/tags/v${vers
 checksum=65707a7b7d8aa6fc034485db270d15c0a796faeab95fb868c24dc0e3c61e3d5b
 
 # Dependencias runtime del launcher oficial (webkit2gtk-4.1 + soup3) + herramientas del wrapper.
-depends="bash curl unzip ca-certificates
- gtk+3 libwebkit2gtk41 libsoup3 gdk-pixbuf glib glib-networking
+# binutils aporta `strings`, usado para leer la versión embebida del launcher.
+depends="bash binutils curl unzip ca-certificates
+ desktop-file-utils gtk+3 libwebkit2gtk41 libsoup3 gdk-pixbuf glib glib-networking
  gsettings-desktop-schemas xdg-utils hicolor-icon-theme"
-
-do_extract() {
-	# GitHub archive → Hytale-Installer-v${version} pero wrksrc sin 'v'
-	# fetch style ya descargó el tarball a SRCDISTDIR; lo descomprimimos
-	# manualmente con strip-components=1 al wrksrc correcto.
-	mkdir -p "${wrksrc}"
-	bsdtar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/hytale-installer-${version}.tar.gz" \
-		-C "${wrksrc}" --strip-components=1
-}
 
 do_install() {
 	vbin hytale-installer
@@ -34,7 +25,5 @@ do_install() {
 		vinstall icons/${size}x${size}/apps/hytale-installer.png \
 			0644 usr/share/icons/hicolor/${size}x${size}/apps hytale-installer.png
 	done
-	vlicense LICENSE
-	vlicense NOTICE
+	vdoc NOTICE
 }
-
