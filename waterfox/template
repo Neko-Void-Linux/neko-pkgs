@@ -1,16 +1,17 @@
 pkgname=waterfox
 version=6.7.7
-revision=1
+revision=2
 archs="x86_64"
 makedepends="bzip2 wget tar"
 short_desc="Fast and Private Web Browser"
-maintainer="Seremegu <Sere@sere.nekoweb.org>"
+maintainer="SelvinTY"
 license="MPL-2.0"
 homepage="https://www.waterfox.net/"
 nopie=yes
 wrksrc="waterfox"
 
 do_fetch(){
+	mkdir -p $wrksrc
 	cd $wrksrc
 	wget -O waterfox.tar.bz2 https://cdn.waterfox.com/waterfox/releases/${version}/Linux_x86_64/waterfox-${version}.tar.bz2
 }
