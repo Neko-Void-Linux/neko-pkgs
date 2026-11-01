@@ -1,0 +1,16 @@
+# Template file for 'ryclop'
+pkgname=ryclop
+version=0.0.1
+revision=1
+build_style=cargo
+short_desc="Zero-dependency POSIX wrapper for system package managers"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="GPL-3.0-only"
+homepage="https://github.com/SrDicov/ryclop"
+changelog="https://github.com/SrDicov/ryclop/releases"
+distfiles="https://github.com/SrDicov/ryclop/archive/refs/tags/v${version}.tar.gz"
+checksum=ec06415e69663e33cf901eaa5c110e03ac7b4645cb75782c770d64b88296bc1b
+
+post_install() {
+	ln -s ryclop "${DESTDIR}/usr/bin/ryp"
+}

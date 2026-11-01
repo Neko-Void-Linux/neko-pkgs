@@ -1,0 +1,11 @@
+--- a/crates/fastframe-audio/src/realtime.rs
++++ b/crates/fastframe-audio/src/realtime.rs
+@@ -193,7 +193,7 @@
+ /// Puts the calling thread back to ordinary scheduling at nice 0. Lowering
+ /// one's own priority needs no privilege.
+ fn lower() {
+-    let param = libc::sched_param { sched_priority: 0 };
++    let param = libc::sched_param { sched_priority: 0, ..unsafe { core::mem::zeroed() } };
+     // SAFETY: changes only the calling thread's own policy and nice value.
+     unsafe {
+         libc::sched_setscheduler(0, libc::SCHED_OTHER, &param);

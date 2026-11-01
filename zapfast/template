@@ -1,0 +1,42 @@
+# Template file for 'zapfast'
+pkgname=zapfast
+version=0.20.1
+revision=1
+archs="x86_64* aarch64*"
+build_style=cargo
+make_check_args="--features demo"
+hostmakedepends="cargo clang cmake git pkg-config"
+makedepends="alsa-lib-devel libglvnd-devel libxkbcommon-devel libX11-devel
+ libxcb-devel libXcursor-devel libXi-devel libXrandr-devel openssl-devel
+ pipewire-devel sqlcipher-devel wayland-devel"
+checkdepends="liberation-fonts-ttf"
+short_desc="Fast native WhatsApp client built with Rust and egui"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MIT, GPL-2.0-only"
+homepage="https://zapfast.rocks"
+changelog="https://github.com/crmne/zapfast/releases"
+distfiles="https://github.com/crmne/zapfast/archive/v${version}.tar.gz"
+checksum=3192c7f852fe5b859e66c78057b3b6c10127513c6ee8700d5d9eebf58dc6383f
+provides="fastsapp-${version}_${revision}"
+replaces="fastsapp>=0"
+
+pre_build() {
+	export RUSTFLAGS="${RUSTFLAGS:+$RUSTFLAGS }--remap-path-prefix=${wrksrc}=/"
+	cargo fetch --locked --target "${RUST_TARGET}"
+	while IFS= read -r f; do
+		grep -q 'sched_param { sched_priority: 0 }' "$f" || continue
+		patch -p1 -d "${f%/crates/*}" \
+			< "${FILESDIR}/fastframe-sched-param.patch"
+	done < <(find "${CARGO_HOME}/git/checkouts" \
+		-path '*/fastframe-audio/src/realtime.rs')
+}
+
+post_install() {
+	vlicense LICENSE
+	vlicense THIRD-PARTY-NOTICES.md
+	vdoc README.md
+	vinstall packaging/applications/zapfast.desktop 644 usr/share/applications
+	vinstall packaging/icons/zapfast.svg 644 usr/share/icons/hicolor/scalable/apps
+	vinstall contrib/omarchy/zapfast.json.tpl 644 usr/share/zapfast/omarchy
+	vinstall contrib/omarchy/zapfast-theme 755 usr/share/zapfast/omarchy
+}
