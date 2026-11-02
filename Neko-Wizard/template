@@ -1,6 +1,6 @@
 pkgname=Neko-Wizard
-version=9.0.16
-revision=7
+version=9.0.20
+revision=8
 build_style=meson
 hostmakedepends="pkg-config meson ninja cmake"
 makedepends="gtk4-devel"
@@ -8,9 +8,10 @@ short_desc="Wizard Post Install for NEKO VOID"
 maintainer="JavierC"
 license="WTFPL"
 homepage="https://github.com/Neko-Void-Linux/Neko-Wizard"
-distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/9.0.16/Neko-Wizard-9.0.16.tar.gz"
-checksum="bf5632a969a086e07e24e0fd6b79a45ed0abb59aaf76d2f674851a93d978f90f"
 
+do_fetch(){
+    git clone --depth 1 https://github.com/Neko-Void-Linux/Neko-Wizard.git ${pkgname}-${version}
+}
 do_install() {
 	vmkdir usr/lib/Neko-Wizard
 	vmkdir usr/bin
