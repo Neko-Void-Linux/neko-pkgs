@@ -1,33 +1,24 @@
+# Template file for 'halley'
 pkgname=halley
-version=0.5.6
-revision=1
-archs="x86_64"
-depends="xwayland-satellite dbus seatd"
-short_desc="Spatial Wayland compositor with per-monitor infinite canvas Fields (Mikuri fork)"
-maintainer="mikuri12 <https://github.com/mikuri12>"
+version=0.8.0
+revision=2
+build_style=cargo
+hostmakedepends="cargo rust pkg-config"
+makedepends="eudev-libudev-devel libdisplay-info-devel libseat-devel
+ libgbm-devel libdrm-devel libinput-devel wayland-devel libxkbcommon-devel"
+depends="seatd dbus xwayland-satellite"
+short_desc="Spatial Wayland compositor with per-monitor infinite canvas"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-only"
 homepage="https://github.com/mikuri12/halley"
-distfiles="https://github.com/mikuri12/halley/releases/download/v${version}/halley-binaries-v${version}-x86_64.tar.gz"
-checksum="95d7293acc2fb068ecbcd4b961c9ab385ee3667d99a8867b3577369cdaea6cf0"
-wrksrc="halley-binaries"
+changelog="https://github.com/mikuri12/halley/releases"
+_tag=v0.8.0-mikuri.20
+distfiles="https://github.com/mikuri12/halley/archive/refs/tags/${_tag}.tar.gz>halley-${version}.tar.gz"
+checksum=7e51e5c3815bbbd959fa6f684cf1919579b624a33225c29b32cf92028e609317
+replaces="halley-bin>=0"
 
-do_build() {
-	:
-}
-
-do_install() {
-	vbin bin/halley
-	vbin bin/halleyctl
-	vbin bin/xdg-desktop-portal-halley
-	vbin bin/halley-session
-
-	vmkdir usr/share/wayland-sessions
-	vinstall share/wayland-sessions/halley.desktop 644 usr/share/wayland-sessions
-
-	vmkdir usr/share/xdg-desktop-portal/portals
-	vinstall share/xdg-desktop-portal/portals/halley.portal 644 usr/share/xdg-desktop-portal/portals
-	vinstall share/xdg-desktop-portal/halley-portals.conf 644 usr/share/xdg-desktop-portal
-
-	vmkdir usr/share/dbus-1/services
-	vinstall share/dbus-1/services/org.freedesktop.impl.portal.desktop.halley.service 644 usr/share/dbus-1/services
+do_extract() {
+	mkdir -p ${wrksrc}
+	bsdtar -xzC ${wrksrc} --strip-components=1 \
+		-f ${XBPS_SRCDISTDIR}/${pkgname}-${version}/halley-${version}.tar.gz
 }

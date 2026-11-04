@@ -1,17 +1,21 @@
+# Template file for 'faugus-launcher'
 pkgname=faugus-launcher
-version=2.3.0
+version=2.5.7
 revision=1
 build_style=meson
-hostmakedepends="pkg-config python3 gettext glib-devel desktop-file-utils ImageMagick"
+hostmakedepends="pkg-config python3 gettext glib-devel desktop-file-utils
+ ImageMagick"
 makedepends="python3-devel libadwaita-devel libayatana-appindicator-devel"
-depends="python3-gobject python3-Pillow python3-yaml libadwaita python3-requests
- python3-filelock python3-psutil ImageMagick python3-icoextract python3-vdf libayatana-appindicator"
-short_desc="Simple and lightweight app for running Windows games using UMU-Launcher"
-maintainer="JavierC"
+depends="python3-gobject python3-Pillow python3-yaml libadwaita
+ python3-requests python3-filelock python3-psutil ImageMagick
+ python3-icoextract python3-vdf libayatana-appindicator"
+short_desc="Simple and lightweight app for running Windows games using
+ UMU-Launcher"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/Faugus/faugus-launcher"
 distfiles="https://github.com/Faugus/faugus-launcher/archive/refs/tags/${version}.tar.gz"
-checksum=172ab4c81bf657f7b0af26dc92ce4a8157e57a3a885bc047239f6b543d648a0d
+checksum=7fda460d6756102d2ce3fd54ad527174d437464449c30c732e0242120769a569
 
 post_install() {
 	vlicense LICENSE

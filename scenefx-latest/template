@@ -1,7 +1,7 @@
+# Template file for 'scenefx-latest'
 pkgname=scenefx-latest
 version=0.5
-revision=1
-wrksrc="scenefx-${version}"
+revision=2
 build_style=meson
 configure_args="-Dwerror=false -Db_ndebug=false"
 hostmakedepends="pkg-config wayland-devel scdoc"
@@ -13,16 +13,20 @@ homepage="https://github.com/wlrfx/scenefx"
 changelog="https://github.com/wlrfx/scenefx/releases/"
 distfiles="https://github.com/wlrfx/scenefx/archive/refs/tags/${version}.tar.gz"
 checksum=0fa8ecca0e310f813efd052624c5ed7d9153d6a0fdead5cc957d34c07f9a86c6
+provides="scenefx-${version}_${revision} scenefx-nk-${version}_${revision}"
 
 post_install() {
-    vlicense LICENSE
+	vlicense LICENSE
 }
 scenefx-latest-devel_package() {
-    short_desc+=" - development files"
-    depends="${sourcepkg}>=${version}_${revision}"
+	replaces="scenefx-devel>=0 scenefx-latest-devel>=0"
+	provides="scenefx-devel-${version}_${revision} scenefx-latest-devel-${version}_${revision}"
+	provides="scenefx-devel-${version}_${revision} scenefx-nk-devel-${version}_${revision}"
+	short_desc+=" - development files"
+	depends="${sourcepkg}>=${version}_${revision}"
 
-    pkg_install() {
-        vmove usr/include
-        vmove usr/lib/pkgconfig
-    }
+	pkg_install() {
+		vmove usr/include
+		vmove usr/lib/pkgconfig
+	}
 }

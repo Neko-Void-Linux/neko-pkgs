@@ -1,25 +1,28 @@
+# Template file for 'zig-nk'
 pkgname=zig-nk
-version=0.17.0
+version=0.17.1
 revision=1
 archs="x86_64*"
-short_desc="Programming language designed for robustness, optimality, and clarity"
+short_desc="Programming language designed for robustness, optimality, and
+ clarity"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://ziglang.org"
-distfiles="https://ziglang.org/builds/zig-x86_64-linux-0.17.0.tar.xz"
-checksum=1cbe9df9f27e6b78d14ccbca43b6703a404ef79ef1c463de901d7f088d4e2026
-wrksrc="zig-linux-x86_64-${version}"
+distfiles="https://ziglang.org/download/${version}/zig-x86_64-linux-${version}.tar.xz"
+checksum=3581863e3cbcfd0fce0efc682ce7e9e93da96668a977791d356a26d2a7e9b17a
+provides="zig-${version}_${revision}"
+replaces="zig-nk>=0 zig-nk-bin>=0 zig>=0"
 nopie=yes
 nocross=yes
 
 do_install() {
-    vmkdir usr/lib/zig
-    cp -a ${wrksrc}/* ${DESTDIR}/usr/lib/zig/
+	vmkdir usr/lib/zig
+	vcopy "${wrksrc}/." usr/lib/zig
 
-    vmkdir usr/bin
-    ln -sf ../lib/zig/zig ${DESTDIR}/usr/bin/zig
+	vmkdir usr/bin
+	ln -sf ../lib/zig/zig ${DESTDIR}/usr/bin/zig
 }
 
 post_install() {
-    vlicense LICENSE
+	vlicense LICENSE
 }

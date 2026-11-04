@@ -1,33 +1,58 @@
+# Template file for 'pineconemc'
 pkgname=pineconemc
-version=11.1.1
-revision=2
-build_style=cmake
-configure_args="-DLauncher_BUILD_PLATFORM=void
- -DLauncher_QT_VERSION_MAJOR=6
- -DENABLE_LTO=OFF
- -DBUILD_TESTING=OFF"
-wrksrc="PineconeMC-${version}"
-hostmakedepends="cmake ninja extra-cmake-modules pkg-config openjdk17 scdoc qt6-tools"
-makedepends="qt6-base-devel qt6-qt5compat-devel qt6-svg-devel zlib-devel
- quazip-qt6-devel qt6-networkauth-devel cmark-devel libgamemode-devel
- qrencode-devel libarchive-devel tomlplusplus-devel"
-depends="virtual?java-runtime qt6-svg qt6-imageformats qt6-plugin-tls-openssl
- hicolor-icon-theme desktop-file-utils xrandr"
-short_desc="Custom Minecraft launcher with Ely.by accounts and skins support"
-maintainer="ANOMALI0x00"
+version=11.1.2
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+hostmakedepends="binutils tar zstd"
+depends="desktop-file-utils hicolor-icon-theme libarchive openjdk17 pciutils
+ qrencode qt6-base qt6-imageformats qt6-networkauth qt6-svg zlib"
+short_desc="Minecraft launcher with integrated Ely.by accounts support"
+maintainer="Dicov <SrDicov@gmail.com>"
 license="GPL-3.0-only"
-homepage="https://github.com/ElyPrismLauncher/Launcher"
-distfiles="https://github.com/ElyPrismLauncher/Launcher/releases/download/${version}/PineconeMC-${version}.tar.gz"
-checksum=ef286101f6ecde639bc79d75306147915dd05773fceddf04876d25f295a973ce
+homepage="https://pineconemc.ru"
+distfiles="https://github.com/ElyPrismLauncher/Launcher/releases/download/${version}/PineconeMC-ArchLinux-${version}.pkg.tar.zst>pineconemc-${version}.zst
+ https://archive.archlinux.org/packages/c/cmark/cmark-0.31.2-1-x86_64.pkg.tar.zst"
+checksum="57d7db6536ede38b86988e41f75b48e6a8653769c7a06c6a317b2a40e3a20a8d
+ 20aa066e2f2051eca725f3f700580813a2d357814fd53c76d916ab641afa1fa8"
+conflicts="elyprismlauncher>=0"
+provides="elyprismlauncher-${version}_${revision}
+ pineconemc-bin-${version}_${revision}"
+replaces="elyprismlauncher>=0 pineconemc-bin>=0"
+nostrip=yes
+nopie=yes
 
-case "$XBPS_TARGET_MACHINE" in
-	armv*) broken="https://github.com/ElyPrismLauncher/Launcher/issues" ;;
-esac
-
-pre_configure() {
-	export JAVA_HOME=/usr/lib/jvm/openjdk17
+do_extract() {
+	mkdir -p "${wrksrc}"
+	tar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/pineconemc-${version}.zst" \
+		-C "${wrksrc}" \
+		--exclude=.BUILDINFO --exclude=.MTREE --exclude=.PKGINFO
+	mkdir -p "${wrksrc}/cmroot"
+	tar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/cmark-0.31.2-1-x86_64.pkg.tar.zst" \
+		-C "${wrksrc}/cmroot" usr/lib/libcmark.so.0.31.2
 }
 
-post_install() {
-	ln -sf elyprismlauncher "${DESTDIR}/usr/bin/pineconemc"
+do_install() {
+	vmkdir usr/bin
+	vcopy usr/bin/elyprismlauncher usr/bin
+	chmod 755 "${DESTDIR}/usr/bin/elyprismlauncher"
+	vbin "${FILESDIR}/pineconemc-wrapper" pineconemc
+
+	vcopy "usr/share/ElyPrismLauncher" usr/share
+
+	vmkdir usr/lib/pineconemc
+	vcopy cmroot/usr/lib/libcmark.so.0.31.2 usr/lib/pineconemc
+
+	for s in 256; do
+		f="usr/share/icons/hicolor/${s}x${s}/apps/io.github.elyprismlauncher.ElyPrismLauncher.png"
+		[ -f "$f" ] && vinstall "$f" 644 \
+			usr/share/icons/hicolor/${s}x${s}/apps pineconemc.png
+	done
+	vinstall usr/share/icons/hicolor/scalable/apps/io.github.elyprismlauncher.ElyPrismLauncher.svg \
+		644 usr/share/icons/hicolor/scalable/apps pineconemc.svg
+
+	vinstall ${FILESDIR}/pineconemc.desktop 644 usr/share/applications
+	rm -f "${DESTDIR}/usr/share/applications/io.github.elyprismlauncher.ElyPrismLauncher.desktop"
+	rm -f "${DESTDIR}/usr/share/icons/hicolor/256x256/apps/io.github.elyprismlauncher.ElyPrismLauncher.png"
+	rm -f "${DESTDIR}/usr/share/icons/hicolor/scalable/apps/io.github.elyprismlauncher.ElyPrismLauncher.svg"
 }

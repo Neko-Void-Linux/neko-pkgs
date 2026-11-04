@@ -1,20 +1,25 @@
+# Template file for 'linux-neko-zen'
 pkgname=linux-neko-zen
-version=7.2
-revision=7
+version=7.2.6
+revision=8
+archs="x86_64*"
+create_wrksrc=yes
 short_desc="Custom Zen kernel 7.2 precompiled for Void Linux"
-maintainer="JavierC"
+maintainer="JavierC <franckeycool@gmail.com>"
 license="GPL-2.0-only"
 homepage="https://github.com/Neko-Void-Linux/kernel-neko-void"
-distfiles="https://github.com/Neko-Void-Linux/kernel-neko-void/releases/download/latest/zen-kernel-void-7.2.6-zen-neko+.tar.gz"
+_flavor="zen-neko+"
+distfiles="https://github.com/Neko-Void-Linux/kernel-neko-void/releases/download/latest/zen-kernel-void-${version}-zen-neko+.tar.gz"
 checksum="15fc2161eeaa165e6347f5025d118d8740a41ac77b72436508639cbb605295b6"
-create_wrksrc=yes
+provides="linux-neko-zen-bin-${version}_${revision}"
+replaces="linux-neko-zen-bin>=0"
 triggers="kernel-hooks"
 kernel_hooks_version="7.2.6-zen-neko+"
 do_install() {
-    vmkdir boot
-    vmkdir usr/lib/modules
-    vmkdir usr/src
-    cp -a boot/* ${DESTDIR}/boot/
-    cp -a lib/modules/* ${DESTDIR}/usr/lib/modules/
-    cp -a usr/src/* ${DESTDIR}/usr/src/
+	vmkdir boot
+	vmkdir usr/lib/modules
+	vmkdir usr/src
+	vcopy "boot/*" boot
+	vcopy "lib/modules/*" usr/lib/modules
+	vcopy "usr/src/*" usr/src
 }

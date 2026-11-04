@@ -1,14 +1,17 @@
+# Template file for 'windscribe-desktop'
 pkgname=windscribe-desktop
 version=2.22.10
-revision=1
+revision=4
 archs="x86_64"
 build_style=fetch
 short_desc="Windscribe Desktop VPN Client (proprietary...)"
-maintainer="Javiercplus"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="custom:proprietary"
 homepage="https://windscribe.com"
-distfiles="https://codeberg.org/javiercplus/Windscribe-void/releases/download/deb/windscribe_${version}_amd64.deb"
+distfiles="https://codeberg.org/Neko-Void/Windscribe-void/releases/download/deb/windscribe_${version}_amd64.deb"
 checksum=ac58048238ad2c3c59cb22b0c8ea0741f7583d90baa2ec258acc04c70632c225
+provides="windscribe-desktop-bin-${version}_${revision}"
+replaces="windscribe-desktop-bin>=0"
 nopie=yes
 nostrip=yes
 do_install() {
@@ -21,7 +24,7 @@ do_install() {
 	vmkdir usr/bin
 	ln -sf /opt/windscribe/windscribe-cli "${DESTDIR}/usr/bin/windscribe"
 
-	sed -i 's|^Exec=.*|Exec=pkexec /opt/windscribe/Windscribe|' \
+	vsed -i 's|^Exec=.*|Exec=pkexec /opt/windscribe/Windscribe|' \
 		"${DESTDIR}/usr/share/applications/windscribe.desktop"
 
 	for size in 16 24 32 48 64 128 256; do
@@ -30,4 +33,6 @@ do_install() {
 			   "${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps/windscribe.png"
 		fi
 	done
+
+	vlicense "${FILESDIR}/LICENSE"
 }

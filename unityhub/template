@@ -1,15 +1,20 @@
+# Template file for 'unityhub'
 pkgname=unityhub
-version=3.21.2
+version=3.22.5
 revision=1
 archs="x86_64"
 hostmakedepends="tar zstd xz"
-depends="gtk+3 libnotify nss xdg-utils at-spi2-core libdrm mesa libxcb ca-certificates gnupg libXScrnSaver libXtst libuuid libsecret tar zip unzip alsa-lib desktop-file-utils glib"
-short_desc="The Official Unity Hub"
+depends="gtk+3 libnotify nss xdg-utils at-spi2-core libdrm mesa libxcb
+ ca-certificates gnupg libXScrnSaver libXtst libuuid libsecret tar zip unzip
+ alsa-lib desktop-file-utils glib"
+short_desc="Official Unity Hub"
 maintainer="Javierc <javiercyt@atomicmail.io>"
 license="custom:Unity Terms of Service"
 homepage="https://unity.com/hub"
-distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/debs/UnityHubSetup-amd64.deb>unityhub-${version}.deb"
-checksum=d3ee77a9fb40cdb5e2233b5db71471fa57dc433f7d3cb663a00396c7c6529413
+distfiles="https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup-amd64.deb>unityhub-${version}.deb"
+checksum=fbf711fb7f3caff1015c507c1eb5f71d1c79606522942f21e716314655321d43
+provides="unityhub-bin-${version}_${revision}"
+replaces="unityhub-bin>=0"
 nostrip=yes
 
 do_extract() {
@@ -19,6 +24,6 @@ do_extract() {
 }
 
 do_install() {
-	vmkdir ${DESTDIR}/usr/
-        cp -rf usr/* ${DESTDIR}/usr/
+	vcopy usr/. usr
+	vlicense "${FILESDIR}/LICENSE"
 }

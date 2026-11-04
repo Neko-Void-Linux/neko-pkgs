@@ -1,37 +1,43 @@
+# Template file for 'antigravity'
 pkgname=antigravity
-version=2.24.0
-revision=6
+version=2.25.0
+revision=1
 archs="x86_64"
-_buildid=5780333019398144
 create_wrksrc=yes
+hostmakedepends="python3 desktop-file-utils"
+depends="gtk+3 libnotify nss libXScrnSaver at-spi2-core cups libxkbcommon
+ alsa-lib pango cairo gdk-pixbuf dbus libXtst libXcomposite libXdamage
+ libXfixes libXrandr atk nspr"
+short_desc="Antigravity Hub (AI Agent IDE)"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="custom:Proprietary"
+homepage="https://antigravity.ai"
+_buildid=6535192714805248
+_site="https://storage.googleapis.com/antigravity-public/antigravity-hub"
+distfiles="${_site}/${version}-${_buildid}/linux-x64/Antigravity.tar.gz"
+checksum=9f9cbd2db9e196f656d9f4caf7bf99af756e9336f70412220af9f39669b69222
+replaces="antigravity-bin>=0"
+provides="antigravity-bin-${version}_${revision}"
 nostrip=yes
 nopie=yes
 noshlibprovides=yes
-hostmakedepends="python3 desktop-file-utils"
-depends="gtk+3 libnotify nss libXScrnSaver at-spi2-core cups
- libxkbcommon alsa-lib pango cairo gdk-pixbuf dbus libXtst
- libXcomposite libXdamage libXfixes libXrandr atk nspr"
-short_desc="Antigravity Hub (AI Agent IDE)"
-maintainer="ANOMALI0x00"
-license="custom:Proprietary"
-homepage="https://antigravity.ai"
-distfiles="https://storage.googleapis.com/antigravity-public/antigravity-hub/${version}-${_buildid}/linux-x64/Antigravity.tar.gz"
-checksum=8808bf580033c5d1365142e1e66ff37474f04a5fa0d9fc24b7c24c8216acdcc6
 
 do_install() {
 	local _bin _src
 	_bin=$(find . -maxdepth 3 -type f -name antigravity -print -quit)
 	if [ -z "$_bin" ]; then
-		msg_error "No se encontró el binario 'antigravity' en el tarball extraído.\n"
+		msg_error "No se encontro el binario 'antigravity'.\n"
 	fi
 	_src=$(dirname "$_bin")
 	_src=${_src#./}
 	[ -z "$_src" ] && _src="."
 
 	vmkdir usr/lib/antigravity
-	cp -a "${_src}/." "${DESTDIR}/usr/lib/antigravity/"
+	vcopy "${_src}/." usr/lib/antigravity
+	chmod -R o-w "${DESTDIR}/usr/lib/antigravity"
 
-	find "${DESTDIR}/usr/lib/antigravity" -name "*.desktop" -delete 2>/dev/null || true
+	find "${DESTDIR}/usr/lib/antigravity" -name "*.desktop" \
+		-delete 2>/dev/null || true
 
 	if [ -f "${DESTDIR}/usr/lib/antigravity/chrome-sandbox" ]; then
 		chmod 4755 "${DESTDIR}/usr/lib/antigravity/chrome-sandbox"
@@ -39,51 +45,15 @@ do_install() {
 
 	vmkdir usr/share/pixmaps
 	if [ -f "${DESTDIR}/usr/lib/antigravity/resources/app.asar" ]; then
-		python3 - "${DESTDIR}/usr/lib/antigravity/resources/app.asar" \
-			"${DESTDIR}/usr/share/pixmaps/antigravity.png" << 'PYEOF'
-import sys, struct, json
-
-asar_path, out_path = sys.argv[1], sys.argv[2]
-
-def try_extract(json_offset):
-    try:
-        with open(asar_path, "rb") as f:
-            head = f.read(16)
-            if len(head) < 16:
-                return False
-            header_size = struct.unpack("<I", head[4:8])[0]
-            if header_size == 0 or header_size > 10485760:
-                return False
-            json_size = struct.unpack("<I", head[json_offset-4:json_offset])[0]
-            if not (4 < json_size < header_size):
-                return False
-            f.seek(json_offset)
-            header = json.loads(f.read(json_size).decode("utf-8"))
-            entry = header.get("files", {}).get("icon.png")
-            if not entry:
-                return False
-            offset = int(entry["offset"])
-            size = int(entry["size"])
-            f.seek(8 + header_size + offset)
-            data = f.read(size)
-            if len(data) != size or data[:4] != b"\x89PNG":
-                return False
-            with open(out_path, "wb") as out:
-                out.write(data)
-            return True
-    except Exception:
-        return False
-
-for off in (12, 16):
-    if try_extract(off):
-        sys.exit(0)
-sys.exit(1)
-PYEOF
+		python3 "${FILESDIR}/extract-icon.py" \
+			"${DESTDIR}/usr/lib/antigravity/resources/app.asar" \
+			"${DESTDIR}/usr/share/pixmaps/antigravity.png"
 	fi
 
 	local _magic=""
 	if [ -f "${DESTDIR}/usr/share/pixmaps/antigravity.png" ]; then
-		_magic=$(head -c 4 "${DESTDIR}/usr/share/pixmaps/antigravity.png" 2>/dev/null | od -An -tx1 | tr -d ' \n')
+		_magic=$(head -c 4 "${DESTDIR}/usr/share/pixmaps/antigravity.png" \
+			2>/dev/null | od -An -tx1 | tr -d ' \n')
 	fi
 	if [ "$_magic" != "89504e47" ]; then
 		rm -f "${DESTDIR}/usr/share/pixmaps/antigravity.png"
@@ -99,39 +69,36 @@ PYEOF
 	fi
 
 	if [ -f "${FILESDIR}/antigravity.svg" ]; then
-		vinstall "${FILESDIR}/antigravity.svg" 644 usr/share/icons/hicolor/scalable/apps
+		vinstall "${FILESDIR}/antigravity.svg" 644 \
+			usr/share/icons/hicolor/scalable/apps
 	fi
 
 	vmkdir usr/share/applications
-	cat > "${DESTDIR}/usr/share/applications/antigravity.desktop" << 'EOF'
-[Desktop Entry]
-Type=Application
-Version=1.5
-Name=Antigravity
-GenericName=AI Agent IDE
-Comment=Antigravity - Agentic Desktop Application by Google
-Exec=antigravity %U
-Icon=antigravity
-Terminal=false
-StartupNotify=true
-StartupWMClass=Antigravity
-Categories=Development;IDE;Utility;
-MimeType=x-scheme-handler/antigravity;
-Keywords=antigravity;ai;agent;ide;google;coding;development;
-EOF
-	chmod 644 "${DESTDIR}/usr/share/applications/antigravity.desktop"
+	printf '%s\n' \
+		"[Desktop Entry]" \
+		"Type=Application" \
+		"Version=1.5" \
+		"Name=Antigravity" \
+		"GenericName=AI Agent IDE" \
+		"Comment=Antigravity - Agentic Desktop Application by Google" \
+		"Exec=antigravity %U" \
+		"Icon=antigravity" \
+		"Terminal=false" \
+		"StartupNotify=true" \
+		"StartupWMClass=Antigravity" \
+		"Categories=Development;IDE;Utility;" \
+		"MimeType=x-scheme-handler/antigravity;" \
+		"Keywords=antigravity;ai;agent;ide;google;coding;development;" \
+		 > "${DESTDIR}/usr/share/applications/antigravity.desktop"
 
 	if command -v desktop-file-validate >/dev/null 2>&1; then
-		desktop-file-validate "${DESTDIR}/usr/share/applications/antigravity.desktop" \
+		desktop-file-validate \
+			"${DESTDIR}/usr/share/applications/antigravity.desktop" \
 			|| msg_error "antigravity.desktop no pasa desktop-file-validate\n"
 	fi
 
 	vmkdir usr/bin
-	cat > "${DESTDIR}/usr/bin/antigravity" << 'EOF'
-#!/bin/sh
-exec /usr/lib/antigravity/antigravity "$@"
-EOF
-	chmod 755 "${DESTDIR}/usr/bin/antigravity"
+	vbin "${FILESDIR}/antigravity"
 
 	local _lic=""
 	for lf in LICENSE LICENSE.txt LICENSE.md COPYING; do

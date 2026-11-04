@@ -1,30 +1,32 @@
+# Template file for 'brave-bin'
 pkgname=brave-bin
-version=1.95.104
+version=1.98.63
 revision=1
-only_for_archs="x86_64"
+archs="x86_64"
+hostmakedepends="tar xz"
 short_desc="Secure, fast and private web browser with ad blocker"
 maintainer="Soanvig <soanvig@gmail.com>"
-hostmakedepends="tar xz"
-license="Mozilla Public License Version 2.0"
+license="MPL-2.0"
 homepage="https://brave.com"
 distfiles="https://github.com/brave/brave-browser/releases/download/v${version}/brave-browser_${version}_amd64.deb"
-checksum=e09e3c3e9fc84f75e65048a0be830c7c4907744a402b5790530d2206b276426e
+checksum=24227cd5a9259ebdc5108db394cc5998df5ac3635f84f8838a7464a7b5cddd55
+provides="brave-${version}_${revision}"
 nostrip=yes
 
 do_extract() {
-    mkdir -p ${DESTDIR}
-    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/brave-browser_${version}_amd64.deb
+	mkdir -p ${DESTDIR}
+	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/brave-browser_${version}_amd64.deb
 }
 
 do_install() {
-    tar xf data.tar.xz -C ${DESTDIR}
+	tar xf data.tar.xz -C ${DESTDIR}
 
-    for size in 24 32 48 64 128 256; do
-        mkdir -p ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps
+	for size in 24 32 48 64 128 256; do
+		vmkdir usr/share/icons/hicolor/${size}x${size}/apps
 
-        mv ${DESTDIR}/opt/brave.com/brave/product_logo_${size}.png         ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps/brave-browser.png
-    done
+		mv ${DESTDIR}/opt/brave.com/brave/product_logo_${size}.png         ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps/brave-browser.png
+	done
 
-    rm -rf ${DESTDIR}/etc
-    rm -rf ${DESTDIR}/opt/brave.com/brave/cron
+	rm -rf ${DESTDIR}/etc
+	rm -rf ${DESTDIR}/opt/brave.com/brave/cron
 }

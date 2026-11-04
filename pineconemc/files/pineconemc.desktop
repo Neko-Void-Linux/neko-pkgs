@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=PineconeMC
+GenericName=Minecraft Launcher
+Comment=Prism Launcher fork with integrated Ely.by accounts support
+Exec=pineconemc %u
+Icon=pineconemc
+Terminal=false
+Categories=Game;
+MimeType=x-scheme-handler/ely;
+StartupNotify=true
+StartupWMClass=PineconeMC

@@ -1,15 +1,20 @@
+# Template file for 'ly'
 pkgname=ly
 version=1.5.0.1
-revision=15
+revision=16
+archs="x86_64*"
 hostmakedepends="pkg-config zig-nk"
 makedepends="libxcb-devel pam-devel"
 depends="brightnessctl xauth"
 short_desc="Lightweight TUI display manager"
-maintainer="Javierc <javiercyt@atomicmail.io>"
+maintainer="Haris <plavpxl@proton.me>"
 license="WTFPL"
 homepage="https://codeberg.org/fairyglade/ly"
-distfiles="https://github.com/javiercplus/ly-xbps/releases/download/1.5.0.1/ly-v1.5.0-rc1.tar.gz"
+_rcver="1.5.0-rc1"
+distfiles="https://github.com/javiercplus/ly-xbps/releases/download/${version}/ly-v${_rcver}.tar.gz"
 checksum=8dd5554b420598437b5456ff1f41d40bae93a6f59b5f39771498305b59b8ce37
+broken="requiere Zig 0.16, sus deps otter no soportan 0.17"
+nopie=yes
 
 conf_files="
  /etc/ly/config.ini
@@ -19,37 +24,36 @@ conf_files="
 "
 
 pre_build() {
-    if [ -z "$CROSS_BUILD" ]; then
-        export XBPS_CROSS_BASE="/"
-    fi
+	if [ -z "$CROSS_BUILD" ]; then
+		export XBPS_CROSS_BASE="/"
+	fi
 }
 
 post_patch() {
-    vsed -i build.zig -e '/zig-out\/bin\/ly/d'
-    vsed -i build.zig -e '/b.installArtifact(exe);/i \    exe.pie = true;'
+	vsed -i build.zig -e '/zig-out\/bin\/ly/d'
+	if [ "$XBPS_TARGET_LIBC" = musl ]; then
+		vsed -i build.zig -e '/b.installArtifact(exe);/i \    exe.pie = false;'
+	else
+		vsed -i build.zig -e '/b.installArtifact(exe);/i \    exe.pie = true;'
+	fi
 }
 
 do_build() {
-    zig build installexe -Ddest_directory=zig-out -Dinit_system=runit
+	zig build installexe -Ddest_directory=zig-out -Dinit_system=runit
 }
 
 do_install() {
-    if [ -f zig-out/usr/bin/ly ]; then
-        vbin zig-out/usr/bin/ly
-    elif [ -f zig-out/bin/ly ]; then
-        vbin zig-out/bin/ly
-    fi
+	if [ -f zig-out/usr/bin/ly ]; then
+		vbin zig-out/usr/bin/ly
+	elif [ -f zig-out/bin/ly ]; then
+		vbin zig-out/bin/ly
+	fi
 
-    if [ -d zig-out/etc ]; then
-        vmkdir etc
-        cp -a zig-out/etc/* ${DESTDIR}/etc/
-    fi
+	if [ -d zig-out/etc ]; then
+		vcopy "zig-out/etc/." etc
+	fi
 }
 
 post_install() {
-    vlicense license.md
+	vlicense license.md
 }
-
-# Due to copyright matters, the following is added; they requested it.
-# Copyright (c) 2026 voiders.dev 
-# SPDX-License-Identifier: MIT

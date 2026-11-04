@@ -5,9 +5,9 @@ build_style=gnu-configure
 short_desc="Minimalist and universal program manager for Linux"
 maintainer="JavierC"
 license="BSD-3-Clause"
-homepage="https://github.com/ezequielgk/Kore-Package-Manager"
-distfiles="https://github.com/ezequielgk/Kore-Package-Manager/releases/download/v${version}/kpm-linux-x86_64.tar.gz"
-checksum=f3aea794dcf4eaf26de42f3750417be370d59dd9bcfa4789bdcbed341e83d17c
+homepage="https://github.com/Ars-byte/Kore-Package-Manager"
+distfiles="https://github.com/SrDicov/z-packages/releases/download/assets/kpm-linux-x86_64.tar.gz"
+checksum=737f6765be6c5861ec6146ba67197264936ff51105ab6eb91ba700fc3dfeb063
 
 do_configure() {
     :

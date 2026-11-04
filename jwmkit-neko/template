@@ -1,14 +1,16 @@
+# Template file for 'jwmkit-neko'
 pkgname=jwmkit-neko
 version=26.5
-revision=1
+revision=2
 build_style=gnu-configure
+depends="python3 python3-gobject gtk+3 alsa-utils jwm"
 short_desc="JWM configuration and management toolkit"
-maintainer="JavierC"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="BSD-3-Clause"
 homepage="https://codeberg.org/Neko-Void/jwmkit-neko"
-checksum=" af0037c3a91b7aa40235ef92eefe06917a842a3d57e11936bb877d430b49af11"
 distfiles="https://codeberg.org/Neko-Void/jwmkit-neko/archive/${version}.tar.gz"
-depends="python3 python3-gobject gtk+3 alsa-utils jwm"
+checksum="af0037c3a91b7aa40235ef92eefe06917a842a3d57e11936bb877d430b49af11"
+provides="jwmkit-${version}_${revision}"
 
 do_configure() {
 	:
@@ -41,4 +43,6 @@ do_install() {
 
 	vmkdir etc/jwmkit/restore
 	vinstall BUILD/DATA/COMMON/restore/original.restore 644 etc/jwmkit/restore
+
+	vlicense doc/LICENSE
 }

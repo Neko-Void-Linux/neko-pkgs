@@ -1,0 +1,15 @@
+Mullvad VPN para Void Linux (runit)
+
+1. Activar el servicio (opcional):
+   sudo ln -s /etc/sv/mullvad-daemon /var/service/
+
+2. Logs:
+   /var/log/mullvad-daemon/current
+
+3. Uso:
+   mullvad account login <número-de-cuenta>
+   mullvad connect
+
+4. Para desinstalar:
+   sudo xbps-remove mullvad-vpn
+   rm -rf /opt/Mullvad\ VPN /etc/mullvad-vpn /var/cache/mullvad-vpn

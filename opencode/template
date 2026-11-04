@@ -1,6 +1,6 @@
 # Template file for 'opencode'
 pkgname=opencode
-version=1.19.3
+version=2.2.5
 revision=1
 archs="x86_64"
 hostmakedepends="tar"
@@ -10,7 +10,9 @@ maintainer="Soanvig <soanvig@gmail.com>"
 license="MIT"
 homepage="https://opencode.ai"
 distfiles="https://github.com/anomalyco/opencode/releases/download/v${version}/opencode-linux-x64.tar.gz>opencode-bin_${version}_x86_64.tar.gz"
-checksum=13a8fb2978302071b86f9d7e00da9c8895f9cd846978379c3bdc6a5333536c9b
+checksum=09f44302c10fd036912f59c81fd1aef5df45dd06f649197f9dfc9bbe2a79614e
+replaces="opencode-bin>=0"
+provides="opencode-bin-${version}_${revision}"
 nostrip=yes
 nopie=yes
 

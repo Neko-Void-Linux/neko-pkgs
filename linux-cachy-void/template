@@ -1,20 +1,25 @@
+# Template file for 'linux-cachy-void'
 pkgname=linux-cachy-void
-version=7.3
-revision=9
+version=7.3.0
+revision=11
+archs="x86_64*"
+create_wrksrc=yes
 short_desc="Cachyos kernel precompiled for Void Linux + headers"
-maintainer="JavierC"
+maintainer="JavierC <franckeycool@gmail.com>"
 license="GPL-2.0-only"
 homepage="https://github.com/javiercplus/kernel-neko-void/"
-distfiles="https://github.com/Neko-Void-Linux/kernel-neko-void/releases/download/latest/neko-kernel-void-7.3.0-cachy-bore+.tar.gz"
-checksum="d1c0e44f684393be1ac7c4b99c6142e6d2a0db039d6d34656893a68977fed2c5"
-create_wrksrc=yes
+_flavor="cachy-bore+"
+distfiles="https://github.com/Neko-Void-Linux/kernel-neko-void/releases/download/latest/neko-kernel-void-${version}-cachy-bore+.tar.gz"
+checksum="e7c435b28e1653c8603458d7673f3840e8dba4a5a3887001a0efbc1e2eb7a196"
+provides="linux-cachy-void-bin-${version}_${revision}"
+replaces="linux-cachy-void-bin>=0"
 triggers="kernel-hooks"
 kernel_hooks_version="7.3.0-cachy-bore+"
 do_install() {
-    vmkdir boot
-    vmkdir usr/lib/modules
-    vmkdir usr/src
-    cp -a boot/* ${DESTDIR}/boot/
-    cp -a lib/modules/* ${DESTDIR}/usr/lib/modules/
-    cp -a usr/src/* ${DESTDIR}/usr/src/
+	vmkdir boot
+	vmkdir usr/lib/modules
+	vmkdir usr/src
+	vcopy "boot/*" boot
+	vcopy "lib/modules/*" usr/lib/modules
+	vcopy "usr/src/*" usr/src
 }
