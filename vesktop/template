@@ -1,20 +1,26 @@
 pkgname=vesktop
-version=1.6.7
-revision=1
+version=1.6.8
+revision=2
 archs="x86_64"
+create_wrksrc=yes
+nostrip=yes
+nopie=yes
+noshlibprovides=yes
+hostmakedepends="binutils tar xz"
+depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core util-linux-libs libsecret"
 short_desc="Custom Discord desktop client"
-maintainer="Wizzard <rich@bandaholics.cash>"
+maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Vencord/Vesktop"
 distfiles="https://github.com/Vencord/Vesktop/releases/download/v${version}/vesktop_${version}_amd64.deb"
-checksum=0204a3fcf8861d11debf72a9be70423d2dca6d4698766b6fda7cfe39beea6a61
-hostmakedepends="binutils tar xz"
-depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core util-linux-libs libsecret"
+checksum=9cc10306d8ab79d5e42fd5a51eea9dbcc8d6928a6342492ef42f41d3a9b24209
 
 do_extract() {
-	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/vesktop_${version}_amd64.deb
-	mkdir -p ${wrksrc}
-	tar xf data.tar.xz -C ${wrksrc}
+	local deb_file="${XBPS_SRCDISTDIR}/${pkgname}-${version}/vesktop_${version}_amd64.deb"
+
+	ar x "${deb_file}"
+	tar -x -f data.tar.xz -C "${wrksrc}"
+	rm -f data.tar.xz control.tar.xz debian-binary
 }
 
 do_install() {
@@ -22,15 +28,27 @@ do_install() {
 	vmkdir usr/share/icons
 	vmkdir usr/share/doc/vesktop
 	vmkdir opt/Vesktop
-	vcopy usr/share/applications/vesktop.desktop /usr/share/applications/
-	vcopy usr/share/icons /usr/share/
-	vcopy usr/share/doc/vesktop/* /usr/share/doc/vesktop/
-	vcopy opt/Vesktop/* /opt/Vesktop/
-	if [ -f ${DESTDIR}/opt/Vesktop/chrome-sandbox ]; then
-		chmod 4755 ${DESTDIR}/opt/Vesktop/chrome-sandbox
+
+	vcopy "${wrksrc}/usr/share/applications/vesktop.desktop" usr/share/applications
+	vcopy "${wrksrc}/usr/share/icons/*" usr/share/icons
+	vcopy "${wrksrc}/usr/share/doc/vesktop/*" usr/share/doc/vesktop
+	vcopy "${wrksrc}/opt/Vesktop/*" opt/Vesktop
+
+	if [ -f "${DESTDIR}/usr/share/applications/vesktop.desktop" ]; then
+		sed -i \
+			-e 's|^Exec=.*|Exec=vesktop %U|' \
+			-e 's|^TryExec=.*|TryExec=vesktop|' \
+			"${DESTDIR}/usr/share/applications/vesktop.desktop"
 	fi
+
+	if [ -f "${DESTDIR}/opt/Vesktop/chrome-sandbox" ]; then
+		chmod 4755 "${DESTDIR}/opt/Vesktop/chrome-sandbox"
+	fi
+
 	vmkdir usr/bin
-	ln -sf /opt/Vesktop/vesktop ${DESTDIR}/usr/bin/vesktop
-	vlicense opt/Vesktop/LICENSE.electron.txt
-	vlicense opt/Vesktop/LICENSES.chromium.html
+	ln -sf /opt/Vesktop/vesktop "${DESTDIR}/usr/bin/vesktop"
+	chmod 755 "${DESTDIR}/opt/Vesktop/vesktop"
+
+	vlicense "${wrksrc}/opt/Vesktop/LICENSE.electron.txt"
+	vlicense "${wrksrc}/opt/Vesktop/LICENSES.chromium.html"
 }
