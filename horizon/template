@@ -1,0 +1,42 @@
+# Template file for 'horizon'
+pkgname=horizon
+version=0.2.39
+revision=1
+archs="x86_64"
+build_style=fetch
+hostmakedepends="7zip"
+depends="desktop-file-utils hicolor-icon-theme libxkbcommon libxcb xdg-utils"
+short_desc="Minecraft Java Edition rewritten from scratch in Rust (launcher)"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MIT"
+homepage="https://playhorizon.dev"
+distfiles="https://github.com/horizon-rust/horizon/releases/download/launcher@${version}/horizon-launcher-linux-x86_64.AppImage"
+checksum=6f97777d6c21626bc1d64c165a56caa0b4baeb6beac5ec8ffd97b821dc5b245d
+provides="horizon-launcher-${version}_${revision} horizon-bin-${version}_${revision}"
+replaces="horizon-launcher>=0 horizon-bin>=0"
+nostrip=yes
+noshlibprovides=yes
+
+post_extract() {
+	local appimg="horizon-launcher-linux-x86_64.AppImage"
+	if command -v 7z >/dev/null 2>&1; then
+		7z x -y "${appimg}"
+	elif command -v 7zip >/dev/null 2>&1; then
+		7zip x -y "${appimg}"
+	else
+		chmod +x "${appimg}"
+		"./${appimg}" --appimage-extract
+		mv squashfs-root/* .
+	fi
+}
+
+do_install() {
+	vbin usr/bin/horizon-launcher
+	ln -sf horizon-launcher "${DESTDIR}/usr/bin/horizon"
+	vinstall horizon-launcher.desktop 644 usr/share/applications
+	ln -sf horizon-launcher.desktop "${DESTDIR}/usr/share/applications/horizon.desktop"
+	vinstall horizon.png 644 usr/share/pixmaps horizon.png
+	vmkdir usr/share/icons
+	vcopy "usr/share/icons/*" usr/share/icons
+	vlicense "${FILESDIR}/LICENSE"
+}

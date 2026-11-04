@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Weft
+Comment=Voxel game engine written in Rust
+Exec=weft
+Icon=weft
+Categories=Game;
+Terminal=false

@@ -1,0 +1,2 @@
+site="https://github.com/Weft-Rust/Weft/releases"
+pattern="releases/tag/v\K[\d.]+"
