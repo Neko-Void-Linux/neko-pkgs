@@ -1,0 +1,35 @@
+# Template file for 'weft'
+pkgname=weft
+version=26.11.1
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+build_style=fetch
+hostmakedepends="tar"
+depends="alsa-lib eudev-libudev vulkan-loader libX11 libXcursor libXi libXrandr libxkbcommon desktop-file-utils hicolor-icon-theme xdg-utils"
+short_desc="Voxel game engine written in Rust"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MPL-2.0"
+homepage="https://github.com/Weft-Rust/Weft"
+distfiles="https://github.com/Weft-Rust/Weft/releases/download/v${version}/Weft-${version}-linux-x64.tar.gz"
+checksum=71276066600284903b5aff383ef61a897a19be5127fffcc42a761e30b8b867d0
+provides="weft-bin-${version}_${revision}"
+replaces="weft-bin>=0"
+nostrip=yes
+noshlibprovides=yes
+
+do_extract() {
+	tar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/Weft-${version}-linux-x64.tar.gz" \
+		-C "${wrksrc}" --strip-components=1
+}
+
+do_install() {
+	vmkdir usr/lib/weft
+	vcopy weft usr/lib/weft
+	vcopy assets usr/lib/weft
+	vcopy run usr/lib/weft
+	vmkdir usr/bin
+	ln -sf /usr/lib/weft/weft "${DESTDIR}/usr/bin/weft"
+	vinstall "${FILESDIR}/weft.desktop" 644 usr/share/applications
+	vinstall assets/core/icon.png 644 usr/share/pixmaps weft.png
+}

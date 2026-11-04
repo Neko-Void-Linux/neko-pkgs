@@ -1,0 +1,2 @@
+site="https://github.com/cinnabar-mc/cinnabar/releases"
+pattern="releases/tag/v\K[\d.]+"
