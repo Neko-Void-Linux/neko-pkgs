@@ -1,25 +1,40 @@
 pkgname=protonup-qt
-version=2.15.1
-revision=1
+version=2.16.0
+revision=2
 build_style=python3-pep517
 hostmakedepends="python3-setuptools python3-wheel"
 depends="python3-pyside6 python3-pyside6-gui python3-pyside6-widgets python3-pyside6-network python3-pyside6-ui-tools python3-pyside6-dbus python3-requests python3-vdf python3-inputs python3-xdg python3-steam python3-yaml python3-zstandard"
-short_desc="Install and manage GE-Proton and Luxtorpeda for Steam and Wine-GE"
+short_desc="Install and manage GE-Proton, Luxtorpeda, Wine-GE and custom compatibility tools"
 maintainer="JavierC"
 license="GPL-3.0-or-later"
 homepage="https://davidotek.github.io/protonup-qt"
 changelog="https://raw.githubusercontent.com/DavidoTek/ProtonUp-Qt/main/CHANGELOG.md"
 distfiles="https://github.com/DavidoTek/ProtonUp-Qt/archive/refs/tags/v${version}.tar.gz"
-checksum=7028c0f3451fcb69f384ba0687b58a973b35fab2b0a64d5435eb1f782f09ea08
+checksum=e09435bdec57818af41fedbe17eac4a838bb33915eeff95c13302de37df5ab89
 
 post_patch() {
-	vsed -i 's/PySide6-Essentials/PySide6/g' requirements.txt setup.py setup.cfg pyproject.toml 2>/dev/null || true
-	vsed -i 's/Exec=net.davidotek.pupgui2/Exec=protonup-qt/g' share/applications/net.davidotek.pupgui2.desktop
+	vsed -i -e 's/PySide6-Essentials/PySide6/g' requirements.txt setup.py setup.cfg pyproject.toml 2>/dev/null || true
+	vsed -i -e 's/Exec=net.davidotek.pupgui2/Exec=protonup-qt/g' share/applications/net.davidotek.pupgui2.desktop
 }
 
 post_install() {
 	vinstall share/applications/net.davidotek.pupgui2.desktop 644 usr/share/applications
+
 	vinstall share/metainfo/net.davidotek.pupgui2.appdata.xml 644 usr/share/metainfo
 
-	vcopy share/icons/hicolor usr/share/icons
+	for res in 32 48 64 128 256 512; do
+		if [ -f "share/icons/hicolor/${res}x${res}/apps/net.davidotek.pupgui2.png" ]; then
+			vinstall "share/icons/hicolor/${res}x${res}/apps/net.davidotek.pupgui2.png" 644 "usr/share/icons/hicolor/${res}x${res}/apps"
+		fi
+	done
+
+	if [ -f share/icons/hicolor/scalable/apps/net.davidotek.pupgui2.svg ]; then
+		vinstall share/icons/hicolor/scalable/apps/net.davidotek.pupgui2.svg 644 usr/share/icons/hicolor/scalable/apps
+	fi
+
+	vmkdir usr/share/pixmaps
+	if [ -f share/icons/hicolor/512x512/apps/net.davidotek.pupgui2.png ]; then
+		ln -sf /usr/share/icons/hicolor/512x512/apps/net.davidotek.pupgui2.png "${DESTDIR}/usr/share/pixmaps/net.davidotek.pupgui2.png"
+		ln -sf /usr/share/icons/hicolor/512x512/apps/net.davidotek.pupgui2.png "${DESTDIR}/usr/share/pixmaps/protonup-qt.png"
+	fi
 }
