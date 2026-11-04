@@ -11,7 +11,7 @@ set -uo pipefail
 HOME="${HOME:-/root}"
 export LC_ALL=C
 
-ARXY_VERSION="0.6.1"
+ARXY_VERSION="0.6.3"
 PROG="arxy"
 SELF="$(readlink -f "$0" 2>/dev/null || echo "$0")"
 
@@ -118,6 +118,11 @@ ARXY_ARGV=("$@")
 # --- usuario real (los .desktop van a SU home aunque se use sudo/doas)
 if [[ "$(id -u)" -eq 0 ]]; then
     REAL_USER="${SUDO_USER:-${DOAS_USER:-${USER:-$(id -un)}}}"
+    # pkexec no pone SUDO_USER/DOAS_USER: el invocador viene en PKEXEC_UID
+    # (sin esto los .desktop de una sesion GUI caerian en /root).
+    if [[ -z "${SUDO_USER:-}${DOAS_USER:-}" && -n "${PKEXEC_UID:-}" ]]; then
+        REAL_USER="$(id -nu "$PKEXEC_UID" 2>/dev/null || echo "$REAL_USER")"
+    fi
 else
     REAL_USER="${USER:-$(id -un)}"
 fi
@@ -178,19 +183,30 @@ arxy_env_pass() { # imprime VAR=val por linea (valores: rutas/flags, sin \n)
     done
 }
 
-# Construye una sola frontera de privilegios para sudo y doas. El modo exec
-# reemplaza el proceso; run devuelve el estado del comando al llamador.
+# Construye una sola frontera de privilegios para sudo, doas y pkexec.
+# Sin tty (GUI/.desktop/SSH: stdin es /dev/null o pipe) un elevador con
+# password no puede pedirla; pkexec usa el dialogo del agente polkit
+# (accion org.freedesktop.policykit.exec, sin .policy propio). Si hay
+# elevador passwordless (cron/NOPASSWD/doas-nopass) se conserva aunque no
+# haya tty: los probes -n nunca preguntan. En terminal no cambia nada.
+# El modo exec reemplaza el proceso; run devuelve el estado al llamador.
 _root_run() { # <run|exec> <cmd...>
     local mode="$1"; shift
     local -a pass=()
     mapfile -t pass < <(arxy_env_pass)
     local -a elevate
-    if command -v sudo >/dev/null 2>&1; then
+    if [[ ! -t 0 ]] \
+        && ! { command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; } \
+        && ! { command -v doas >/dev/null 2>&1 && doas -n true 2>/dev/null; } \
+        && command -v pkexec >/dev/null 2>&1; then
+        # pkexec sanea el entorno: env por argv conserva los ARXY_*.
+        elevate=(pkexec "$(command -v env)" "${pass[@]}")
+    elif command -v sudo >/dev/null 2>&1; then
         elevate=(sudo "${pass[@]}" --)
     elif command -v doas >/dev/null 2>&1; then
         elevate=(doas env "${pass[@]}")
     else
-        die "este comando necesita root y no hay sudo/doas"
+        die "este comando necesita root y no hay sudo/doas/pkexec"
     fi
     [[ "$mode" == exec ]] && exec "${elevate[@]}" "$@"
     "${elevate[@]}" "$@"
@@ -465,10 +481,18 @@ in_chroot() {
     return $rc
 }
 
-# Conf temporal de pacman para nivel 2 (el llamador la borra tras usarla).
-pacman_tmpconf() { # ro|mut : ruta por stdout; 1 = sin temporal, 2 = transform fallo
-    mkdir -p "$ARXY_ROOT/tmp" 2>/dev/null || true
-    local _t _tpl="$ARXY_ROOT/tmp/pacman-arxy.XXXXXX"
+# Conf temporal de pacman para escrituras (el llamador la borra tras usarla).
+pacman_tmpconf() { # [ro|mut] [host] : ruta por stdout; 1 = sin temporal, 2 = transform fallo
+    local _t _tpl
+    if [[ "${2:-}" == host ]]; then
+        # L1 bindea /tmp del host sobre el del root: un temporal bajo
+        # $ARXY_ROOT/tmp no seria visible dentro. Va en /tmp del host y
+        # se cita como /tmp/<base> (misma ruta dentro y fuera).
+        _tpl="/tmp/pacman-arxy.XXXXXX"
+    else
+        mkdir -p "$ARXY_ROOT/tmp" 2>/dev/null || true
+        _tpl="$ARXY_ROOT/tmp/pacman-arxy.XXXXXX"
+    fi
     if [[ "${1:-}" == ro ]]; then
         _tpl="$ARXY_ROOT/tmp/pacman-arxy-ro.XXXXXX"
     else
@@ -498,7 +522,19 @@ pacman_mut() {
         rm -f "$tmpconf" || true
         return $rc
     else
-        in_bwrap /usr/bin/pacman "$@"
+        # Sin CheckSpace: los ro-bind de L1 (/etc/hosts, resolv.conf)
+        # falsean su contabilidad cuando `filesystem` entra en la
+        # transaccion ("not enough free disk space" con 167G libres;
+        # muerte probada en la migracion CachyOS). Igual que en nivel 2:
+        # conf temporal sin CheckSpace.
+        local tmpconf _pcc=0
+        tmpconf="$(pacman_tmpconf mut host)"; _pcc=$?
+        (( _pcc == 1 )) && die "no pude crear conf temporal (¿espacio en /tmp?)"
+        (( _pcc != 0 )) && die "imagen rota: sin pacman.conf (reinstala con 'sudo $PROG setup')"
+        in_bwrap /usr/bin/pacman --config "/tmp/${tmpconf##*/}" "$@"
+        local rc=$?
+        rm -f "$tmpconf" || true
+        return $rc
     fi
 }
 
@@ -680,12 +716,12 @@ enforce_signature_policy() { # <rc> : aplica ARXY_SIGNATURE_POLICY (die, warn o 
     local rc="${1:-1}" pol="${ARXY_SIGNATURE_POLICY:-optional}"
     case "$pol" in
         required)
-            [[ "$rc" == 0 ]] || die "firma minisign no valida (rc=$rc, policy=required)" ;;
+            [[ "$rc" == 0 ]] || die "firma minisign no valida o no verificable (rc=$rc, policy=required)" ;;
         optional)
             case "$rc" in
                 0) : ;;
                 2) msg "aviso: sin minisign en el host, omitiendo verificacion de firma" >&2 ;;
-                *) die "firma minisign no valida (rc=$rc, policy=optional)" ;;
+                *) die "firma minisign no valida o no verificable (rc=$rc, policy=optional)" ;;
             esac ;;
         off) : ;;
         *) die "ARXY_SIGNATURE_POLICY invalida: '$pol' (required|optional|off)" ;;
@@ -711,6 +747,75 @@ sig_check_compat() { # die si pin + required (fail closed: required exige firma)
 # siguiente invocacion (ver recover_staging). Orden: descarga -> fsync -> sha
 # -> staging -> fsync -> version DENTRO del staging -> fsync -> rotacion via
 # .old.tmp.$$ -> rename -> fsync -> rotar .old -> fsync. Red (-Sy) al final.
+# --- repos CachyOS por microarquitectura (solo si la imagen los trae)
+# Contrato con arxy-image: cachyos-keyring instalado + mirrorlists en
+# /etc/pacman.d/ + stanzas comentadas (#[cachyos*]) en pacman.conf.
+# Sin marker: repos base, sin tocar nada. pacman.conf vive DENTRO del
+# root: rollback lo restaura solo, sin backup extra. [cachyos] trae el
+# pacman forkeado (acepta x86_64_v3/v4; el stock muere con "does not
+# have a valid architecture"): la migracion lo instala tras el -Syy,
+# antes del -Syu, y fija Architecture = auto al activar.
+cachy_usable() { # 0 si la imagen trae keyring + mirrorlist base
+    [[ -f "$ARXY_ROOT/etc/pacman.d/cachyos-mirrorlist" ]] || return 1
+    run_pacman -Qq cachyos-keyring >/dev/null 2>&1
+}
+
+cachy_activate() { # <v3|v4|znver4> : activa ese tier + [cachyos]; 1 si la imagen no trae stanzas
+    local tier="$1" ml="cachyos-v3-mirrorlist" conf="$ARXY_ROOT/etc/pacman.conf"
+    case "$tier" in
+        v3) ;;
+        v4|znver4) ml="cachyos-v4-mirrorlist" ;; # v4 y znver4 comparten mirrorlist (wiki)
+        *) return 1 ;;
+    esac
+    [[ -f "$conf" ]] || return 1
+    grep -q 'cachyos' "$conf" 2>/dev/null || return 1
+    [[ -f "$ARXY_ROOT/etc/pacman.d/$ml" ]] || return 1
+    # Neutraliza tiers previos y activa el que toca (idempotente).
+    # Architecture = auto: el stock solo acepta x86_64 y los tiers sirven
+    # x86_64_v3/v4 (la imagen puede traerlo pineado; sin auto el -Syu muere).
+    sed -i -E 's@^\[(cachyos-(core-|extra-)?(v3|v4|znver4))\]@#[\1]@' "$conf" \
+    && sed -i -E 's@^Include = /etc/pacman\.d/(cachyos-v3-mirrorlist|cachyos-v4-mirrorlist)@#Include = /etc/pacman.d/\1@' "$conf" \
+    && sed -i -E "s@^#(\[(cachyos(-${tier}|-core-${tier}|-extra-${tier})?)\])@\1@" "$conf" \
+    && sed -i -E "s@^#(Include = /etc/pacman\.d/(cachyos-mirrorlist|${ml}))@\1@" "$conf" \
+    && sed -i -E 's@^#?Architecture[[:space:]]*=.*@Architecture = auto@' "$conf" \
+    && { grep -q '^Architecture = auto' "$conf" 2>/dev/null || printf '\nArchitecture = auto\n' >>"$conf"; }
+}
+
+cachy_active_tier() { # v3|v4|znver4 del pacman.conf activo (rc 1 si base)
+    local conf="$ARXY_ROOT/etc/pacman.conf" t
+    [[ -f "$conf" ]] || return 1
+    for t in znver4 v4 v3; do
+        grep -q "^\[cachyos-core-${t}\]" "$conf" 2>/dev/null && { echo "$t"; return 0; }
+    done
+    return 1
+}
+cachy_migrate() { # <tier> : stanzas -> -Syy -> pacman [cachyos] -> -Syu -> reinstalar explicitos
+    local tier="$1"
+    # El -Syu debe correr con el pacman de [cachyos] (parcheado: acepta
+    # x86_64_v3/v4); con el stock muere "does not have a valid
+    # architecture" (visto en setup real). Pin de repo: el de [core] no
+    # sirve. Explicitos al final: mismo ver-rel no subiria solo al tier.
+    msg "microarquitectura $tier: activando repos CachyOS..."
+    cachy_activate "$tier" || die "la imagen trae CachyOS pero no pude activar el tier $tier"
+    pacman_mut -Syy || die "fallo 'pacman -Syy' en $ARXY_ROOT (¿red o DNS? reintenta '$PROG setup' o revisa '$PROG doctor')"
+    local -a nc
+    nc_args nc
+    pacman_mut -S "${nc[@]}" cachyos/pacman || die "fallo instalar pacman de [cachyos] en $ARXY_ROOT (sin el, x86_64_v3 es invalido)"
+    pacman_mut -Syu "${nc[@]}" || die "fallo 'pacman -Syu' en $ARXY_ROOT (¿red o lock? mira el error de arriba)"
+    local -a re=() mig=()
+    mapfile -t re < <(run_pacman -Qqn 2>/dev/null || true)
+    # Respeta el hold de la mini (IgnorePkg=mesa): reinstalarlo desde el
+    # tier traeria el paquete full y pregunta en headless (muerte sin
+    # tty). gpu-* lo levanta a pedido (ver cmd_install).
+    local hold p
+    hold=" $(sed -n 's/^IgnorePkg[[:space:]]*=[[:space:]]*//p' "$ARXY_ROOT/etc/pacman.conf" | tr '\n' ' ') "
+    for p in ${re[@]+"${re[@]}"}; do [[ "$hold" == *" $p "* ]] || mig+=("$p"); done
+    if ((${#mig[@]})); then
+        pacman_mut -S "${nc[@]}" "${mig[@]}" || die "fallo la migracion a CachyOS $tier en $ARXY_ROOT (mira el error de arriba)"
+    fi
+    clean_pkg_cache
+    msg "CachyOS tier $tier activo y actualizado"
+}
 cmd_setup() {
     [[ $# -eq 0 ]] || die "uso: $PROG setup"
     need_root
@@ -885,8 +990,15 @@ cmd_setup() {
     # Perfil HW persistido (caché del mismo schema; doctor calcula fresco).
     # Antes del -Sy: describe lo instalado aunque falle la red. Nunca falla setup.
     write_hardware_json "$(emit_hardware_json 2>/dev/null || true)"
-    msg "sincronizando bases de pacman..."
-    pacman_mut -Sy || die "fallo 'pacman -Sy' en $ARXY_ROOT (¿red o DNS? reintenta '$PROG setup' o revisa '$PROG doctor')"
+    local tier=""
+    tier="$(cpu_tier 2>/dev/null || true)"
+    if [[ -n "$tier" ]] && cachy_usable 2>/dev/null; then
+        cachy_migrate "$tier"
+    else
+        [[ -n "$tier" ]] && msg "imagen sin soporte CachyOS: repos base" || msg "CPU sin x86-64-v3: repos base"
+        msg "sincronizando bases de pacman..."
+        pacman_mut -Sy || die "fallo 'pacman -Sy' en $ARXY_ROOT (¿red o DNS? reintenta '$PROG setup' o revisa '$PROG doctor')"
+    fi
     msg "imagen lista en $ARXY_ROOT"
 }
 
@@ -2176,6 +2288,57 @@ detect_dev_nodes() { # una ruta por línea: dri/* nvidia* fuse ntsync ("" = nada
     done
     return 0
 }
+
+# shellcheck disable=SC2120 # args opcionales: solo los tests inyectan cpuinfo/arch/ldso
+cpu_tier() { # [cpuinfo] [arch] [ldso] : v3|v4|znver4 (vacio + rc 1 si <v3 o no x86_64)
+    local arch="${2:-$(uname -m 2>/dev/null || true)}"
+    [[ "$arch" == x86_64 ]] || return 1
+    local cpuinfo="${1:-${ARXY_SYS_ROOT:-}/proc/cpuinfo}" line
+    line="$(grep -m1 '^flags[[:space:]]*:' "$cpuinfo" 2>/dev/null || true)"
+    [[ -n "$line" ]] || return 1
+    local fl=" ${line#*:} "
+    # Nivel base: el ld-linux del host manda (lee CPUID directo, canonico
+    # glibc como la wiki CachyOS). Las flags van enmascaradas en VMs y no
+    # vetan. Sin ld-linux (musl) caemos a flags estrictas (conservador).
+    local ldso="${3:-}" _lp
+    if [[ -z "$ldso" ]]; then
+        for _lp in /lib64/ld-linux-x86-64.so.2 /lib/ld-linux-x86-64.so.2 /usr/lib/ld-linux-x86-64.so.2; do
+            if [[ -x "$_lp" ]]; then ldso="$_lp"; break; fi
+        done
+    fi
+    local v3="" v4=""
+    if [[ -n "$ldso" && -x "$ldso" ]]; then
+        local hw
+        hw="$("$ldso" --help 2>/dev/null || true)"
+        [[ "$hw" == *"x86-64-v3 (supported"* ]] && v3=1
+        [[ "$hw" == *"x86-64-v4 (supported"* ]] && v4=1
+    else
+        local f ok=1
+        for f in avx avx2 bmi1 bmi2 fma lzcnt movbe osxsave; do
+            [[ "$fl" == *" $f "* ]] || { ok=""; break; }
+        done
+        [[ -n "$ok" ]] || return 1
+        v3=1
+        ok=1
+        for f in avx512f avx512bw avx512cd avx512dq avx512vl; do
+            [[ "$fl" == *" $f "* ]] || { ok=""; break; }
+        done
+        [[ -n "$ok" ]] && v4=1
+    fi
+    [[ -n "$v3" ]] || return 1
+    # Hibridos Intel (Alder Lake+): reportan v4 pero sin AVX512 usable
+    # (wiki CachyOS); modelos heterogeneos => tope v3.
+    # ponytail: heterogeneidad como proxy de hibrido; tabla de modelos si da falsos.
+    local nmodels
+    nmodels="$(grep '^model[[:space:]]*:' "$cpuinfo" 2>/dev/null | sort -u | grep -c . || true)"
+    if [[ "${nmodels:-1}" -gt 1 ]]; then echo v3; return 0; fi
+    if [[ -z "$v4" ]]; then echo v3; return 0; fi
+    local vendor
+    vendor="$(grep -m1 '^vendor_id' "$cpuinfo" 2>/dev/null || true)"
+    # ponytail: znver4 ~= VBMI en AMD (sin gcc para -march=native en imagen ni host).
+    if [[ "$vendor" == *AuthenticAMD* && "$fl" == *" avx512vbmi "* ]]; then echo znver4; return 0; fi
+    echo v4
+}
 # --- diagnostico, reparaciones y salida humana
 # Contratos compartidos por la salida humana y JSON.
 declare -ar HOST_TOOLS=(bwrap curl tar zstd sha256sum awk sed grep mktemp su)
@@ -2497,6 +2660,11 @@ cmd_version() {
         echo "hold mesa-mini: activo"
     else
         echo "hold mesa-mini: ausente"
+    fi
+    if _ct="$(cachy_active_tier 2>/dev/null)"; then
+        echo "repos: CachyOS tier $_ct"
+    else
+        echo "repos: base (Arch)"
     fi
     show_hardware_profile
 }
@@ -2916,7 +3084,7 @@ cmd_host_bridge() { # [--daemon|--stop|--status] [--socket P] [--allowed-cmd B..
                 [[ $# -ge 2 ]] || die "uso: $PROG $usage"
                 sock="$2"; shift 2 ;;
             --allowed-cmd)
-                [[ $# -ge 2 ]] || die "uso: $PROG $usage"
+                [[ $# -ge 2 && -n "${2:-}" ]] || die "falta binario de --allowed-cmd (uso: $PROG $usage)"
                 allow+=("$2"); shift 2 ;;
             -h|--help) echo "uso: $PROG $usage"; return 0 ;;
             *) die "uso: $PROG $usage" ;;

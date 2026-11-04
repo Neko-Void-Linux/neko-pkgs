@@ -1,13 +1,17 @@
+# Template file for 'portproton'
 pkgname=portproton
 version=1.7.5.0
-revision=2
+revision=3
 archs="x86_64"
-short_desc="PortProton - a tool for installing Windows games and software on Linux"
-maintainer="JavierC"
+short_desc="PortProton - a tool for installing Windows games and software on
+ Linux"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-or-later"
 homepage="https://codeberg.org/javiercplus/PortProton_ALT-void-patch"
 distfiles="https://codeberg.org/javiercplus/PortProton_ALT-void-patch/archive/${version}.tar.gz"
-checksum="c661bf92f79cd6df32311cf7dedb1f64fe33dfe4b77e5bb2fcafaf98c82791bd"
+checksum="1ede1cd54042ee0b2a3ecdba19ac7dc028dacb68f8bfb4e7f20d247fc99518fc"
+provides="portproton-bin-${version}_${revision}"
+replaces="portproton-bin>=0"
 
 hostmakedepends="desktop-file-utils gtk-update-icon-cache"
 depends="
@@ -136,19 +140,17 @@ do_install() {
 	vmkdir usr/share/applications
 	vmkdir usr/share/icons/hicolor/scalable/apps
 	vmkdir usr/share/metainfo
-	vmkdir usr/share/licenses/portproton
 
 	cp -r ${wrksrc}/* ${DESTDIR}/usr/lib/portproton/
 
 	chmod +x ${DESTDIR}/usr/lib/portproton/portproton
-        chmod +x ${DESTDIR}/usr/lib/portproton/portprotonvoid
+		chmod +x ${DESTDIR}/usr/lib/portproton/portprotonvoid
 	ln -sf /usr/lib/portproton/portproton ${DESTDIR}/usr/bin/portproton
-    ln -sf /usr/lib/portproton/portprotonvoid ${DESTDIR}/usr/bin/portprotonvoid
+	ln -sf /usr/lib/portproton/portprotonvoid ${DESTDIR}/usr/bin/portprotonvoid
 
 	vinstall ${wrksrc}/ru.linux_gaming.PortProton.desktop 644 usr/share/applications
 	vinstall ${wrksrc}/ru.linux_gaming.PortProton.svg 644 usr/share/icons/hicolor/scalable/apps
 	vinstall ${wrksrc}/ru.linux_gaming.PortProton.metainfo.xml 644 usr/share/metainfo
-	vinstall ${wrksrc}/LICENSE 644 usr/share/licenses/portproton
 }
 
 post_install() {

@@ -1,7 +1,7 @@
 # Template file for 'geforcenow'
 pkgname=geforcenow
 version=2.0.89.141
-revision=1
+revision=2
 archs="x86_64"
 build_style=fetch
 hostmakedepends="ostree"
@@ -17,7 +17,9 @@ homepage="https://www.nvidia.com/en-us/geforce-now/"
 _site="https://international.download.nvidia.com/GFNLinux/flatpak"
 _repo="${_site}/geforcenow_repo"
 _ref="app/com.nvidia.geforcenow/x86_64/master"
-_commit=f04023919e48360fa55cc550f79b1041c1725680d30414e5bda9fd73ef26d324
+_commit=5a43907ba03d2f6b7e211fe895c50b14f8ae82e98c0dd1132b3cf0726dbb243c
+replaces="geforcenow-bin>=0"
+provides="geforcenow-bin-${version}_${revision}"
 nostrip=yes
 nodebug=yes
 noshlibprovides=yes

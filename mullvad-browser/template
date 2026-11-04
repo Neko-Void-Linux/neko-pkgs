@@ -1,27 +1,30 @@
+# Template file for 'mullvad-browser'
 pkgname=mullvad-browser
-version=15.0.21
+version=16.0
 revision=1
 archs="x86_64"
 create_wrksrc=no
-nopie=yes
-nostrip=yes
 hostmakedepends="bsdtar"
 depends="gtk+3 dbus-glib libXtst libXScrnSaver nss alsa-lib libgbm libdrm"
 short_desc="Privacy-focused browser by Mullvad and Tor Project"
-maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
+maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="MPL-2.0"
 homepage="https://mullvad.net/browser"
 distfiles="https://github.com/mullvad/mullvad-browser/releases/download/${version}/mullvad-browser_${version}-1_amd64.deb"
-checksum=4f9479074ea6d8da2711ec5767ccff2dbfb6d1e884fb1ab82521846f1fac1e82
+checksum=7a13c1da7737b190bbf17f4b686cd58fe48f7fd17a42a942294c0604a8481377
+provides="mullvad-browser-bin-${version}_${revision}"
+replaces="mullvad-browser-bin>=0"
+nopie=yes
+nostrip=yes
 
 do_extract() {
-    mkdir -p ${wrksrc}
-    bsdtar -xf ${XBPS_SRCDISTDIR}/${pkgname}-${version}/mullvad-browser_${version}-1_amd64.deb -C ${wrksrc}
-    bsdtar -xf ${wrksrc}/data.tar.xz -C ${wrksrc}
+	mkdir -p ${wrksrc}
+	bsdtar -xf ${XBPS_SRCDISTDIR}/${pkgname}-${version}/mullvad-browser_${version}-1_amd64.deb -C ${wrksrc}
+	bsdtar -xf ${wrksrc}/data.tar.xz -C ${wrksrc}
 }
 
 do_install() {
-    vmkdir usr
-    cp -a ${wrksrc}/usr/* ${DESTDIR}/usr/
-    chmod -R 755 ${DESTDIR}/usr
+	vmkdir usr
+	vcopy "${wrksrc}/usr/." usr
+	chmod -R 755 ${DESTDIR}/usr
 }

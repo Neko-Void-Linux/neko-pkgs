@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Heroic Games Launcher
+Comment=An Open Source Launcher for GOG, Epic Games and Amazon Games
+Exec=heroic %U
+Icon=heroic
+Terminal=false
+Type=Application
+Categories=Game;
+StartupWMClass=Heroic

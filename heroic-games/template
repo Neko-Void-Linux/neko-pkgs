@@ -1,15 +1,18 @@
+# Template file for 'heroic-games'
 pkgname=heroic-games
-version=2.22.3
+version=2.22.4
 revision=1
 archs="x86_64"
 build_style=fetch
-short_desc="Open Source Launcher for GOG, Epic Games and Amazon Games"
-maintainer="Javiercplus"
 hostmakedepends="binutils tar xz"
+short_desc="Open Source Launcher for GOG, Epic Games and Amazon Games"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="GPL-3.0-only"
 homepage="https://heroicgameslauncher.com"
 distfiles="https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher/releases/download/v${version}/Heroic-${version}-linux-x64.tar.xz"
-checksum=7382d719a5114c5f0761eea05cdb22f73f58fe98ec840d16b3d85a054d0d3efd
+checksum=81497c4e67d42905da5839a32be053c011eae35fb1fd5ec9441249b238d8f99b
+provides="heroic-games-bin-${version}_${revision}"
+replaces="heroic-games-bin>=0"
 
 depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core libuuid libsecret"
 
@@ -22,27 +25,16 @@ do_install() {
 		-C "${DESTDIR}/opt/Heroic"
 
 	vmkdir usr/share/icons/hicolor/512x512/apps
-	cp "${DESTDIR}/opt/Heroic/resources/app.asar.unpacked/build/icon.png" \
-		"${DESTDIR}/usr/share/icons/hicolor/512x512/apps/heroic.png"
+	vinstall "${DESTDIR}/opt/Heroic/resources/app.asar.unpacked/build/icon.png" 644 \
+		usr/share/icons/hicolor/512x512/apps heroic.png
 	chmod 644 "${DESTDIR}/usr/share/icons/hicolor/512x512/apps/heroic.png"
 
-	vmkdir usr/share/applications
-	cat > "${DESTDIR}/usr/share/applications/heroic.desktop" <<_EOF
-[Desktop Entry]
-Name=Heroic Games Launcher
-Comment=An Open Source Launcher for GOG, Epic Games and Amazon Games
-Exec=heroic %U
-Icon=heroic
-Terminal=false
-Type=Application
-Categories=Game;
-StartupWMClass=Heroic
-_EOF
+	vinstall "${FILESDIR}/heroic.desktop" 644 usr/share/applications
 
 	if [ -f "${DESTDIR}/opt/Heroic/resources/apparmor-profile" ]; then
 		vmkdir etc/apparmor.d
-		cp "${DESTDIR}/opt/Heroic/resources/apparmor-profile" \
-			"${DESTDIR}/etc/apparmor.d/heroic"
+		vinstall "${DESTDIR}/opt/Heroic/resources/apparmor-profile" 644 \
+			etc/apparmor.d heroic
 		chmod 644 "${DESTDIR}/etc/apparmor.d/heroic"
 	fi
 

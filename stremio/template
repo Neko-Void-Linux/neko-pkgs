@@ -1,37 +1,55 @@
+# Template file for 'stremio'
 pkgname=stremio
-version=4.4.168
-revision=3
-only_for_archs="x86_64"
-short_desc="Freedom to Stream"
-maintainer="JavierC"
-depends="nodejs mpv qt5-declarative qt5-quickcontrols qt5-quickcontrols2 qt5-webchannel qt5-webengine rubberband uchardet fdk-aac libssl1.1"
-hostmakedepends="tar xz wget patchelf"
+version=4.4.183
+revision=1
+build_style=cmake
+hostmakedepends="cmake librsvg-utils"
+makedepends="qt5-devel qt5-declarative-devel qt5-location-devel
+ qt5-webchannel-devel qt5-webengine-devel mpv-devel openssl-devel MesaLib-devel"
+depends="nodejs qt5-declarative qt5-quickcontrols2 qt5-webchannel qt5-webengine"
+short_desc="Stremio media center (Qt5 shell compiled from source)"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://www.stremio.com/"
-nostrip=yes
+changelog="https://github.com/Stremio/stremio-shell/releases"
+_server="https://dl.strem.io/server/v4.20.16/desktop/server.js"
+distfiles="https://github.com/Stremio/stremio-shell/archive/refs/tags/v${version}.tar.gz>stremio-shell-${version}.tar.gz
+ ${_server}>server.js
+ https://github.com/itay-grudev/SingleApplication/archive/aede311d28d20179216c5419b581087be2a8409f.tar.gz>singleapplication.tar.gz
+ https://github.com/Ivshti/libmpv/archive/b0eae77cf6dc59aaf142b7d079cb13a0904fd3ee.tar.gz>libmpv.tar.gz"
+checksum="7f27d20ae64a3ef80cc528840030d341a8cd5da3da55a80931bb313a12a494f8
+ 88e887f058765f0e3dbc636829e7687ab80759c392eb9a64df457c8f9fc86e28
+ 7b8a10a511b329e910ba428626e707576d312f522292acb7ee29d55db22546cc
+ 865f07289ba6e4f3747a455b40eaed64174fd57d352e0ee4d0b4e5f4698e83d2"
+replaces="stremio-bin>=0"
 
 do_extract() {
-	mkdir -p ${DESTDIR}
-	wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/stremio_4.4.168-1_amd64.deb https://dl.strem.io/shell-linux/v4.4.168/stremio_4.4.168-1_amd64.deb
-	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/stremio_4.4.168-1_amd64.deb
+	mkdir -p ${wrksrc}
+	bsdtar -xzC ${wrksrc} --strip-components=1 \
+		-f ${XBPS_SRCDISTDIR}/${pkgname}-${version}/stremio-shell-${version}.tar.gz
 }
 
-do_install() {
-	tar xf data.tar.xz -C ${DESTDIR}
+post_extract() {
+	mkdir -p deps/singleapplication deps/libmpv
+	bsdtar -xf \
+		"${XBPS_SRCDISTDIR}/${pkgname}-${version}/singleapplication.tar.gz" \
+		-C deps/singleapplication --strip-components=1
+	bsdtar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/libmpv.tar.gz" \
+		-C deps/libmpv --strip-components=1
+}
 
-	for size in 24 32 64 128 256; do
-		mkdir -p ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps
-		mv ${DESTDIR}/opt/stremio/icons/smartcode-stremio_${size}.png ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps/smartcode-stremio.png 2>/dev/null || true
-		mv ${DESTDIR}/opt/stremio/icons/smartcode-stremio-tray_${size}.png ${DESTDIR}/usr/share/icons/hicolor/${size}x${size}/apps/smartcode-stremio-tray.png 2>/dev/null || true
+post_install() {
+	vinstall ${XBPS_SRCDISTDIR}/${pkgname}-${version}/server.js 755 opt/stremio
+	ln -sf /usr/bin/node ${DESTDIR}/opt/stremio/node
+	mkdir -p ${wrksrc}/icons
+	for size in 16 22 24 32 64 128; do
+		rsvg-convert ${wrksrc}/images/stremio.svg -w ${size} -o ${wrksrc}/icons/stremio_${size}.png
+		rsvg-convert ${wrksrc}/images/stremio_tray_white.svg -w ${size} -o ${wrksrc}/icons/tray_${size}.png
+		vinstall ${wrksrc}/icons/stremio_${size}.png 644 \
+			usr/share/icons/hicolor/${size}x${size}/apps smartcode-stremio.png
+		vinstall ${wrksrc}/icons/tray_${size}.png 644 \
+			usr/share/icons/hicolor/${size}x${size}/apps smartcode-stremio-tray.png
 	done
-	
-	mkdir -p ${DESTDIR}/usr/share/applications
-	mv ${DESTDIR}/opt/stremio/smartcode-stremio.desktop ${DESTDIR}/usr/share/applications/smartcode-stremio.desktop
-	patchelf --replace-needed libmpv.so.1 libmpv.so.2 "${DESTDIR}/opt/stremio/stremio"
-	mkdir -p ${DESTDIR}/usr/bin
-	ln -sf /opt/stremio/stremio ${DESTDIR}/usr/bin/stremio
-	mkdir -p ${DESTDIR}/usr/lib
-	if [ -f /usr/lib/libmpv.so.2 ]; then
-		ln -sf /usr/lib/libmpv.so.2 "${DESTDIR}/usr/lib/libmpv.so.1"
-	fi
+	vinstall ${wrksrc}/smartcode-stremio.desktop 644 usr/share/applications
+	vlicense LICENSE.md
 }

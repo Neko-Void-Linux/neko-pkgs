@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Neko Wizard
+Comment=WIZARD for INSTALL Software and DRIVERS
+Exec=neko-store
+Icon=system-software-install
+Categories=Utility;
+Terminal=false

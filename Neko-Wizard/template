@@ -1,42 +1,38 @@
+# Template file for 'Neko-Wizard'
 pkgname=Neko-Wizard
-version=9.0.20
-revision=8
+version=9.0.23
+revision=1
 build_style=meson
 hostmakedepends="pkg-config meson ninja cmake"
 makedepends="gtk4-devel"
 short_desc="Wizard Post Install for NEKO VOID"
-maintainer="JavierC"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="WTFPL"
-homepage="https://github.com/Neko-Void-Linux/Neko-Wizard"
+homepage="https://github.com/SrDicov/Neko-Wizard"
+_commit="74b7a6c6cc7d56fc8b13571cd1d2fed5e6844081"
+_repository="https://github.com/SrDicov/Neko-Wizard.git"
+distfiles="https://github.com/SrDicov/Neko-Wizard/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
+checksum="a0a4ca84b822a831381fecc73b59a30a7afe8e5260e672a5bdf95a7eb7a87852"
 
-do_fetch(){
-    git clone --depth 1 https://github.com/Neko-Void-Linux/Neko-Wizard.git ${pkgname}-${version}
+do_extract() {
+	vsrcextract --strip-components=1 ${pkgname}-${version}.tar.gz
 }
+
 do_install() {
 	vmkdir usr/lib/Neko-Wizard
 	vmkdir usr/bin
 	vmkdir usr/share/applications
-    vmkdir etc/xbps.d
 	vcopy build/neko-store usr/lib/Neko-Wizard/neko-store
 	chmod 755 "${DESTDIR}/usr/lib/Neko-Wizard/neko-store"
 
 	vcopy resources usr/lib/Neko-Wizard/resources
-    vcopy xbps.d/20-repository-neko.conf etc/xbps.d
+	vmkdir etc/xbps.d
+	vcopy xbps.d/20-repository-neko.conf etc/xbps.d
 	vcopy data usr/lib/Neko-Wizard/data
 
 	ln -s ../lib/Neko-Wizard/neko-store "${DESTDIR}/usr/bin/neko-store"
 
-	cat > "${DESTDIR}/usr/share/applications/neko-store.desktop" << EOF
-[Desktop Entry]
-Type=Application
-Name=Neko Wizard
-Comment=WIZARD for INSTALL Software and DRIVERS
-Exec=neko-store
-Icon=system-software-install
-Categories=Utility;
-Terminal=false
-EOF
-	chmod 644 "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	vinstall ${FILESDIR}/neko-store.desktop 644 usr/share/applications
 
 	if [ -f LICENSE ]; then
 		vlicense LICENSE

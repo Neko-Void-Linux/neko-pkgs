@@ -1,0 +1,9 @@
+#!/bin/sh
+# Wrapper: the bundled libcmark lives in /usr/lib/pineconemc, outside the
+# loader's default path and the binary's RUNPATH ($ORIGIN), so it is
+# exposed via LD_LIBRARY_PATH. argv[0] stays /usr/bin/elyprismlauncher,
+# which is what the jar lookup (../share/ElyPrismLauncher) expects.
+HERE="$(dirname "$(readlink -f "$0")")"
+BIN="$HERE/elyprismlauncher"
+export LD_LIBRARY_PATH="/usr/lib/pineconemc${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec "$BIN" "$@"

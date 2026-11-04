@@ -1,13 +1,19 @@
+# Template file for 'python3-steam'
 pkgname=python3-steam
 version=2.0.0alpha1
-revision=1
+revision=2
 build_style=python3-pep517
-_tag="v2.0.0-alpha1"
 hostmakedepends="python3-setuptools python3-wheel"
-depends="python3-pycryptodomex python3-requests python3-cachetools python3-vdf python3-gevent python3-protobuf python3-gevent python3-wsproto python3-zstandard"
+depends="python3-pycryptodomex python3-requests python3-cachetools python3-vdf
+ python3-gevent python3-protobuf python3-wsproto python3-zstandard"
 short_desc="Python package for interacting with Steam (Solstice fork)"
-maintainer="Tu Nombre <tu.email@ejemplo.com>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/solsticegamestudios/steam"
+_tag="v2.0.0-alpha1"
 distfiles="https://github.com/solsticegamestudios/steam/archive/refs/tags/${_tag}.tar.gz"
 checksum=6447a3c97248885b44b73fec3bdcaee0421fe3e6e062d1bb195b9de3acc7eb0a
+
+do_install() {
+	vlicense LICENSE
+}

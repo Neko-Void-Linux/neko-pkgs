@@ -1,13 +1,13 @@
 # Template file for 'arxy'
 pkgname=arxy
-version=0.6.1
+version=1.0.0
 revision=1
-depends="bash bubblewrap curl tar zstd xz gzip file desktop-file-utils minisign sudo"
+depends="bash bubblewrap curl tar zstd xz gzip file desktop-file-utils minisign
+ sudo"
 short_desc="Subsistema Arch para correr software glibc en cualquier distro"
 maintainer="Dicov <srdicov@gmail.com>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/SrDicov/arxy"
-# No pisar la config del usuario al actualizar (puede anclar URL/SHA).
 conf_files="/etc/arxy/arxy.conf"
 
 do_install() {
@@ -15,5 +15,4 @@ do_install() {
 	ln -sf arxy ${DESTDIR}/usr/bin/axy
 	vinstall ${FILESDIR}/arxy.conf 644 etc/arxy/
 	vinstall ${FILESDIR}/arxy.pub 644 etc/arxy/
-	vlicense ${FILESDIR}/LICENSE
 }
