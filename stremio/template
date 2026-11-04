@@ -6,7 +6,7 @@ build_style=cmake
 hostmakedepends="cmake librsvg-utils"
 makedepends="qt5-devel qt5-declarative-devel qt5-location-devel
  qt5-webchannel-devel qt5-webengine-devel mpv-devel openssl-devel MesaLib-devel"
-depends="nodejs qt5-declarative qt5-quickcontrols2 qt5-webchannel qt5-webengine"
+depends="nodejs qt5-declarative qt5-quickcontrols qt5-quickcontrols2 qt5-webchannel qt5-webengine"
 short_desc="Stremio media center (Qt5 shell compiled from source)"
 maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
