@@ -1,14 +1,15 @@
+# Template file for 'winboat'
 pkgname=winboat
 version=0.9.2
 revision=1
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar xz"
-depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils \
- at-spi2-core libuuid libsecret libayatana-appindicator \
+depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils
+ at-spi2-core libuuid libsecret libayatana-appindicator
  hicolor-icon-theme desktop-file-utils"
 short_desc="Run Windows apps on Linux natively"
-maintainer="ANOMALI0x00"
+maintainer="ANOMALI0x00 <anomali@example.com>"
 license="MIT"
 homepage="https://github.com/TibixDev/winboat"
 distfiles="https://github.com/TibixDev/winboat/releases/download/v${version}/winboat-${version}-amd64.deb"

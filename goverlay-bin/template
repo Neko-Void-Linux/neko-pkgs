@@ -4,7 +4,7 @@ version=1.9.4
 revision=1
 archs="x86_64"
 hostmakedepends="tar xz"
-depends="MangoHud qt6-base qt6-declarative gamemode nerd-fonts libqt6pas
+depends="MangoHud qt6-base qt6-declarative gamemode nerd-fonts libqt6pas-bin
  python3"
 short_desc="Modern Qt6 GUI application to configure MangoHud, vkBasalt, and
  more"

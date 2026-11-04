@@ -1,20 +1,28 @@
+# Template file for 'libqt6pas-bin'
 pkgname=libqt6pas-bin
 version=6.2.10
 revision=4
+archs="x86_64"
 short_desc="Free Pascal Qt6 binding library"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="LGPL-2.1-or-later"
 homepage="https://github.com/davidbannon/libqt6pas"
-distfiles="https://github.com/davidbannon/libqt6pas/releases/download/v6.2.10/libqt6pas_6_2_10-1_amd64.tar.gz"
+distfiles="https://github.com/davidbannon/libqt6pas/releases/download/v${version}/libqt6pas_${version//./_}-1_amd64.tar.gz"
 checksum=28c677a5eb6f260b32a8ee30bbed97d927f22607174bc520474c94a137d7c494
+replaces="libqt6pas>=0"
+provides="libqt6pas-${version}_${revision}"
 
 shlib_provides="libQt6Pas.so.6"
 
-wrksrc="libqt6pas_6_2_10-1_amd64"
-
 do_install() {
-    vinstall libQt6Pas.so.6.2.10 755 usr/lib
-    
-    ln -sf libQt6Pas.so.6.2.10 ${DESTDIR}/usr/lib/libQt6Pas.so.6
-    ln -sf libQt6Pas.so.6 ${DESTDIR}/usr/lib/libQt6Pas.so
+	vinstall libQt6Pas.so.6.2.10 755 usr/lib
+
+	ln -sf libQt6Pas.so.6.2.10 ${DESTDIR}/usr/lib/libQt6Pas.so.6
+	ln -sf libQt6Pas.so.6 ${DESTDIR}/usr/lib/libQt6Pas.so
+}
+
+libqt6pas_package() {
+	metapackage=yes
+	depends="${sourcepkg}>=${version}_${revision}"
+	short_desc+=" (transitional dummy package)"
 }
