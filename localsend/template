@@ -1,7 +1,7 @@
 # Template file for 'localsend'
 pkgname=localsend
 version=1.18.2
-revision=1
+revision=2
 archs="x86_64"
 create_wrksrc=yes
 depends="gtk+3 desktop-file-utils hicolor-icon-theme"
@@ -19,5 +19,27 @@ nostrip=yes
 do_install() {
 	vmkdir usr/lib/localsend
 	vcopy "*" usr/lib/localsend
-	vbin localsend_app localsend
+	chmod 755 "${DESTDIR}/usr/lib/localsend/localsend_app"
+
+	vmkdir usr/bin
+	cat <<-'EOF' > "${DESTDIR}/usr/bin/localsend"
+	#!/bin/sh
+	exec /usr/lib/localsend/localsend_app "$@"
+	EOF
+	chmod 755 "${DESTDIR}/usr/bin/localsend"
+
+	vmkdir usr/share/icons/hicolor/512x512/apps
+	vinstall data/flutter_assets/assets/img/logo-512.png 644 usr/share/icons/hicolor/512x512/apps localsend.png
+
+	vmkdir usr/share/applications
+	cat <<-'EOF' > "${DESTDIR}/usr/share/applications/localsend.desktop"
+	[Desktop Entry]
+	Name=LocalSend
+	Comment=An open-source cross-platform alternative to AirDrop
+	Exec=localsend %U
+	Icon=localsend
+	Type=Application
+	Terminal=false
+	Categories=Network;FileTransfer;
+	EOF
 }

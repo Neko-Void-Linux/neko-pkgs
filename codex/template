@@ -1,7 +1,7 @@
 # Template file for 'codex'
 pkgname=codex
 version=26.1029.61003
-revision=1
+revision=2
 archs="x86_64"
 build_style=fetch
 hostmakedepends="binutils tar xz"
@@ -26,27 +26,28 @@ nopie=yes
 do_install() {
 	vextract "chatgpt_${version}_amd64.deb"
 
+	vmkdir usr/lib
+	vcopy usr/lib/chatgpt usr/lib
+
+	vmkdir usr/share
+	[ ! -d usr/share/applications ] || vcopy usr/share/applications usr/share
+	[ ! -d usr/share/pixmaps ] || vcopy usr/share/pixmaps usr/share
+
+	vmkdir usr/bin
+	[ ! -f usr/bin/chatgpt ] || vcopy usr/bin/chatgpt usr/bin
 	if [ -x usr/lib/chatgpt/resources/codex ]; then
-		vmkdir usr/bin
 		ln -sf /usr/lib/chatgpt/resources/codex "${DESTDIR}/usr/bin/codex"
 	fi
 	if [ -x usr/lib/chatgpt/resources/codex-code-mode-host ]; then
-		vmkdir usr/bin
 		ln -sf /usr/lib/chatgpt/resources/codex-code-mode-host \
 			"${DESTDIR}/usr/bin/codex-code-mode-host"
 	fi
 
 	[ ! -e usr/share/applications/chatgpt.desktop ] || \
-		chmod 0644 usr/share/applications/chatgpt.desktop
+		chmod 0644 "${DESTDIR}/usr/share/applications/chatgpt.desktop"
 	[ ! -e usr/share/pixmaps/chatgpt.png ] || \
-		chmod 0644 usr/share/pixmaps/chatgpt.png
+		chmod 0644 "${DESTDIR}/usr/share/pixmaps/chatgpt.png"
 
 	[ ! -e usr/share/doc/chatgpt/copyright ] || \
 		vlicense usr/share/doc/chatgpt/copyright
-}
-
-chatgpt_package() {
-	metapackage=yes
-	depends="${sourcepkg}>=${version}_${revision}"
-	short_desc+=" (transitional dummy package)"
 }

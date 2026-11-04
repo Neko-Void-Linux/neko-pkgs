@@ -1,7 +1,7 @@
 # Template file for 'python3-steam'
 pkgname=python3-steam
 version=2.0.0alpha1
-revision=2
+revision=3
 build_style=python3-pep517
 hostmakedepends="python3-setuptools python3-wheel"
 depends="python3-pycryptodomex python3-requests python3-cachetools python3-vdf
@@ -14,6 +14,6 @@ _tag="v2.0.0-alpha1"
 distfiles="https://github.com/solsticegamestudios/steam/archive/refs/tags/${_tag}.tar.gz"
 checksum=6447a3c97248885b44b73fec3bdcaee0421fe3e6e062d1bb195b9de3acc7eb0a
 
-do_install() {
+post_install() {
 	vlicense LICENSE
 }
