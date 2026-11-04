@@ -1,7 +1,8 @@
 # Template file for 'Neko-Wizard'
 pkgname=Neko-Wizard
-version=9.0.16
-revision=7
+version=9.0.23
+revision=2
+_commit="c5acd4a54166a6697bab90248fb56cba3bcfa444"
 build_style=meson
 hostmakedepends="pkg-config meson ninja cmake"
 makedepends="gtk4-devel"
@@ -9,8 +10,12 @@ short_desc="Wizard Post Install for NEKO VOID"
 maintainer="JavierC"
 license="WTFPL"
 homepage="https://github.com/Neko-Void-Linux/Neko-Wizard"
-distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/${version}/Neko-Wizard-${version}.tar.gz"
-checksum="bf5632a969a086e07e24e0fd6b79a45ed0abb59aaf76d2f674851a93d978f90f"
+distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
+checksum="f48826c661634919527c8a855ea5f85d4ce383df545899c5ffda7031b9719b7c"
+
+do_extract() {
+	vsrcextract --strip-components=1 ${pkgname}-${version}.tar.gz
+}
 
 do_install() {
 	vmkdir usr/lib/Neko-Wizard
@@ -26,7 +31,7 @@ do_install() {
 
 	ln -s ../lib/Neko-Wizard/neko-store "${DESTDIR}/usr/bin/neko-store"
 
-	cat > "${DESTDIR}/usr/share/applications/neko-store.desktop" << EOF
+	cat > "${DESTDIR}/usr/share/applications/neko-store.desktop" << 'DESKTOPEOF'
 [Desktop Entry]
 Type=Application
 Name=Neko Wizard
@@ -35,7 +40,7 @@ Exec=neko-store
 Icon=system-software-install
 Categories=Utility;
 Terminal=false
-EOF
+DESKTOPEOF
 	chmod 644 "${DESTDIR}/usr/share/applications/neko-store.desktop"
 
 	if [ -f LICENSE ]; then
