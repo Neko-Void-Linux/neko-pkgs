@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=REAPER
+Comment=Digital audio workstation and MIDI sequencer
+Exec=reaper %U
+# No Icon=: upstream ships no app icon (only .ico toolbar art), and
+# pointing at a missing file renders a broken image.
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;X-Jack;Recorder;
+MimeType=audio/x-reaper;audio/x-reaper-project;
+StartupNotify=true

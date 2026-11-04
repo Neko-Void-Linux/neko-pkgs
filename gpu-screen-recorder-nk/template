@@ -1,0 +1,21 @@
+# Template file for 'gpu-screen-recorder-nk'
+pkgname=gpu-screen-recorder-nk
+version=6.1.7
+revision=1
+build_style=meson
+configure_args="-Dcapabilities=false -Dsystemd=false"
+hostmakedepends="meson ninja pkg-config wayland-devel"
+makedepends="ffmpeg6-devel libcap-devel libdrm-devel libglvnd-devel
+ libva-devel libX11-devel libXcomposite-devel libXcursor-devel
+ libXdamage-devel libXext-devel libXfixes-devel libXi-devel
+ libXinerama-devel libXrandr-devel pipewire-devel pulseaudio-devel
+ vulkan-loader-devel dbus-devel"
+depends="libcap-progs"
+short_desc="Extremely fast screen recorder for Linux"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="GPL-3.0-only"
+homepage="https://git.dec05eba.com/gpu-screen-recorder/about"
+distfiles="https://dec05eba.com/snapshot/gpu-screen-recorder.git.${version}.tar.gz"
+checksum=17be095ed8c6200c467c1477cc127c97b056b25071443d015e0ef026cf3fcd73
+provides="gpu-screen-recorder-${version}_${revision}"
+replaces="gpu-screen-recorder>=0"

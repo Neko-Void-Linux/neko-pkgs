@@ -1,0 +1,41 @@
+# Template file for 'voxtype'
+pkgname=voxtype
+version=1.1.1
+revision=1
+build_style=cargo
+configure_args="--features osd-gtk4"
+hostmakedepends="cargo rust pkg-config cmake clang pkgconf"
+makedepends="alsa-lib-devel gtk4-devel gtk4-layer-shell-devel"
+depends="pipewire wireplumber wtype"
+short_desc="Offline speech-to-text daemon for Wayland compositors"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MIT"
+homepage="https://github.com/peteonrails/voxtype"
+distfiles="https://github.com/peteonrails/voxtype/archive/refs/tags/v${version}.tar.gz"
+checksum=dbde68a335ae190aec4f077e1b653f5fef3ff9dc7cddbfce1befae090eea33c9
+replaces="voxtype-bin>=0"
+
+do_install() {
+	local b="target/${RUST_TARGET}/release"
+	vbin "$b/voxtype"
+	vinstall "$b/voxtype-osd" 755 usr/lib/voxtype
+	for x in voxtype-osd-gtk4 voxtype-osd-quickshell; do
+		vinstall "target/${RUST_TARGET}/release/${x}" 755 usr/lib/voxtype
+	done
+	vbin "$b/voxtype-audio-bridge"
+	ln -sf /usr/lib/voxtype/voxtype-osd ${DESTDIR}/usr/bin/voxtype-osd
+	vmkdir usr/share/voxtype
+	vcopy quickshell usr/share/voxtype
+	vcopy examples/osd-packages usr/share/voxtype/osd
+	vcopy examples/osd-recipes usr/share/voxtype/osd-recipes
+	vinstall packaging/completions/voxtype.zsh 644 usr/share/zsh/site-functions _voxtype
+	vinstall packaging/completions/voxtype.fish 644 usr/share/fish/vendor_completions.d voxtype.fish
+	vinstall packaging/completions/voxtype.bash 644 usr/share/bash-completion/completions voxtype
+	vinstall packaging/systemd/voxtype.service 644 usr/lib/systemd/user
+	vinstall config/default.toml 644 etc/voxtype config.toml
+	vman_dir=$(find ${wrksrc}/target/${RUST_TARGET}/release/build -name man -type d -path '*/voxtype-*/out' 2>/dev/null | head -n1)
+	if [ -n "${vman_dir}" ]; then
+		vman ${vman_dir}/*.1
+	fi
+	vlicense LICENSE
+}

@@ -1,0 +1,8 @@
+case "${ACTION}" in
+post)
+	if command -v setcap >/dev/null 2>&1; then
+		setcap cap_setuid+ep /usr/bin/gsr-global-hotkeys 2>/dev/null || \
+			echo "WARNING: failed to set cap_setuid on /usr/bin/gsr-global-hotkeys"
+	fi
+	;;
+esac
