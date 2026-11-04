@@ -1,0 +1,19 @@
+# Template file for 'gpu-screen-recorder-ui-nk'
+pkgname=gpu-screen-recorder-ui-nk
+version=1.15.1
+revision=1
+build_style=meson
+configure_args="-Dcapabilities=false"
+hostmakedepends="pkg-config meson desktop-file-utils wayland-devel"
+makedepends="pango-devel libX11-devel libXrandr-devel libXrender-devel libXcomposite-devel
+ libXfixes-devel libXext-devel libXi-devel libXcursor-devel libxkbcommon-devel
+ libglvnd-devel pulseaudio-devel libdrm-devel dbus-devel libcap-devel wayland-devel"
+depends="gpu-screen-recorder-nk gpu-screen-recorder-notification-nk libcap-progs"
+short_desc="ShadowPlay-like UI for gpu-screen-recorder"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="GPL-3.0-only, OFL-1.1, CC-BY-SA-3.0, CC0-1.0, CC-BY-4.0"
+homepage="https://git.dec05eba.com/gpu-screen-recorder-ui/about"
+distfiles="https://dec05eba.com/snapshot/gpu-screen-recorder-ui.git.${version}.tar.gz"
+checksum=36257f5d7859c98b04c4c51d98d17d8f20a464f093794263c866dc61870462f2
+provides="gpu-screen-recorder-ui-${version}_${revision}"
+replaces="gpu-screen-recorder-ui>=0"

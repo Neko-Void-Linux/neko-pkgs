@@ -1,0 +1,43 @@
+# Template file for 'reaper'
+pkgname=reaper
+version=7.84
+revision=1
+archs="x86_64"
+create_wrksrc=yes
+hostmakedepends="binutils tar xz"
+depends="alsa-lib at-spi2-core cairo dbus desktop-file-utils fontconfig
+ freetype gdk-pixbuf glib gtk+3 libX11 libXcomposite libXcursor libXext
+ libXfixes libXi libXinerama libXrandr libXrender libXScrnSaver libXt libXtst
+ pango pulseaudio xdg-utils"
+short_desc="Digital audio workstation and MIDI sequencer"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="custom:Reaper EULA"
+homepage="https://www.reaper.fm"
+distfiles="https://www.reaper.fm/files/7.x/reaper784_linux_x86_64.tar.xz>reaper-${version}-linux-x86_64.tar.xz"
+checksum=d87b39862bec6a82bbb530731ae1fa36bba4bc9954ff72518a187420eed9ec7d
+replaces="reaper-bin>=0"
+provides="reaper-bin-${version}_${revision}"
+nostrip=yes
+nopie=yes
+noshlibprovides=yes
+
+do_extract() {
+	tar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/reaper-${version}-linux-x86_64.tar.xz" \
+		-C "${wrksrc}" --strip-components=1
+}
+
+do_install() {
+	vmkdir usr/lib/reaper
+	vcopy "REAPER/." usr/lib/reaper
+	vlicense REAPER/EULA.txt
+
+	vmkdir usr/bin
+	printf '#!/bin/sh\nexec /usr/lib/reaper/reaper "$@"\n' \
+		> "${DESTDIR}/usr/bin/reaper"
+	chmod 755 "${DESTDIR}/usr/bin/reaper"
+	chmod 755 "${DESTDIR}/usr/lib/reaper/reaper" \
+		"${DESTDIR}/usr/lib/reaper/libSwell.so"
+
+	vmkdir usr/share/applications
+	vinstall "${FILESDIR}/reaper.desktop" 644 usr/share/applications
+}

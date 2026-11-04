@@ -1,0 +1,30 @@
+# Template file for 'cmuspp'
+pkgname=cmuspp
+version=1.1.1
+revision=4
+short_desc="C++17 terminal music player with cover art, lyrics and themes"
+maintainer="Ars-byte <shaggyfino11@gmail.com>"
+license="MIT"
+homepage="https://github.com/Ars-byte/cmuspp"
+distfiles="https://github.com/Ars-byte/cmuspp/archive/refs/tags/v${version}.tar.gz"
+checksum="0138ff26ba531768d00bd045c777c1509447fc08f2f7bfac494aa0a0da9954cd"
+
+makedepends="libsndfile-devel alsa-lib-devel libjpeg-turbo-devel libpng-devel"
+depends="lame libmpg123 libogg opus libvorbis"
+
+do_build() {
+	$CXX main.cpp -o cmuspp \
+		-std=c++17 -Wall -Wextra -pthread \
+		-DCMUSPP_HAS_JPEG -DCMUSPP_HAS_PNG \
+		$CXXFLAGS $LDFLAGS \
+		-lsndfile -lpng -ljpeg -lasound
+}
+
+do_install() {
+	vbin cmuspp
+
+	vmkdir usr/share/cmuspp/themes
+	vcopy themes/*.xml usr/share/cmuspp/themes/
+
+	vlicense LICENSE
+}

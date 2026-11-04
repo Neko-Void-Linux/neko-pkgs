@@ -1,0 +1,46 @@
+# Template file for 'pavoldcontrol'
+pkgname=pavoldcontrol
+version=r2.d7befd6
+revision=1
+build_style=gnu-makefile
+make_use_env=yes
+hostmakedepends="pkg-config gettext git"
+makedepends="gtk+3-devel pulseaudio-devel"
+depends="gtk+3 libpulseaudio"
+short_desc="Pavucontrol rewrite that still uses gtk3"
+maintainer="Kevin <kevinzz@tutamail.com>"
+license="GPL-2.0-or-later"
+homepage="https://github.com/ItsZariep/pavoldcontrol"
+replaces="pavoldcontrol-git>=0"
+conflicts="pavucontrol>=0"
+provides="pavucontrol-${version}_${revision}
+ pavoldcontrol-git-${version}_${revision}"
+
+do_fetch() {
+	git clone --depth 1 https://github.com/ItsZariep/pavoldcontrol "${wrksrc}"
+}
+
+pre_build() {
+	vsed -i 's|-DLOCALEDIR=\\"$(abspath $(LOCALE_DIR))\\"|-DLOCALEDIR=\\"/usr/share/locale\\"|' Makefile
+}
+
+do_install() {
+	vbin build/pavoldcontrol
+	vsed -i \
+		-e 's|^Icon=.*|Icon=org.pulseaudio.pavucontrol|' \
+		-e 's|^Name=.*|Name=Pavoldcontrol|' \
+		src/pavucontrol.desktop.in
+	vinstall src/pavucontrol.desktop.in 644 usr/share/applications pavucontrol.desktop
+	vinstall icons/org.pulseaudio.pavoldcontrol.svg 644 \
+		usr/share/icons/hicolor/scalable/apps org.pulseaudio.pavoldcontrol.svg
+	vinstall icons/org.pulseaudio.pavoldcontrol-symbolic.svg 644 \
+		usr/share/icons/hicolor/symbolic/apps org.pulseaudio.pavoldcontrol-symbolic.svg
+
+	for po in po/*.po; do
+		[ -e "$po" ] || continue
+		lang="${po#po/}"
+		lang="${lang%.po}"
+		vmkdir "usr/share/locale/${lang}/LC_MESSAGES"
+		msgfmt -o "${DESTDIR}/usr/share/locale/${lang}/LC_MESSAGES/pavoldcontrol.mo" "$po"
+	done
+}

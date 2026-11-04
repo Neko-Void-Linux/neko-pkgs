@@ -1,0 +1,17 @@
+# Template file for 'pam-fprint-grosshack'
+pkgname=pam-fprint-grosshack
+version=0.4.0
+revision=2
+build_style=meson
+hostmakedepends="meson ninja pkg-config"
+makedepends="elogind-devel pam-devel"
+short_desc="PAM module for simultaneous fingerprint and password authentication"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="GPL-2.0-or-later"
+homepage="https://github.com/furbyhaxx/pam-fprint-grosshack"
+distfiles="https://github.com/furbyhaxx/pam-fprint-grosshack/archive/37005210381f3a55fffb784dfec703c6b2a64df2.tar.gz"
+checksum=1357941b400100c9086d2cbedcb97e08d5f5ee94d9f875fe288feab36a4cdb72
+
+post_install() {
+	vdoc README.md
+}

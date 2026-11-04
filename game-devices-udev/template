@@ -1,0 +1,17 @@
+# Template file for 'game-devices-udev'
+pkgname=game-devices-udev
+version=1.1
+revision=1
+depends="base-files"
+short_desc="Udev rules for game controllers from many vendors"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MIT"
+homepage="https://codeberg.org/fabiscafe/game-devices-udev"
+distfiles="https://codeberg.org/fabiscafe/game-devices-udev/archive/${version}.tar.gz"
+checksum=56527bb4f6f33563c8879f0ba140a9baacf282bf6481b22737b04998dbe7f7af
+
+do_install() {
+	vmkdir usr/lib/udev/rules.d
+	vcopy "src/*.rules" usr/lib/udev/rules.d
+	vlicense LICENSE
+}

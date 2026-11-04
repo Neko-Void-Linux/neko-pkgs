@@ -1,0 +1,8 @@
+case "${ACTION}" in
+post)
+	if command -v setcap >/dev/null 2>&1; then
+		setcap cap_sys_admin=ep /usr/bin/gsr-kms-server 2>/dev/null || \
+			echo "WARNING: failed to set cap_sys_admin on /usr/bin/gsr-kms-server"
+	fi
+	;;
+esac
