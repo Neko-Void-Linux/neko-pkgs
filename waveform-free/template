@@ -1,24 +1,26 @@
+# Template file for 'waveform-free'
 pkgname=waveform-free
 version=2026.10
 revision=2
-only_for_archs="x86_64"
-short_desc="DAW WAVEFORM FREE"
-maintainer="JavierC"
+archs="x86_64"
 hostmakedepends="tar xz wget"
 depends="curl alsa-lib xprop tracktion-download-manager"
-license="Propietary"
+short_desc="DAW WAVEFORM FREE"
+maintainer="JavierC <javiercyt@atomicmail.io>"
+license="custom:Proprietary"
 homepage="http://www.tracktion.com"
 nostrip=yes
 
-do_fetch(){
-  mkdir -p ${XBPS_SRCDISTDIR}/${pkgname}-${version}
-  wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/debs/waveform14_14.1.23_amd64.deb
+do_fetch() {
+	mkdir -p ${XBPS_SRCDISTDIR}/${pkgname}-${version}
+	wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb https://github.com/Neko-Void-Linux/Neko-Wizard/releases/download/debs/waveform14_14.1.23_amd64.deb
 }
+
 do_extract() {
-    mkdir -p ${DESTDIR}
-    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb
+	mkdir -p ${DESTDIR}
+	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/waveform14_14.1.23_amd64.deb
 }
 
 do_install() {
-    tar xf data.tar.gz -C ${DESTDIR}
+	tar xf data.tar.gz -C ${DESTDIR}
 }

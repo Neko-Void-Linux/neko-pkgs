@@ -1,15 +1,16 @@
+# Template file for 'matrix-asm'
 pkgname=matrix-asm
 version=2.0
 revision=2
-only_for_archs="x86_64"
-hostmakedepends="wget" 
+archs="x86_64"
+hostmakedepends="wget"
 short_desc="Matrix Terminal in assembly"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="WTFPL"
 homepage="https://github.com/javiercplus/MATRIx-ASM"
 nopie=yes
 
 do_install() {
-    wget https://github.com/javiercplus/MATRIx-ASM/releases/download/2.0/matrix_asm_x86_64
-    vbin matrix_asm_x86_64 matrix-asm
+	wget https://github.com/javiercplus/MATRIx-ASM/releases/download/2.0/matrix_asm_x86_64
+	vbin matrix_asm_x86_64 matrix-asm
 }
