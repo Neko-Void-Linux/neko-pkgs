@@ -1,34 +1,38 @@
 # Template file for 'not-st'
 pkgname=not-st
 version=0.9.3.1
-revision=1
+revision=2
 build_style=gnu-makefile
 make_use_env=compliant
 hostmakedepends="pkg-config make"
-makedepends="libX11-devel libXft-devel libXrender-devel fontconfig-devel freetype-devel harfbuzz-devel imlib2-devel zlib-devel"
+makedepends="libX11-devel libXft-devel libXrender-devel fontconfig-devel
+ freetype-devel harfbuzz-devel imlib2-devel zlib-devel"
 depends="ncurses"
-short_desc="st fork with Kitty graphics and external configuration"
-maintainer="Derszi65g"
+short_desc="St fork with Kitty graphics and external configuration"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/Derszi65g/not-st"
 distfiles="https://github.com/Derszi65g/not-st/archive/refs/tags/v${version}.tar.gz"
 checksum=61f6787b605c1a60c7fd44a2a52e05fa3b2091208caaad6a9c30166cf000aeb4
 
+pre_build() {
+	vsed -i 's/-march=native//' config.mk
+}
+
 do_build() {
-	make
+	make ${makejobs} CC="$CC"
 }
 
 do_install() {
 	vmkdir usr/share/terminfo
-	tic -sx -o ${DESTDIR}/usr/share/terminfo st.info
-	vinstall assets/st.desktop 644 usr/share/applications not-st.desktop
-	vinstall assets/st.png 644 usr/share/pixmaps not-st.png
-	vinstall assets/st.png 644 usr/share/pixmaps st.png
+	export TERMINFO=${DESTDIR}/usr/share/terminfo
+	vmkdir usr/share/applications
+	vmkdir usr/share/icons
+	vmkdir usr/bin
+	vinstall assets/st.desktop 644 usr/share/applications st.desktop
 	vinstall assets/st.png 644 usr/share/icons st.png
 	vbin st not-st
-	ln -sf not-st ${DESTDIR}/usr/bin/st
-	[ -f tools/st-urlhandler ] && vbin tools/st-urlhandler
+
 	vlicense LICENSE
 	vdoc README.md
-	vman st.1
 }
