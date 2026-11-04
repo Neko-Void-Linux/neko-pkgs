@@ -1,6 +1,6 @@
 pkgname=hydra-launcher
-version=4.2.0
-revision=2
+version=4.3.0
+revision=3
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="bsdtar"
@@ -9,11 +9,11 @@ depends="gtk+3 nss alsa-lib nspr at-spi2-core libsecret libnotify libXtst
  libxkbcommon libgbm mesa-dri xrandr hicolor-icon-theme p7zip
  python3 libtorrent-rasterbar-python3 xdg-utils"
 short_desc="Game launcher with built-in bittorrent client"
-maintainer="ANOMALI0x00"
+maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
 license="MIT"
 homepage="https://github.com/hydralauncher/hydra"
 distfiles="https://github.com/hydralauncher/hydra/releases/download/v${version}/hydralauncher_${version}_amd64.deb"
-checksum=3982e1ba4026f436378b54bce831f0dd340833b574325950a7dbf03c363b215a
+checksum=63fd66c39aa05e2ffeb11c4d0213243dfaad17631268f25187b1e34c5c020c61
 nostrip=yes
 noshlibextract=yes
 noverifyrdeps=yes
@@ -21,13 +21,15 @@ nopie=yes
 python_version=ignore
 
 do_extract() {
+	local _deb="${XBPS_SRCDISTDIR}/${pkgname}-${version}/hydralauncher_${version}_amd64.deb"
+
+	bsdtar -x -f "${_deb}" -C "${wrksrc}"
 	local _data
-	bsdtar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/hydralauncher_${version}_amd64.deb" -C "${wrksrc}"
 	_data=$(ls "${wrksrc}"/data.tar.* 2>/dev/null | head -n1)
 	if [ -z "${_data}" ]; then
-		msg_error "No se encontró data.tar.* dentro del .deb\n"
+		msg_error "No se encontro data.tar.* dentro del .deb\n"
 	fi
-	bsdtar -xf "${_data}" -C "${wrksrc}"
+	bsdtar -x -f "${_data}" -C "${wrksrc}"
 	rm -f "${wrksrc}"/control.tar.* "${wrksrc}"/debian-binary "${wrksrc}"/data.tar.*
 }
 
@@ -37,36 +39,36 @@ do_install() {
 	vmkdir usr/share
 
 	if [ ! -d "${wrksrc}/opt/Hydra" ]; then
-		msg_error "No se encontró ${wrksrc}/opt/Hydra tras extraer el .deb\n"
+		msg_error "No se encontro ${wrksrc}/opt/Hydra tras extraer el .deb\n"
 	fi
 
-	vcopy opt/Hydra opt/
+	vcopy "${wrksrc}/opt/Hydra" opt/
 
 	vmkdir opt/Hydra/resources/app.asar.unpacked/python
 	for f in main.py torrent_downloader.py; do
 		if [ -f "${FILESDIR}/${f}" ]; then
 			vcopy "${FILESDIR}/${f}" opt/Hydra/resources/app.asar.unpacked/python/
 		elif [ -f "${wrksrc}/${f}" ]; then
-			vcopy "${f}" opt/Hydra/resources/app.asar.unpacked/python/
+			vcopy "${wrksrc}/${f}" opt/Hydra/resources/app.asar.unpacked/python/
 		else
-			msg_error "Falta ${f} (no está en FILESDIR ni en wrksrc)\n"
+			msg_error "Falta ${f} (no esta en FILESDIR ni en wrksrc)\n"
 		fi
 	done
 
-	RPC_DIR="${DESTDIR}/opt/Hydra/resources/hydra-python-rpc"
-	if [ -d "${RPC_DIR}" ]; then
-		rm -rf "${RPC_DIR:?}"/*
+	local rpc_dir="${DESTDIR}/opt/Hydra/resources/hydra-python-rpc"
+	if [ -d "${rpc_dir}" ]; then
+		rm -rf "${rpc_dir:?}"/*
 		vmkdir opt/Hydra/resources/hydra-python-rpc/bin
 
-		ln -sf /usr/bin/python3 "${RPC_DIR}/python3"
-		ln -sf /usr/bin/python3 "${RPC_DIR}/python"
-		ln -sf /usr/bin/python3 "${RPC_DIR}/bin/python"
+		ln -sf /usr/bin/python3 "${rpc_dir}/python3"
+		ln -sf /usr/bin/python3 "${rpc_dir}/python"
+		ln -sf /usr/bin/python3 "${rpc_dir}/bin/python"
 
-		cat << 'EOF' > "${RPC_DIR}/hydra-python-rpc"
+		cat << 'EOF' > "${rpc_dir}/hydra-python-rpc"
 #!/bin/bash
 exec /usr/bin/python3 /opt/Hydra/resources/app.asar.unpacked/python/main.py "$@"
 EOF
-		chmod 755 "${RPC_DIR}/hydra-python-rpc"
+		chmod 755 "${rpc_dir}/hydra-python-rpc"
 	fi
 
 	rm -f "${DESTDIR}/opt/Hydra/chrome-sandbox"
@@ -85,11 +87,18 @@ EOF
 	ln -sf /opt/Hydra/hydralauncher "${DESTDIR}/usr/bin/hydra-launcher"
 
 	if [ -d "${wrksrc}/usr/share/applications" ]; then
-		vcopy usr/share/applications usr/share/
+		vcopy "${wrksrc}/usr/share/applications" usr/share/
+	fi
+
+	if [ -f "${DESTDIR}/usr/share/applications/hydralauncher.desktop" ]; then
+		sed -i \
+			-e 's|^Exec=.*|Exec=hydra-launcher %U|' \
+			-e 's|^TryExec=.*|TryExec=hydra-launcher|' \
+			"${DESTDIR}/usr/share/applications/hydralauncher.desktop"
 	fi
 
 	if [ -d "${wrksrc}/usr/share/icons" ]; then
-		vcopy usr/share/icons usr/share/
+		vcopy "${wrksrc}/usr/share/icons" usr/share/
 	fi
 
 	vmkdir usr/share/pixmaps
@@ -101,10 +110,10 @@ EOF
 	fi
 
 	if [ -f "${wrksrc}/opt/Hydra/LICENSE.electron.txt" ]; then
-		vlicense opt/Hydra/LICENSE.electron.txt
+		vlicense "${wrksrc}/opt/Hydra/LICENSE.electron.txt"
 	fi
 	if [ -f "${wrksrc}/opt/Hydra/LICENSE" ]; then
-		vlicense opt/Hydra/LICENSE
+		vlicense "${wrksrc}/opt/Hydra/LICENSE"
 	fi
 
 	find "${DESTDIR}/opt/Hydra" -type f \
