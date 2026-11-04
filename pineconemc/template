@@ -1,7 +1,7 @@
 # Template file for 'pineconemc'
 pkgname=pineconemc
 version=11.1.2
-revision=1
+revision=2
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar zstd"
@@ -33,15 +33,20 @@ do_extract() {
 }
 
 do_install() {
+	vmkdir usr/lib/pineconemc
+	vcopy usr/bin/elyprismlauncher usr/lib/pineconemc
+	chmod 755 "${DESTDIR}/usr/lib/pineconemc/elyprismlauncher"
+	vcopy cmroot/usr/lib/libcmark.so.0.31.2 usr/lib/pineconemc
+
 	vmkdir usr/bin
-	vcopy usr/bin/elyprismlauncher usr/bin
-	chmod 755 "${DESTDIR}/usr/bin/elyprismlauncher"
-	vbin "${FILESDIR}/pineconemc-wrapper" pineconemc
+	cat <<-'EOF' > "${DESTDIR}/usr/bin/pineconemc"
+	#!/bin/sh
+	exec /usr/lib/pineconemc/elyprismlauncher "$@"
+	EOF
+	chmod 755 "${DESTDIR}/usr/bin/pineconemc"
+	ln -sf pineconemc "${DESTDIR}/usr/bin/elyprismlauncher"
 
 	vcopy "usr/share/ElyPrismLauncher" usr/share
-
-	vmkdir usr/lib/pineconemc
-	vcopy cmroot/usr/lib/libcmark.so.0.31.2 usr/lib/pineconemc
 
 	for s in 256; do
 		f="usr/share/icons/hicolor/${s}x${s}/apps/io.github.elyprismlauncher.ElyPrismLauncher.png"
