@@ -1,12 +1,12 @@
 # Template file for 'stremio'
 pkgname=stremio
 version=4.4.183
-revision=1
+revision=2
 build_style=cmake
 hostmakedepends="cmake librsvg-utils"
 makedepends="qt5-devel qt5-declarative-devel qt5-location-devel
  qt5-webchannel-devel qt5-webengine-devel mpv-devel openssl-devel MesaLib-devel"
-depends="nodejs qt5-declarative qt5-quickcontrols2 qt5-webchannel qt5-webengine"
+depends="nodejs qt5-declarative qt5-quickcontrols qt5-quickcontrols2 qt5-webchannel qt5-webengine"
 short_desc="Stremio media center (Qt5 shell compiled from source)"
 maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
@@ -39,6 +39,13 @@ post_extract() {
 }
 
 post_install() {
+	if [ -d ${DESTDIR}/usr/opt/stremio ]; then
+		vmkdir opt
+		mv ${DESTDIR}/usr/opt/stremio ${DESTDIR}/opt/
+	fi
+	vmkdir usr/bin
+	ln -sf /opt/stremio/stremio ${DESTDIR}/usr/bin/stremio
+
 	vinstall ${XBPS_SRCDISTDIR}/${pkgname}-${version}/server.js 755 opt/stremio
 	ln -sf /usr/bin/node ${DESTDIR}/opt/stremio/node
 	mkdir -p ${wrksrc}/icons
