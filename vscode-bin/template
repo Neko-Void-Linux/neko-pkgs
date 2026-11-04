@@ -1,21 +1,27 @@
+# Template file for 'vscode-bin'
 pkgname=vscode-bin
-version=1.144.1
-revision=3
+version=1.145.0
+revision=1
 archs="x86_64"
-nostrip=yes
-nopie=yes
-noshlibprovides=yes
-wrksrc="VSCode-linux-x64"
+create_wrksrc=yes
 hostmakedepends="tar"
 depends="libXtst nss nspr alsa-lib gtk+3 libsecret libnotify libXScrnSaver xdg-utils desktop-file-utils"
 short_desc="Visual Studio Code (official Microsoft binary release)"
-maintainer="ANOMALI0x00"
+maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="custom:Unfree"
 homepage="https://code.visualstudio.com"
-_commit=261c84cb1eddf11235f9e2c921425e9663fbe556
-_timestamp=1793549455
+_commit=a717861c07586a53d83b80d742cd3f59b20a6273
+_timestamp=1793749246
 distfiles="https://vscode.download.prss.microsoft.com/dbazure/download/stable/${_commit}/code-stable-x64-${_timestamp}.tar.gz"
-checksum=59d8d6f9dc2431353c453cf6a4da0faae3993e332007ab387f526332eef93fe4
+checksum=d44510383961b089f7b7ce848ebcd38a740f8591bb8b60f8153a210e45d8848c
+nostrip=yes
+nopie=yes
+noshlibprovides=yes
+
+do_extract() {
+	tar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}"/*.tar.gz \
+		-C "${wrksrc}" --strip-components=1
+}
 
 do_install() {
 	vmkdir usr/lib/code
