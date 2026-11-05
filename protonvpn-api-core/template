@@ -11,8 +11,8 @@ hostmakedepends="cargo pkg-config python3-setuptools"
 makedepends="libmnl-devel libnftnl-devel python3-devel"
 depends="NetworkManager NetworkManager-openvpn python3 python3-Jinja2
  python3-cairo python3-cryptography python3-dbus-fast python3-distro
- python3-fido2 python3-gobject python3-packaging python3-pynacl
- python3-sentry protonvpn-core protonvpn-local-agent"
+ python3-fido2 python3-gobject python3-packaging python3-pynacl python3-sentry
+ protonvpn-core protonvpn-local-agent"
 short_desc="ProtonVPN API Core"
 maintainer="Voiders <repo@voiders.dev>"
 license="GPL-3.0-or-later"
@@ -26,6 +26,8 @@ checksum="9b8a4eca0c59c53c51e95862fb00c31f146f38d2ee88bb3fbda24ed53fdefa67
 pre_build() {
 	rm -rf dependencies/protun
 	cp -a "${wrksrc}/protun-${_protun_version}" dependencies/protun
+	vsed -i 's/TUNSETIFF, ifr/TUNSETIFF as _, ifr/' \
+		src/protun/nm_protun_service/service.rs
 	cargo build --locked --release --all-features
 	cp target/release/libproton_vpn_platform.so \
 		proton/vpn/platform.abi3.so
