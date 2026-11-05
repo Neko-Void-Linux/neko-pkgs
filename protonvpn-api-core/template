@@ -1,0 +1,51 @@
+# Template file for 'protonvpn-api-core'
+pkgname=protonvpn-api-core
+version=6.1.1
+revision=2
+archs="x86_64*"
+create_wrksrc=yes
+build_wrksrc="python-proton-vpn-api-core-${version}"
+build_style=python3-module
+build_helper="rust"
+hostmakedepends="cargo pkg-config python3-setuptools"
+makedepends="libmnl-devel libnftnl-devel python3-devel"
+depends="NetworkManager NetworkManager-openvpn python3 python3-Jinja2
+ python3-cairo python3-cryptography python3-dbus-fast python3-distro
+ python3-fido2 python3-gobject python3-packaging python3-pynacl
+ python3-sentry protonvpn-core protonvpn-local-agent"
+short_desc="ProtonVPN API Core"
+maintainer="Voiders <repo@voiders.dev>"
+license="GPL-3.0-or-later"
+homepage="https://protonvpn.com"
+_protun_version=2.2.1
+distfiles="https://github.com/ProtonVPN/python-proton-vpn-api-core/archive/refs/tags/v${version}.tar.gz
+ https://github.com/ProtonVPN/protun/archive/refs/tags/v${_protun_version}.tar.gz"
+checksum="9b8a4eca0c59c53c51e95862fb00c31f146f38d2ee88bb3fbda24ed53fdefa67
+ 4bf7eab3255332ffd97e1906a79d048fddb0d1bc40b6caefb899de9106e322cc"
+
+pre_build() {
+	rm -rf dependencies/protun
+	cp -a "${wrksrc}/protun-${_protun_version}" dependencies/protun
+	cargo build --locked --release --all-features
+	cp target/release/libproton_vpn_platform.so \
+		proton/vpn/platform.abi3.so
+}
+
+post_install() {
+	vinstall target/release/nm-protun-service 755 usr/libexec
+	vsed -i -e 's|program=.*|program=/usr/libexec/nm-protun-service|' \
+		resources/nm-protun.name
+	vinstall resources/nm-protun.name 644 usr/lib/NetworkManager/VPN
+	vinstall resources/nm-protun-service.conf 644 \
+		usr/share/dbus-1/system.d
+	vinstall target/release/proton-vpn-kill-switch-service 755 usr/libexec
+	vinstall resources/proton-vpn-kill-switch.conf 644 \
+		usr/share/dbus-1/system.d
+	vinstall resources/proton-vpn-kill-switch.dbus-service 644 \
+		usr/share/dbus-1/system-services me.proton.vpn.kill_switch.service
+	vinstall resources/proton-vpn-kill-switch-boot.service 644 \
+		usr/lib/systemd/system
+	vinstall resources/proton-vpn-disable-kill-switch 755 usr/libexec
+	vinstall resources/me.proton.vpn.kill-switch.disable.policy 644 \
+		usr/share/polkit-1/actions
+}
