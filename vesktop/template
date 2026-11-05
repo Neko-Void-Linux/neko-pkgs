@@ -1,23 +1,19 @@
-# Template file for 'vesktop'
 pkgname=vesktop
 version=1.6.9
-revision=1
+revision=3
 archs="x86_64"
 create_wrksrc=yes
+nostrip=yes
+nopie=yes
+noshlibprovides=yes
 hostmakedepends="binutils tar xz"
-depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core
- util-linux-libs libsecret"
+depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core util-linux-libs libsecret"
 short_desc="Custom Discord desktop client"
 maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Vencord/Vesktop"
 distfiles="https://github.com/Vencord/Vesktop/releases/download/v${version}/vesktop_${version}_amd64.deb"
 checksum=8487a3ba56c7cd0bb230c1d6b42373fa0a8a23bab6f0809c903988b4f3e9cefc
-nostrip=yes
-nopie=yes
-noshlibprovides=yes
-provides="vesktop-bin-${version}_${revision}"
-replaces="vesktop-bin>=0"
 
 do_extract() {
 	local deb_file="${XBPS_SRCDISTDIR}/${pkgname}-${version}/vesktop_${version}_amd64.deb"
