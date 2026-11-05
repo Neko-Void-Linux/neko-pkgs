@@ -1,11 +1,11 @@
 # Template file for 'concord'
 pkgname=concord
-version=2.6.4
+version=2.7.0
 revision=1
 build_style=cargo
 configure_args="--config profile.release.lto=\"thin\" --config
  profile.release.codegen-units=1"
-hostmakedepends="pkg-config clang cmake nasm"
+hostmakedepends="pkg-config clang cmake nasm git"
 makedepends="alsa-lib-devel libva-devel libzstd-devel pipewire-devel"
 depends="libglvnd xdg-desktop-portal"
 short_desc="Feature-rich TUI client for Discord"
@@ -14,7 +14,7 @@ license="GPL-3.0-only"
 homepage="https://github.com/chojs23/concord"
 changelog="https://github.com/chojs23/concord/releases"
 distfiles="https://github.com/chojs23/concord/archive/refs/tags/v${version}.tar.gz>${pkgname}-${version}.tar.gz"
-checksum=fb238450a554c1b52a09d593b40c4ee2d98cd9eb7ca1e32345ee85b6035d2d29
+checksum=c3997c7f23fa9367baacf3b27c5b5bedf1b2c6c3a83a21bbf82b79754006c673
 
 post_install() {
 	vdoc README.md
