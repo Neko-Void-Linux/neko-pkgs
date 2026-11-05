@@ -1,18 +1,19 @@
 # Template file for 'weft'
 pkgname=weft
-version=26.11.1
+version=26.11.2
 revision=1
 archs="x86_64"
 create_wrksrc=yes
 build_style=fetch
 hostmakedepends="tar"
-depends="alsa-lib eudev-libudev vulkan-loader libX11 libXcursor libXi libXrandr libxkbcommon desktop-file-utils hicolor-icon-theme xdg-utils"
+depends="alsa-lib eudev-libudev vulkan-loader libX11 libXcursor libXi libXrandr
+ libxkbcommon desktop-file-utils hicolor-icon-theme xdg-utils"
 short_desc="Voxel game engine written in Rust"
 maintainer="Dicov <SrDicov@gmail.com>"
 license="MPL-2.0"
 homepage="https://github.com/Weft-Rust/Weft"
 distfiles="https://github.com/Weft-Rust/Weft/releases/download/v${version}/Weft-${version}-linux-x64.tar.gz"
-checksum=71276066600284903b5aff383ef61a897a19be5127fffcc42a761e30b8b867d0
+checksum=b62d9f3d2cb63f1a0d323bcc7e1a7977b2c12eceb9a0939bfc0d3fa4168b3edb
 provides="weft-bin-${version}_${revision}"
 replaces="weft-bin>=0"
 nostrip=yes
