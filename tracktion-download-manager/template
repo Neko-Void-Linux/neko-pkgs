@@ -1,26 +1,27 @@
 # Template file for 'tracktion-download-manager'
 pkgname=tracktion-download-manager
-version=2026.10
+version=2026.10.1.5.3
 revision=1
+_debver="1.5.3"
+_debdir="153"
 archs="x86_64"
-hostmakedepends="tar xz wget"
+create_wrksrc=yes
+hostmakedepends="binutils tar xz"
 depends="curl alsa-lib xprop"
 short_desc="Tracktion Download Manager"
-maintainer="JavierC <javiercyt@atomicmail.io>"
+maintainer="JavierC"
 license="custom:Proprietary"
 homepage="http://www.tracktion.com"
+distfiles="https://downloads.tracktion.com/download-mgr/${_debdir}/tracktion_download_manager_v${_debver}.deb"
+checksum=577b8480c9d33a8b5cc213c61e9c3ff90a6e6a0a00efa0cbe7f4c2ec4f99cfa7
 nostrip=yes
 
-do_fetch() {
-	mkdir -p ${XBPS_SRCDISTDIR}/${pkgname}-${version}
-	wget -O ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb https://downloads.tracktion.com/download-mgr/153/tracktion_download_manager_v1.5.3.deb
-}
-
 do_extract() {
-	mkdir -p ${DESTDIR}
-	ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v1.5.3.deb
+	ar x "${XBPS_SRCDISTDIR}/${pkgname}-${version}/tracktion_download_manager_v${_debver}.deb"
+	tar -xf data.tar.xz
 }
 
 do_install() {
-	tar xf data.tar.xz -C ${DESTDIR}
+	vcopy usr .
+	vlicense usr/share/doc/tracktion-download-manager/copyright LICENSE
 }

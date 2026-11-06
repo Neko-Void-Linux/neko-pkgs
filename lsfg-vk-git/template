@@ -1,49 +1,23 @@
+# Template file for 'lsfg-vk-git'
 pkgname=lsfg-vk-git
-version=2026
-revision=9
-hostmakedepends="pkg-config"
-makedepends="Vulkan-Headers clang base-devel qt6-base-devel git llvm curl cmake ninja qt6-declarative-devel"
-depends="Vulkan-Headers Vulkan-Tools mesa qt6-base qt6-declarative"
-short_desc="the most popular feature from the Windows-exclusive Lossless Scaling program to Linux."
-maintainer="JavierC"
-license="Creative Commons"
+version=2026.2.0.0
+revision=1
+_ver="${version#2026.}"
+build_style=cmake
+configure_args="-DLSFGVK_BUILD_UI=ON -DLSFGVK_INSTALL_XDG_FILES=ON
+ -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_COMPILER_AR=/usr/bin/llvm-ar
+ -DCMAKE_CXX_COMPILER_RANLIB=/usr/bin/llvm-ranlib
+ -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON"
+hostmakedepends="cmake clang llvm pkg-config gcc libstdc++-devel"
+makedepends="Vulkan-Headers qt6-base-devel qt6-declarative-devel"
+depends="vulkan-loader Vulkan-Tools mesa"
+short_desc="Lossless Scaling frame generation for Linux via Vulkan"
+maintainer="JavierC <javiercyt@atomicmail.io>"
+license="GPL-3.0-only"
 homepage="https://lsfg-vk.dev"
-
-do_configure() {
-	git clone --depth 1 https://git.lsfg-vk.dev/lsfg-vk.git .
-}
-
-do_build() {
-	cd ${wrksrc}
-	cmake -B build -G Ninja \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \
-		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DCMAKE_CXX_COMPILER=clang++ \
-		-DCMAKE_CXX_COMPILER_AR=/usr/bin/llvm-ar \
-		-DCMAKE_CXX_COMPILER_RANLIB=/usr/bin/llvm-ranlib \
-		-DLSFGVK_BUILD_UI=ON
-	cmake --build build
-}
-
-do_install() {
-	vmkdir usr/lib64
-	vmkdir usr/share/vulkan/implicit_layer.d
-	vmkdir usr/bin
-	vmkdir usr/share/icons/hicolor/256x256/apps
-	vmkdir usr/share/applications
-
-	vcopy build/lsfg-vk-layer/liblsfg-vk-layer.so usr/lib64/liblsfg-vk-layer.so
-
-	vcopy build/lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json \
-		usr/share/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json
-
-	vinstall build/lsfg-vk-cli/lsfg-vk-cli 755 usr/bin
-	vinstall build/lsfg-vk-ui/lsfg-vk-ui    755 usr/bin
-
-	vinstall lsfg-vk-ui/resources/gay.pancake.lsfg-vk-ui.png \
-		644 usr/share/icons/hicolor/256x256/apps
-
-	vinstall lsfg-vk-ui/resources/gay.pancake.lsfg-vk-ui.desktop \
-		644 usr/share/applications
-}
+changelog="https://git.lsfg-vk.dev/lsfg-vk/log/"
+distfiles="https://git.lsfg-vk.dev/lsfg-vk/snapshot/lsfg-vk-${_ver}.tar.xz"
+checksum=abb688feac00d50f9e59dabb2476998bc1d3f0290fb971407d49cba26dd44b3b
+wrksrc="lsfg-vk-${_ver}"
+replaces="lsfg-vk>=0"
+provides="lsfg-vk-${version}_${revision}"
