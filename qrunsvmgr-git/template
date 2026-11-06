@@ -4,14 +4,15 @@ version=r17.c15fa15
 revision=1
 build_style=cmake
 make_use_env=yes
-hostmakedepends="ninja pkg-config git"
+hostmakedepends="ninja pkg-config"
 makedepends="qt6-base-devel qt6-tools-devel"
 depends="polkit qt6-base"
 short_desc="Service manager GUI (Qt6), supporting Runit and Dinit"
 maintainer="Kevin <kevinzz@tutamail.com>"
 license="GPL-3.0-or-later"
 homepage="https://codeberg.org/ItsZariep/qrunsvmgr"
-
-do_fetch() {
-	git clone --depth 1 https://codeberg.org/ItsZariep/qrunsvmgr "${wrksrc}"
-}
+_commit="c15fa1537dea0941dd5ff043bb56201d65942074"
+distfiles="https://codeberg.org/ItsZariep/qrunsvmgr/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
+checksum=06e5eba6be805fe1fa246d7e268cbb92e14206d0e3dbe0b16a6d026e55b628bb
+replaces="qrunsvmgr>=0"
+provides="qrunsvmgr-${version}_${revision}"

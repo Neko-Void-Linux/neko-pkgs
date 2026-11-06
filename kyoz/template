@@ -1,18 +1,23 @@
+# Template file for 'kyoz'
 pkgname=kyoz
 version=2026.3
 revision=4
-hostmakedepends="zig-nk git"
-makedepends="zig-nk git"
+hostmakedepends="zig-nk"
 short_desc="Wrapper for xbps package manager"
 maintainer="Javierc"
 license="WTFPL"
 homepage="https://github.com/Neko-Void-Linux/kyoz"
+_commit=90e34716c591fb6d6ee7eb5beeb118ed75d2f4cf
+distfiles="https://github.com/Neko-Void-Linux/kyoz/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
+checksum=839e9149df5d0e6e75a3250f187a4bf189800b8d500558de0ab07f19f64b3317
 
 do_build() {
-    git clone https://github.com/Neko-Void-Linux/kyoz.git .
-    zig build-exe kyo.zig -mcpu=baseline -O ReleaseSafe
+	zig build-exe kyo.zig -mcpu=baseline -O ReleaseSafe
 }
 
 do_install() {
-    vbin kyo
+	vbin kyo
+	if [ -f LICENSE.md ]; then
+		vlicense LICENSE.md
+	fi
 }
