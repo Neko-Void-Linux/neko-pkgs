@@ -11,7 +11,7 @@ maintainer="JavierC"
 license="WTFPL"
 homepage="https://github.com/Neko-Void-Linux/Neko-Wizard"
 distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
-checksum="f48826c661634919527c8a855ea5f85d4ce383df545899c5ffda7031b9719b7c"
+checksum="3436e06be0dff7cc61b724ce57e91e777f00507772698374c0e73354264efa59"
 
 do_extract() {
 	vsrcextract --strip-components=1 ${pkgname}-${version}.tar.gz
