@@ -1,5 +1,5 @@
 pkgname=artcraft-launcher
-version=0.14.1
+version=0.15.0
 revision=3
 archs="x86_64"
 wrksrc="artcraft-launcher-${version}-linux-x86_64"
@@ -9,7 +9,7 @@ maintainer="ANOMALI0x00"
 license="MIT, Apache-2.0"
 homepage="https://getartcraft.com/apps"
 distfiles="https://github.com/storytold/craft-launcher/releases/download/v${version}/artcraft-launcher-${version}-linux-x86_64.tar.gz"
-checksum=540536bd4bc520e20511f3e5445e2b2dc1ef79f70f37ebe1894b919e3219f825
+checksum=04a26649692107ca4d49c9ea2d47b24c19de2af8b19140d13563d9fc78f19aed
 nostrip=yes
 
 do_install() {
