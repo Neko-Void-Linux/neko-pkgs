@@ -1,26 +1,31 @@
 pkgname=neko-icons
 version=7.8
-revision=6
+revision=7
 archs=x86_64
-wrksrc="neko-icons"
+_commit=007cd0fa9bfc0a5a31304d372539c8e4fa81b88a
+_pixelitos_commit=b31fefc71e52defdfdab3b9fb996fc6d6d6300f7
+_pixora_commit=ea994cfa6dc9da1a468405d6bcb6aeffa80aa52e
+create_wrksrc=yes
 short_desc="Colección de iconos Neko"
-makedepends="git"
 maintainer="JavierC"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-icons"
-do_build(){
-    cd $wrksrc
-    git clone --depth 1 https://github.com/ItsZariep/pixelitos-icon-theme.git tmp
-    git clone --depth 1 https://github.com/tsora1603/pixora-icons.git tmp2
-    git clone --depth 1 https://github.com/Neko-Void-Linux/neko-icons.git icons
-    
-    mkdir -p usr/share/icons
-    cp -a icons/* .
-    cp -a tmp/pixelitos-dark usr/share/icons/
-    cp -a tmp/pixelitos-light usr/share/icons/
-    cp -a tmp2/pixora-accent usr/share/icons/
-    cp -a tmp2/pixora-dark usr/share/icons/
+distfiles="https://github.com/Neko-Void-Linux/neko-icons/archive/${_commit}.tar.gz>neko-icons-${_commit}.tar.gz
+ https://github.com/ItsZariep/pixelitos-icon-theme/archive/${_pixelitos_commit}.tar.gz>pixelitos-${_pixelitos_commit}.tar.gz
+ https://github.com/tsora1603/pixora-icons/archive/${_pixora_commit}.tar.gz>pixora-${_pixora_commit}.tar.gz"
+checksum="40c7775094a9c4f1acc0a8419832007cd9af7e9def7dad69692e587f6810dff5
+ e4b47e76d96f6a3592f41961a7540bd8d7416230434a9c7c845ea995e1591210
+ b374567fb70db9cb524d0251bdd3ac737fe91546ce38c111eccd6b2850407e19"
+
+do_build() {
+	mkdir -p usr/share/icons
+	cp -a neko-icons-${_commit}/* .
+	cp -a pixelitos-icon-theme-${_pixelitos_commit}/pixelitos-dark usr/share/icons/
+	cp -a pixelitos-icon-theme-${_pixelitos_commit}/pixelitos-light usr/share/icons/
+	cp -a pixora-icons-${_pixora_commit}/pixora-accent usr/share/icons/
+	cp -a pixora-icons-${_pixora_commit}/pixora-dark usr/share/icons/
 }
+
 do_install() {
-    vcopy usr/share usr
+	vcopy usr/share usr
 }
