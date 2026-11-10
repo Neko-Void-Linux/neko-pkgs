@@ -1,15 +1,15 @@
 # Template file for 'windscribe-desktop'
 pkgname=windscribe-desktop
-version=2.22.10
+version=2.24.12
 revision=4
 archs="x86_64"
 build_style=fetch
 short_desc="Windscribe Desktop VPN Client (proprietary...)"
-maintainer="Orphaned <orphan@voidlinux.org>"
+maintainer="JavierC"
 license="custom:proprietary"
 homepage="https://windscribe.com"
-distfiles="https://codeberg.org/Neko-Void/Windscribe-void/releases/download/deb/windscribe_${version}_amd64.deb"
-checksum=ac58048238ad2c3c59cb22b0c8ea0741f7583d90baa2ec258acc04c70632c225
+distfiles="https://deploy.totallyacdn.com/desktop-apps/${version}/windscribe_${version}_amd64.deb"
+checksum=9a27a51ede9cb24f5ffbc830db890c380700f328248b94351bd48e9811dbf2f4
 provides="windscribe-desktop-bin-${version}_${revision}"
 replaces="windscribe-desktop-bin>=0"
 nopie=yes
