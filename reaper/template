@@ -1,6 +1,6 @@
 # Template file for 'reaper'
 pkgname=reaper
-version=7.84
+version=7.85
 revision=1
 archs="x86_64"
 create_wrksrc=yes
