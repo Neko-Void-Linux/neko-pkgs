@@ -1,26 +1,33 @@
+# Template file for 'artcraft-launcher'
 pkgname=artcraft-launcher
-version=0.15.0
-revision=3
-archs="x86_64"
-wrksrc="artcraft-launcher-${version}-linux-x86_64"
-depends="hicolor-icon-theme libxkbcommon ca-certificates"
+version=0.17.0
+revision=1
+build_style=cargo
+make_build_args="-p artcraft-launcher"
+make_install_args="--path apps/artcraft-launcher"
+make_check_args="-- --skip
+ a_not_installed_card_is_grey_until_the_pointer_is_over_it"
+hostmakedepends="cargo rust pkg-config"
+makedepends="wayland-devel libxkbcommon-devel"
+depends="hicolor-icon-theme ca-certificates"
+checkdepends="procps-ng"
 short_desc="Install, update and launch the Craft App Suite"
-maintainer="ANOMALI0x00"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT, Apache-2.0"
 homepage="https://getartcraft.com/apps"
-distfiles="https://github.com/storytold/craft-launcher/releases/download/v${version}/artcraft-launcher-${version}-linux-x86_64.tar.gz"
-checksum=04a26649692107ca4d49c9ea2d47b24c19de2af8b19140d13563d9fc78f19aed
-nostrip=yes
+changelog="https://github.com/storytold/craft-launcher/releases"
+distfiles="https://github.com/storytold/craft-launcher/archive/refs/tags/v${version}.tar.gz"
+checksum=3c9148de017b2d13ce03fcfa0bfdb5589d4208f2273a92fe46e68d4f7a8cb944
+replaces="artcraft-launcher-bin>=0"
 
-do_install() {
-	vbin bin/artcraft-launcher
-	vinstall share/applications/ai.storyteller.artcraft-launcher.desktop 644 usr/share/applications
-	vinstall share/metainfo/ai.storyteller.artcraft-launcher.metainfo.xml 644 usr/share/metainfo
-	vmkdir usr/share
-	vcopy share/icons usr/share
-	vlicense share/doc/artcraft-launcher/LICENSE-MIT
-	vlicense share/doc/artcraft-launcher/LICENSE-APACHE
-	vdoc share/doc/artcraft-launcher/README.md
-	vdoc share/doc/artcraft-launcher/ATTRIBUTION.md
-	vdoc share/doc/artcraft-launcher/NOTICE
+case "$XBPS_TARGET_MACHINE" in
+i686*)
+	make_check=no # el fixture de test solo trae assets linux-x86_64
+	;;
+esac
+
+post_install() {
+	vlicense LICENSE-MIT
+	vlicense LICENSE-APACHE
+	vlicense NOTICE
 }
