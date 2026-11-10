@@ -1,0 +1,11 @@
+--- a/mozc/src/data/dictionary_oss/BUILD.bazel
++++ b/mozc/src/data/dictionary_oss/BUILD.bazel
+@@ -71,6 +71,7 @@ filegroup(
+         "dictionary07.txt",
+         "dictionary08.txt",
+         "dictionary09.txt",
++        "mozcdic-ut.txt",
+         "//dictionary:zip_code_data",
+     ],
+     visibility = ["//visibility:private"],
+
