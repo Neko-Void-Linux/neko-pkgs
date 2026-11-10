@@ -1,8 +1,8 @@
 # Template file for 'libva-intel-driver-irql'
 pkgname=libva-intel-driver-irql
 version=2.4.6.1
-revision=1
-_commit=53d1a41ed460dd2c1b76a30c4514bb72b726ba71
+revision=2
+_commit=a3e7353e054eee372d6176466f3ee142addc3693
 build_style=meson
 hostmakedepends="pkg-config python2"
 makedepends="libva-devel libdrm-devel libX11-devel"
@@ -12,7 +12,7 @@ maintainer="Kevin <kevinzz@tutamail.com>"
 license="MIT"
 homepage="https://github.com/irql-notlessorequal/intel-vaapi-driver"
 distfiles="https://github.com/irql-notlessorequal/intel-vaapi-driver/archive/${_commit}.tar.gz"
-checksum="ae8ccad482461f1cc98fbb31dc04a62eb580472ed6e53627cedc928e60096361"
+checksum="6cba2e4afa1f8199e18f5cd681ad831fdbad7c5a20109ee75ea213540404920a"
 conflicts="libva-intel-driver>=0"
 provides="libva-intel-driver-${version}_1"
 replaces="libva-intel-driver>=0"
