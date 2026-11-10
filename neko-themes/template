@@ -1,18 +1,25 @@
 pkgname=neko-themes
 version=7.8
-revision=3
+revision=4
 archs=x86_64
-wrksrc="neko-themes"
+_commit=d4b2d667a38643bdfef5d5863cd303cef4d1cd76
+_dracula_commit=557273060fbc955457a1a848b4a777abb8046582
+create_wrksrc=yes
 short_desc="Colección de temas"
-makedepends="git"
 maintainer="JavierC"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-themes"
-do_build(){
-    cd $wrksrc
-    git clone https://github.com/Neko-Void-Linux/neko-themes.git .
-    git clone --depth 1 https://github.com/Neko-Void-Linux/Dracula.git usr/share/themes/Dracula
+distfiles="https://github.com/Neko-Void-Linux/neko-themes/archive/${_commit}.tar.gz>neko-themes-${_commit}.tar.gz
+ https://github.com/Neko-Void-Linux/Dracula/archive/${_dracula_commit}.tar.gz>Dracula-${_dracula_commit}.tar.gz"
+checksum="60b65d39ca70b8af5a81af630f6fdba546a34f8dd8bbc02ef6d17b6a1059f0d6
+ bedf8cad3bfa2af2baaecc42d6ab817c60f701e9f6ef0128e083d3ec8bedda72"
+
+do_build() {
+	cp -a neko-themes-${_commit}/* .
+	mkdir -p usr/share/themes
+	cp -a Dracula-${_dracula_commit} usr/share/themes/Dracula
 }
-do_install() {    
-    vcopy usr/share usr
+
+do_install() {
+	vcopy usr/share usr
 }
