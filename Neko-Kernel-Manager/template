@@ -1,14 +1,15 @@
 # Template file for 'Neko-Kernel-Manager'
 pkgname=Neko-Kernel-Manager
-version=1.4.2
-revision=2
+version=1.5.0
+revision=1
 build_style=meson
 configure_args="-Db_lto=false"
 hostmakedepends="pkg-config qt6-base qt6-declarative"
-makedepends="qt6-base-devel qt6-declarative-devel fmt-devel"
+makedepends="qt6-base-devel qt6-declarative-devel"
+depends="polkit bash"
 short_desc="Comprehensive kernel manager for Void Linux"
 maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="GPL-3.0-only"
 homepage="https://github.com/Neko-Void-Linux/Neko-Kernel-Manager"
 distfiles="https://github.com/Neko-Void-Linux/Neko-Kernel-Manager/archive/refs/tags/${version}.tar.gz"
-checksum=bf8006b9bfa67bba77163b8bee216e40a2feb7f15b4da2819b1c641fbe64444b
+checksum=e5395c0478227565b85c7a83f24aee5e4b208a2b33c458d15e24ff69097ddc30
