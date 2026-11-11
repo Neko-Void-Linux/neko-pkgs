@@ -1,6 +1,6 @@
 # Template file for 'vscode-bin'
 pkgname=vscode-bin
-version=1.145.2
+version=1.146.0
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -11,10 +11,10 @@ short_desc="Visual Studio Code (official Microsoft binary release)"
 maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="custom:Unfree"
 homepage="https://code.visualstudio.com"
-_commit=a717861c07586a53d83b80d742cd3f59b20a6273
-_timestamp=1793749246
-distfiles="https://vscode.download.prss.microsoft.com/dbazure/download/stable/c4453f8ea430795f941c1b2ff6c9321135a74a02/code-stable-x64-1793945155.tar.gz"
-checksum=3b01286639fa026fd860944b811d418f7b93bc5dc447d9e607b0cd1377cfbaa2
+_commit=69047191fc427f2f92828279aae1d90d8eeda7ab
+_timestamp=1794339449
+distfiles="https://vscode.download.prss.microsoft.com/dbazure/download/stable/69047191fc427f2f92828279aae1d90d8eeda7ab/code-stable-x64-1794340754.tar.gz"
+checksum=cbdb7bde3d358c7297cf1d9d6adc16dfb1d0179501fb2c152df48593e39e3600
 nostrip=yes
 nopie=yes
 noshlibprovides=yes
