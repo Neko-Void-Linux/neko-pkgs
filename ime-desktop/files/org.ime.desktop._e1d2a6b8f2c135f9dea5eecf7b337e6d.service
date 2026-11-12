@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.ime.desktop._e1d2a6b8f2c135f9dea5eecf7b337e6d
+Exec=/usr/bin/iMe

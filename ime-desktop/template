@@ -1,7 +1,7 @@
 # Template file for 'ime-desktop'
 pkgname=ime-desktop
 version=7.3.4
-revision=1
+revision=2
 archs="x86_64"
 depends="alsa-lib ca-certificates dbus hicolor-icon-theme libglvnd libX11
  libXcomposite libXcursor libXdamage libXext libXfixes libXi libXinerama
@@ -10,7 +10,7 @@ depends="alsa-lib ca-certificates dbus hicolor-icon-theme libglvnd libX11
  xcb-util-cursor xcb-util-image xcb-util-keysyms xcb-util-renderutil
  xcb-util-wm xdg-utils"
 short_desc="Telegram-based messaging client with AI features"
-maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
+maintainer="SrDicov <SrDicov@gmail.com>"
 license="custom:Proprietary"
 homepage="https://imem.me/"
 distfiles="https://imem.app/download/desktop/linux>iMe_Desktop_Linux-${version}.tar.xz"
@@ -20,11 +20,10 @@ nopie=yes
 noshlibprovides=yes
 
 do_install() {
-	vmkdir usr/libexec/ime-desktop
-	vcopy iMe usr/libexec/ime-desktop
-	vcopy Updater usr/libexec/ime-desktop
-	vbin "${FILESDIR}/ime-wrapper" iMe
-	vinstall "${FILESDIR}/ime.desktop" 644 usr/share/applications org.ime.desktop.desktop
+	vbin iMe
+	vbin Updater
+	vinstall "${FILESDIR}/ime.desktop" 644 usr/share/applications org.ime.desktop._e1d2a6b8f2c135f9dea5eecf7b337e6d.desktop
+	vinstall "${FILESDIR}/org.ime.desktop._e1d2a6b8f2c135f9dea5eecf7b337e6d.service" 644 usr/share/dbus-1/services
 	vinstall "${FILESDIR}/org.ime.desktop.svg" 644 usr/share/icons/hicolor/scalable/apps
 	vinstall "${FILESDIR}/org.ime.desktop.png" 644 usr/share/pixmaps
 	vlicense "${FILESDIR}/LICENSE"
