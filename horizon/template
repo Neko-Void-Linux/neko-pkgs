@@ -1,6 +1,6 @@
 # Template file for 'horizon'
 pkgname=horizon
-version=0.2.60
+version=0.2.61
 revision=1
 archs="x86_64"
 build_style=fetch
@@ -11,7 +11,7 @@ maintainer="Dicov <SrDicov@gmail.com>"
 license="MIT"
 homepage="https://playhorizon.dev"
 distfiles="https://github.com/horizon-rust/horizon/releases/download/launcher@${version}/horizon-launcher-linux-x86_64.AppImage"
-checksum=a07912b481edd4e2d0fe9df00beff38eb2670a18abd1de72c0f43085fe1f889e
+checksum=6fdce0ab64c8a72dd4bfa260ded3d254ab6522f90eb460db2a1632a43605d95d
 provides="horizon-launcher-${version}_${revision}
  horizon-bin-${version}_${revision}"
 replaces="horizon-launcher>=0 horizon-bin>=0"
@@ -35,7 +35,6 @@ do_install() {
 	vbin usr/bin/horizon-launcher
 	ln -sf horizon-launcher "${DESTDIR}/usr/bin/horizon"
 	vinstall horizon-launcher.desktop 644 usr/share/applications
-	ln -sf horizon-launcher.desktop "${DESTDIR}/usr/share/applications/horizon.desktop"
 	vinstall horizon.png 644 usr/share/pixmaps horizon.png
 	vmkdir usr/share/icons
 	vcopy "usr/share/icons/*" usr/share/icons
