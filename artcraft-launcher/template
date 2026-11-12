@@ -1,7 +1,7 @@
 # Template file for 'artcraft-launcher'
 pkgname=artcraft-launcher
 version=0.19.0
-revision=1
+revision=2
 build_style=cargo
 make_build_args="-p artcraft-launcher"
 make_install_args="--path apps/artcraft-launcher"
@@ -12,7 +12,7 @@ makedepends="wayland-devel libxkbcommon-devel"
 depends="hicolor-icon-theme ca-certificates"
 checkdepends="procps-ng"
 short_desc="Install, update and launch the Craft App Suite"
-maintainer="Orphaned <orphan@voidlinux.org>"
+maintainer="Dicov <SrDicov@gmail.com>"
 license="MIT, Apache-2.0"
 homepage="https://getartcraft.com/apps"
 changelog="https://github.com/storytold/craft-launcher/releases"
@@ -30,4 +30,8 @@ post_install() {
 	vlicense LICENSE-MIT
 	vlicense LICENSE-APACHE
 	vlicense NOTICE
+	vinstall packaging/linux/ai.storyteller.artcraft-launcher.desktop 644 usr/share/applications
+	vmkdir usr/share/icons
+	vcopy assets/app-icon/hicolor usr/share/icons
+	vinstall assets/app-icon/hicolor/512x512/apps/ai.storyteller.artcraft-launcher.png 644 usr/share/pixmaps
 }
