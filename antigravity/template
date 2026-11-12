@@ -1,6 +1,6 @@
 # Template file for 'antigravity'
 pkgname=antigravity
-version=2.30.0
+version=2.31.2
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -12,10 +12,10 @@ short_desc="Antigravity Hub (AI Agent IDE)"
 maintainer="Orphaned <orphan@voidlinux.org>"
 license="custom:Proprietary"
 homepage="https://antigravity.ai"
-_buildid=5723181030440960
+_buildid=6470801290035200
 _site="https://storage.googleapis.com/antigravity-public/antigravity-hub"
-distfiles="https://storage.googleapis.com/antigravity-public/antigravity-hub/2.30.0-6386428939206656/linux-x64/Antigravity.tar.gz"
-checksum=ef67dfea1a0a8f2d98ce1925fae3132d47b05c1a7e8d4b0a1f761d06085a7bdf
+distfiles="${_site}/${version}-${_buildid}/linux-x64/Antigravity.tar.gz"
+checksum=20be3cab21a2aeba9dca3eee9a212f0308cf34b22fb4a8a98b0dedf18ee63413
 replaces="antigravity-bin>=0"
 provides="antigravity-bin-${version}_${revision}"
 nostrip=yes

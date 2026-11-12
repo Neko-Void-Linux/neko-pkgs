@@ -1,6 +1,6 @@
 # Template file for 'codex'
 pkgname=codex
-version=26.1103.60933
+version=26.1106.51428
 revision=1
 archs="x86_64"
 build_style=fetch
@@ -14,7 +14,7 @@ maintainer="CrowRei <Ortal.christopher@outlook.com>"
 license="custom:Proprietary"
 homepage="https://developers.openai.com/codex/app"
 distfiles="https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_${version}_amd64.deb"
-checksum=0746e9ba575182f5dbe32617b82a645eb93ad57ca588e5a9358695a6b65aee71
+checksum=8356a7821930b135b741347faccbc43e1692b4424c3eab710a9af56c0bebb135
 provides="codex-bin-${version}_${revision}"
 replaces="codex-bin>=0 chatgpt>=0"
 nostrip=yes

@@ -1,6 +1,6 @@
 # Template file for 'weft'
 pkgname=weft
-version=26.11.3
+version=26.11.4
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -13,7 +13,7 @@ maintainer="Dicov <SrDicov@gmail.com>"
 license="MPL-2.0"
 homepage="https://github.com/Weft-Rust/Weft"
 distfiles="https://github.com/Weft-Rust/Weft/releases/download/v${version}/Weft-${version}-linux-x64.tar.gz"
-checksum=5a4eed2d4caac39e5f358e81ae5a6782f6c4de3c22e28c5a826571ae9c20f9db
+checksum=5a38d8cc12829b0a347441fe0ebc267514558adc6e1a535184bb22f114efcbd6
 provides="weft-bin-${version}_${revision}"
 replaces="weft-bin>=0"
 nostrip=yes

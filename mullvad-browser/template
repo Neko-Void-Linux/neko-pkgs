@@ -1,6 +1,6 @@
 # Template file for 'mullvad-browser'
 pkgname=mullvad-browser
-version=16.0
+version=16.0.1
 revision=1
 archs="x86_64"
 create_wrksrc=no
@@ -11,7 +11,7 @@ maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="MPL-2.0"
 homepage="https://mullvad.net/browser"
 distfiles="https://github.com/mullvad/mullvad-browser/releases/download/${version}/mullvad-browser_${version}-1_amd64.deb"
-checksum=7a13c1da7737b190bbf17f4b686cd58fe48f7fd17a42a942294c0604a8481377
+checksum=bc9ad8436265574074eca6023c1fafa3ef2c394c36dad7e15ca7faa06ab24c39
 provides="mullvad-browser-bin-${version}_${revision}"
 replaces="mullvad-browser-bin>=0"
 nopie=yes

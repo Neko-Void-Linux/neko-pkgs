@@ -1,6 +1,6 @@
 # Template file for 'brave-origin'
 pkgname=brave-origin
-version=1.99.55
+version=1.99.56
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -13,7 +13,7 @@ maintainer="datfooldive <datfooldive@gmail.com>"
 license="MPL-2.0"
 homepage="https://brave.com"
 distfiles="https://github.com/brave/brave-browser/releases/download/v${version}/brave-origin-${version}-linux-amd64.zip"
-checksum=9d0e39e4020bfdf7aafc51308017d440ec009f8f3bbd91b67876b0d65a55505d
+checksum=9c23fa625c124222c6c59d6d6f9819831838a715a7b8109c7f7ef8d85ec636a3
 provides="brave-origin-bin-${version}_${revision}"
 replaces="brave-origin-bin>=0"
 nostrip=yes
