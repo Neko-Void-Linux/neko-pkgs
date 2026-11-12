@@ -1,0 +1,21 @@
+[Desktop Entry]
+Name=iMe Desktop
+Comment=Official iMe desktop version of Telegram messaging app
+TryExec=iMe
+Exec=iMe -- %u
+Icon=org.ime.desktop
+Terminal=false
+StartupWMClass=iMe
+Type=Application
+Categories=Chat;Network;InstantMessaging;Qt;
+MimeType=x-scheme-handler/tg;x-scheme-handler/tonsite;
+Keywords=tg;chat;im;messaging;messenger;sms;tdesktop;
+Actions=quit;
+SingleMainWindow=true
+X-GNOME-UsesNotifications=true
+X-GNOME-SingleWindow=true
+
+[Desktop Action quit]
+Exec=iMe -quit
+Name=Quit iMe
+Icon=application-exit
