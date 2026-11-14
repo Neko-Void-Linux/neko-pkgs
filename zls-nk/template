@@ -1,0 +1,23 @@
+pkgname=zls-nk
+version=0.17.0
+revision=9
+archs="x86_64*"
+hostmakedepends="zig-nk git"
+short_desc="non-official implementation of the Language Server Protocol for Zig in Zig"
+maintainer="JavierC"
+license="MIT"
+homepage="https://github.com/zigtools/zls"
+nopie=yes
+
+do_fetch() {
+    git clone -b 0.17.0 --depth 1 https://github.com/zigtools/zls.git ${pkgname}-${version}
+}
+
+do_build() {
+    zig build -Doptimize=ReleaseFast -Dcpu=baseline
+}
+
+do_install() {
+    vbin zig-out/bin/zls
+    [ -f ../LICENSE ] && vlicense ../LICENSE
+}
