@@ -1,6 +1,6 @@
 pkgname=zls-nk
 version=0.17.0
-revision=9
+revision=10
 archs="x86_64*"
 hostmakedepends="zig-nk git"
 short_desc="non-official implementation of the Language Server Protocol for Zig in Zig"
