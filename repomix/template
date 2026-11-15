@@ -2,25 +2,23 @@
 pkgname=repomix
 version=1.19.0
 revision=1
-archs="x86_64"
-create_wrksrc=yes
+archs="x86_64*"
 hostmakedepends="nodejs"
 depends="nodejs"
 short_desc="Packs repository contents into a single AI-friendly file"
-maintainer="ANOMALI0x00"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/yamadashy/repomix"
-distfiles="https://github.com/yamadashy/repomix/archive/refs/tags/v${version}.tar.gz"
+changelog="https://github.com/yamadashy/repomix/releases"
+distfiles="https://github.com/yamadashy/repomix/archive/v${version}.tar.gz"
 checksum=0add59735e9cacd000705821e0751d20aae4ad07adf9454224985e8179b036f4
 
 do_build() {
-	cd "repomix-${version}"
 	npm install --no-audit --no-fund
 	npm run build
 }
 
 do_install() {
-	cd "repomix-${version}"
 	vmkdir usr/lib/repomix
 	vcopy lib usr/lib/repomix
 	vcopy bin usr/lib/repomix
@@ -30,12 +28,8 @@ do_install() {
 	vcopy node_modules usr/lib/repomix
 
 	vmkdir usr/bin
-	cat > "${DESTDIR}/usr/bin/repomix" <<-'EOF'
-	#!/bin/sh
-	exec node /usr/lib/repomix/bin/repomix.cjs "$@"
-	EOF
+	vinstall "${FILESDIR}/repomix" 644 usr/bin repomix
 	chmod 0755 "${DESTDIR}/usr/bin/repomix"
 
-	vmkdir "usr/share/licenses/${pkgname}"
-	vcopy LICENSE "usr/share/licenses/${pkgname}"
+	vlicense LICENSE
 }

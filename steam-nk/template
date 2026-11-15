@@ -1,51 +1,55 @@
+# Template file for 'steam-nk'
 pkgname=steam-nk
 version=1.0.0.85
 revision=15
 archs="x86_64"
 create_wrksrc=yes
+hostmakedepends="binutils tar xz"
+depends="binutils tar xz"
 short_desc="Digital distribution platform by Valve (sandboxed binary version)"
-maintainer="Javiercplus"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="custom:Valve-EULA"
 homepage="https://store.steampowered.com/about/"
-distfiles="https://codeberg.org/Neko-Void/STEAM-ALT-VOID/releases/download/deb-build/steam_latest.deb"
+changelog="https://codeberg.org/Neko-Void/STEAM-ALT-VOID/releases"
+_site="https://codeberg.org/Neko-Void/STEAM-ALT-VOID"
+distfiles="${_site}/releases/download/deb-build/steam_latest.deb"
 checksum=b44634a6a604ca7c8b23809d0f2a921a0348bb2081c8cb8944116d0799872b70
-
-hostmakedepends="binutils tar xz"
-
-depends="desktop-file-utils hicolor-icon-theme xdg-utils zenity bubblewrap
- libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit libibus libibus-32bit vulkan-loader-32bit
- libopenal-32bit libXrandr-32bit xauth libnm-32bit dbus-glib libXtst libdrm
- libpciaccess libxshmfence nss-32bit nss p11-kit p11-kit-32bit xhost gtk+-32bit gdk-pixbuf-32bit libcurl
- gtk+-32bit libpipewire-32bit libva-32bit libvdpau-32bit libvdpau mesa-dri mesa-dri-32bit
- steam-udev-rules SDL2 SDL2-32bit libpulseaudio-32bit alsa-plugins-pulseaudio-32bit"
-
-conflicts="steam"
-provides="steam-${version}_${revision}"
+provides="steam-${version}_${revision} steam-bin-${version}_${revision}
+ steam-nk-bin-${version}_${revision}"
+replaces="steam>=0 steam-bin>=0 steam-nk-bin>=0"
+nostrip=yes
+noshlibprovides=yes
+noverifyrdeps=yes
 
 do_extract() {
-    ar x ${XBPS_SRCDISTDIR}/${pkgname}-${version}/steam_latest.deb
-    tar xf data.tar.xz
+	ar x "${XBPS_SRCDISTDIR}/${pkgname}-${version}/steam_latest.deb"
+	tar xf data.tar.xz
 }
 
 do_install() {
-    vmkdir usr/lib/steam
-    vcopy usr/lib/steam/* usr/lib/steam/
+	vmkdir usr/lib/steam
+	vcopy usr/lib/steam/* usr/lib/steam
 
-    vinstall ${FILESDIR}/steam-wrapper 755 usr/bin steam
+	vmkdir usr/bin
+	vcopy "${FILESDIR}/steam" usr/bin
 
-    vmkdir usr/share
-    for dir in applications doc icons man metainfo pixmaps; do
-        if [ -d usr/share/$dir ]; then
-            vcopy usr/share/$dir usr/share/
-        fi
-    done
+	vmkdir usr/share
+	for dir in applications doc icons man metainfo pixmaps; do
+		if [ -d usr/share/$dir ]; then
+			vcopy usr/share/$dir usr/share
+		fi
+	done
 
-    vmkdir etc/security/limits.d
-    echo "* soft nofile 1048576" > ${DESTDIR}/etc/security/limits.d/99-steam.conf
-    echo "* hard nofile 1048576" >> ${DESTDIR}/etc/security/limits.d/99-steam.conf
+	vmkdir etc/security/limits.d
+	echo "* soft nofile 1048576" \
+		> "${DESTDIR}/etc/security/limits.d/99-steam.conf"
+	echo "* hard nofile 1048576" \
+		>> "${DESTDIR}/etc/security/limits.d/99-steam.conf"
 
-    vmkdir usr/lib/tmpfiles.d
-    echo "d /run/media 0755 root root -" > ${DESTDIR}/usr/lib/tmpfiles.d/steam-bin.conf
+	vmkdir usr/lib/tmpfiles.d
+	echo "d /run/media 0755 root root -" \
+		> "${DESTDIR}/usr/lib/tmpfiles.d/steam.conf"
 
-    vlicense usr/share/doc/steam-launcher/copyright
+	vlicense usr/share/doc/steam-launcher/copyright
+	chmod -R o-w "${DESTDIR}"
 }

@@ -1,22 +1,23 @@
+# Template file for 'spotify'
 pkgname=spotify
 version=1.2.95.453
-_gitrev="g0eeebbed"
 revision=1
+_gitrev="g0eeebbed"
 archs="x86_64"
 create_wrksrc=yes
-nostrip=yes
-nopie=yes
-noshlibprovides=yes
 hostmakedepends="bsdtar curl"
 depends="libcurl nss libXtst libXScrnSaver libxml2 libxslt libglvnd gtk+3
  alsa-lib desktop-file-utils hicolor-icon-theme xdg-utils libnotify libgcrypt
  libayatana-appindicator"
 short_desc="Spotify digital music streaming service"
-maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
+maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="custom:Proprietary"
 homepage="https://www.spotify.com"
 distfiles="https://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_${version}.${_gitrev}_amd64.deb"
 checksum=256e2eb1ec96fbc0c51afab247298e4e6eabfabbafafd4617584f44cca2fb31f
+nostrip=yes
+nopie=yes
+noshlibprovides=yes
 
 do_extract() {
 	local deb_file="${XBPS_SRCDISTDIR}/${pkgname}-${version}/spotify-client_${version}.${_gitrev}_amd64.deb"
@@ -63,4 +64,8 @@ do_install() {
 	vmkdir usr/bin
 	ln -sf /usr/lib/spotify/spotify "${DESTDIR}/usr/bin/spotify"
 	chmod 755 "${DESTDIR}/usr/lib/spotify/spotify"
+
+	if [ -f "${DESTDIR}/usr/lib/spotify/LICENSE" ]; then
+		vlicense "${DESTDIR}/usr/lib/spotify/LICENSE"
+	fi
 }

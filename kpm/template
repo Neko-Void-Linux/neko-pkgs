@@ -1,27 +1,28 @@
+# Template file for 'kpm'
 pkgname=kpm
 version=3.2.2
 revision=1
+archs="x86_64"
 build_style=gnu-configure
 short_desc="Minimalist and universal program manager for Linux"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="BSD-3-Clause"
 homepage="https://github.com/Ars-byte/Kore-Package-Manager"
 distfiles="https://github.com/SrDicov/z-packages/releases/download/assets/kpm-linux-x86_64.tar.gz"
 checksum=737f6765be6c5861ec6146ba67197264936ff51105ab6eb91ba700fc3dfeb063
 
 do_configure() {
-    :
+	:
 }
 
 do_build() {
-    :
+	:
 }
 
 do_install() {
-    vbin kpm
-    vbin kpm-gui
-
-    vinstall kore-ico.png 644 usr/share/icons/hicolor/48x48/apps
-
-    vinstall kpm.desktop 644 usr/share/applications
+	vbin kpm
+	vbin kpm-gui
+	vinstall kore-ico.png 644 usr/share/icons/hicolor/48x48/apps
+	vinstall kpm.desktop 644 usr/share/applications
+	vlicense LICENSE
 }

@@ -1,9 +1,9 @@
+# Template file for 'zerotierone'
 pkgname=zerotierone
 version=1.16.2
 revision=1
 hostmakedepends="pkg-config gcc make git"
 makedepends="openssl-devel libffi-devel rust cargo linux-headers"
-depends=""
 short_desc="ZeroTier One - Software-defined networking platform"
 maintainer="JavierC <franckeycool@gmail.com>"
 license="MIT"

@@ -1,17 +1,15 @@
+# Template file for 'vouru'
 pkgname=vouru
 version=3.4
 revision=5
 depends="xtools git curl bash xbps"
-hostmakedepends="git"
-makedepends="git"
-short_desc="Void User Repository Helper - build/install packages from git and void-packages"
-maintainer="JavierC"
+short_desc="Void User Repository Helper for git and void-packages"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="BSD-3-Clause"
-homepage="https://github.com/javiercplus/vouru"
+homepage="https://github.com/Neko-Void-Linux/vouru"
+distfiles="https://github.com/Neko-Void-Linux/vouru/archive/refs/tags/${version}.tar.gz"
+checksum=52e6d72fac7b7711f8c22185a8ab3cdcdca05f294a1313669cd32f519da75f64
 
-do_build(){
-	git clone https://github.com/Neko-Void-Linux/vouru.git .
-}
 do_install() {
 	vbin vouru
 	vlicense LICENSE

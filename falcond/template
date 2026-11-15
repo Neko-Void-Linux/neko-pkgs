@@ -1,4 +1,4 @@
-
+# Template file for 'falcond'
 pkgname=falcond
 version=2.0.14
 revision=9
@@ -6,40 +6,38 @@ archs="x86_64*"
 hostmakedepends="zig-nk git"
 depends="dbus scx"
 short_desc="Advanced Linux Gaming Performance Daemon"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://github.com/PikaOS-Linux/falcond"
-distfiles="https://github.com/Neko-Void-Linux/falcond/releases/download/2.0.14/falcond-2.0.14.tar.gz"
+distfiles="https://github.com/Neko-Void-Linux/falcond/releases/download/${version}/falcond-${version}.tar.gz"
 checksum=cb13918088ef42cb57e452552046fa265ca9fc08184550226f283725b944f984
 nopie=yes
 
 post_extract() {
-
-    git clone --depth 1 https://github.com/PikaOS-Linux/falcond-profiles.git falcond/profiles
-
+	git clone --depth 1 https://github.com/PikaOS-Linux/falcond-profiles.git falcond/profiles
 }
 
 do_build() {
-    cd falcond
-    zig build -Doptimize=ReleaseFast -Dcpu=baseline
+	cd falcond
+	zig build -Doptimize=ReleaseFast -Dcpu=baseline
 }
 
 do_install() {
-    cd falcond
+	cd falcond
 
-    vbin zig-out/bin/falcond
+	vbin zig-out/bin/falcond
 
-    vmkdir usr/share/falcond
-    cp -r profiles/usr/share/falcond/* ${DESTDIR}/usr/share/falcond/
+	vmkdir usr/share/falcond
+	cp -r profiles/usr/share/falcond/* ${DESTDIR}/usr/share/falcond/
 
-    vmkdir etc/sv/falcond
-    cat << 'EOF' > ${DESTDIR}/etc/sv/falcond/run
+	vmkdir etc/sv/falcond
+	cat << 'EOF' > ${DESTDIR}/etc/sv/falcond/run
 #!/bin/sh
 exec falcond
 EOF
-    chmod 755 ${DESTDIR}/etc/sv/falcond/run
+	chmod 755 ${DESTDIR}/etc/sv/falcond/run
 
-    vmkdir var/lib/falcond
+	vmkdir var/lib/falcond
 
-    [ -f ../LICENSE ] && vlicense ../LICENSE
+	[ -f ../LICENSE ] && vlicense ../LICENSE
 }

@@ -5,16 +5,19 @@ revision=1
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar xz"
-depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils
- at-spi2-core libuuid libsecret libayatana-appindicator
- hicolor-icon-theme desktop-file-utils"
+depends="gtk+3 libnotify nss libXScrnSaver libXtst xdg-utils at-spi2-core
+ libuuid libsecret libayatana-appindicator hicolor-icon-theme
+ desktop-file-utils"
 short_desc="Run Windows apps on Linux natively"
-maintainer="ANOMALI0x00 <anomali@example.com>"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/TibixDev/winboat"
-distfiles="https://github.com/TibixDev/winboat/releases/download/v${version}/winboat-${version}-amd64.deb"
-checksum="c01bfbabef6c1c57895dfb3165d4ca7c6912d2f63c67f61b2c2dd3e69449f0ba"
-
+changelog="https://github.com/TibixDev/winboat/releases"
+_gh="https://github.com/TibixDev/winboat/releases/download/v${version}"
+distfiles="${_gh}/winboat-${version}-amd64.deb"
+checksum=c01bfbabef6c1c57895dfb3165d4ca7c6912d2f63c67f61b2c2dd3e69449f0ba
+replaces="winboat-bin>=0"
+provides="winboat-bin-${version}_${revision}"
 nopie=yes
 nostrip=yes
 nodebug=yes
@@ -22,8 +25,9 @@ noverifyrdeps=yes
 noshlibprovides=yes
 
 do_extract() {
-	ar x "${XBPS_SRCDISTDIR}/${pkgname}-${version}/winboat-${version}-amd64.deb"
 	local _data
+
+	ar x "${XBPS_SRCDISTDIR}/${pkgname}-${version}/winboat-${version}-amd64.deb"
 	_data=$(ls data.tar.* 2>/dev/null | head -n1)
 	if [ -z "${_data}" ]; then
 		msg_error "No data.tar.* found inside .deb\n"
@@ -34,38 +38,37 @@ do_extract() {
 
 do_install() {
 	vmkdir opt
-	vcopy opt/winboat opt/
+	vcopy opt/winboat opt
 
 	vmkdir usr/bin
 	ln -sf /opt/winboat/winboat "${DESTDIR}/usr/bin/winboat"
 
 	if [ -d usr/share/icons ]; then
 		vmkdir usr/share
-		vcopy usr/share/icons usr/share/
+		vcopy usr/share/icons usr/share
 	fi
 
 	if [ -d usr/share/pixmaps ]; then
 		vmkdir usr/share
-		vcopy usr/share/pixmaps usr/share/
+		vcopy usr/share/pixmaps usr/share
 	fi
 
 	if [ -d usr/share/metainfo ]; then
 		vmkdir usr/share
-		vcopy usr/share/metainfo usr/share/
+		vcopy usr/share/metainfo usr/share
 	fi
 
 	vmkdir usr/share/applications
-	cat > "${DESTDIR}/usr/share/applications/winboat.desktop" << 'EOF'
-[Desktop Entry]
-Name=WinBoat
-Exec=winboat %U
-Terminal=false
-Type=Application
-Icon=winboat
-StartupWMClass=winboat
-Comment=Windows for Penguins
-Categories=Utility;
-EOF
+	printf '%s\n' \
+		"[Desktop Entry]" \
+		"Name=WinBoat" \
+		"Exec=winboat %U" \
+		"Terminal=false" \
+		"Type=Application" \
+		"Icon=winboat" \
+		"StartupWMClass=winboat" \
+		"Comment=Windows for Penguins" \
+		"Categories=Utility;" > "${DESTDIR}/usr/share/applications/winboat.desktop"
 
 	if [ -f usr/share/doc/winboat/changelog.gz ]; then
 		vdoc usr/share/doc/winboat/changelog.gz

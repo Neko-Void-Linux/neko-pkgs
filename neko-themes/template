@@ -1,3 +1,4 @@
+# Template file for 'neko-themes'
 pkgname=neko-themes
 version=7.8
 revision=4
@@ -6,7 +7,7 @@ _commit=d4b2d667a38643bdfef5d5863cd303cef4d1cd76
 _dracula_commit=557273060fbc955457a1a848b4a777abb8046582
 create_wrksrc=yes
 short_desc="Colección de temas"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-themes"
 distfiles="https://github.com/Neko-Void-Linux/neko-themes/archive/${_commit}.tar.gz>neko-themes-${_commit}.tar.gz

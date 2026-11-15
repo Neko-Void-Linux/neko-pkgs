@@ -1,15 +1,15 @@
+# Template file for 'neko-fonts'
 pkgname=neko-fonts
 version=7.0
 revision=1
 archs=x86_64
-wrksrc="neko-fonts"
 short_desc="Colección de fuentes Neko"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-fonts"
-distfiles="https://github.com/Neko-Void-Linux/neko-fonts/releases/download/7.0/neko-fonts-7.0.tar.gz"
+distfiles="https://github.com/Neko-Void-Linux/neko-fonts/releases/download/${version}/neko-fonts-${version}.tar.gz"
 checksum=0bdbc2829527536ba6ea56c0057621f520f24d156ffa30e2f23483dc862f22d7
 
 do_install() {
-    vcopy usr/share usr
+	vcopy usr/share usr
 }

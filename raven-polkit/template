@@ -1,3 +1,4 @@
+# Template file for 'raven-polkit'
 pkgname=raven-polkit
 version=0.1.4
 revision=2
@@ -5,8 +6,8 @@ build_style=gnu-makefile
 hostmakedepends="pkg-config"
 makedepends="gtk+3-devel dbus-devel polkit-devel"
 short_desc="Minimalist, pure-C PolicyKit authentication agent"
-maintainer="JavierC"
-license="GPL 3.0"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/raven-polkit"
 distfiles="https://github.com/Neko-Void-Linux/raven-polkit/releases/download/${version}/raven-polkit-exp-flicker-free-retries.tar.gz"
 checksum=cd06e74d736082791b5c6f6e8a41b942c352d900cb64a1a773b5d9fa39fa7cfc

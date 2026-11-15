@@ -1,3 +1,4 @@
+# Template file for '3utools'
 pkgname=3utools
 version=9.03.003
 revision=1
@@ -5,39 +6,49 @@ archs="x86_64"
 hostmakedepends="bsdtar patchelf file"
 depends="hicolor-icon-theme libglvnd usbmuxd usbutils psmisc desktop-file-utils"
 short_desc="Apple device management and jailbreak tool"
-maintainer="ANOMALI0x00"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="custom:Proprietary"
 homepage="https://www.3u.com"
-distfiles="https://dl.3u.com/update/v900/dl/linux/x64/com.3u.3utools_${version}_amd64.deb"
+_site="https://dl.3u.com/update/v900/dl/linux/x64"
+distfiles="${_site}/com.3u.3utools_${version}_amd64.deb"
 checksum=3431e97e5b2dde0c1f8365ef5e0c15d79a11572d58dc0236029777a76b596fef
+replaces="3utools-bin>=0"
+provides="3utools-bin-${version}_${revision}"
 nostrip=yes
 nopie=yes
 noshlibprovides=yes
 noverifyrdeps=yes
 
 do_extract() {
-	bsdtar -xf "${XBPS_SRCDISTDIR}/${pkgname}-${version}/com.3u.3utools_${version}_amd64.deb" -C "${wrksrc}"
+	local d="${XBPS_SRCDISTDIR}/${pkgname}-${version}"
+
+	bsdtar -xf "$d/com.3u.3utools_${version}_amd64.deb" -C "${wrksrc}"
 	local _data
 	_data=$(ls "${wrksrc}"/data.tar.* 2>/dev/null | head -n1)
 	if [ -z "${_data}" ]; then
-		msg_error "No se encontró data.tar.* dentro del .deb\n"
+		msg_error "No se encontro data.tar.* dentro del .deb\n"
 	fi
 	bsdtar -xf "${_data}" -C "${wrksrc}"
-	rm -f "${wrksrc}"/control.tar.* "${wrksrc}"/debian-binary "${wrksrc}"/data.tar.*
+	rm -f "${wrksrc}"/control.tar.* "${wrksrc}"/debian-binary \
+		"${wrksrc}"/data.tar.*
 }
 
 do_install() {
-	cp -a opt "${DESTDIR}/"
+	vcopy opt opt
 
-	if [ -f usr/share/applications/com.3u.3utools.desktop ]; then
-		vinstall usr/share/applications/com.3u.3utools.desktop 644 usr/share/applications
+	_app="opt/apps/com.3u.3utools/share"
+	if [ -f "${_app}/applications/com.3u.3utools.desktop" ]; then
+		vinstall "${_app}/applications/com.3u.3utools.desktop" \
+			644 usr/share/applications
 	fi
 
-	if [ -f usr/share/icons/hicolor/scalable/apps/com.3u.3utools.svg ]; then
-		vinstall usr/share/icons/hicolor/scalable/apps/com.3u.3utools.svg 644 usr/share/icons/hicolor/scalable/apps
+	if [ -f "${_app}/icons/hicolor/scalable/apps/com.3u.3utools.svg" ]; then
+		vinstall "${_app}/icons/hicolor/scalable/apps/com.3u.3utools.svg" \
+			644 usr/share/icons/hicolor/scalable/apps
 	fi
 
 	vinstall "${FILESDIR}/38-3uTools.rules" 644 usr/lib/udev/rules.d
+	vlicense "${FILESDIR}/LICENSE"
 }
 
 post_install() {
@@ -51,24 +62,31 @@ post_install() {
 
 	chmod -R u+w "$appdir"
 
-	find "$appdir" -type f -perm -u+x -print0 | while IFS= read -r -d '' f; do
-		file -b "$f" | grep -q ELF || continue
-		patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$f" 2>/dev/null || true
-		patchelf --print-needed "$f" 2>/dev/null | grep '^\./lib/' | while read -r lib; do
-			patchelf --replace-needed "$lib" "$(basename "$lib")" "$f" 2>/dev/null || true
+	find "$appdir" -type f -perm -u+x -print0 | \
+		while IFS= read -r -d '' f; do
+			file -b "$f" | grep -q ELF || continue
+			patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 "$f" \
+				2>/dev/null || true
+			patchelf --print-needed "$f" 2>/dev/null | \
+				grep '^\./lib/' | while read -r lib; do
+					patchelf --replace-needed "$lib" "$(basename "$lib")" \
+						"$f" 2>/dev/null || true
+				done
+			patchelf --force-rpath --set-rpath "$rpath" "$f" \
+				2>/dev/null || true
 		done
-		patchelf --force-rpath --set-rpath "$rpath" "$f" 2>/dev/null || true
-	done
 
 	if [ -d "$libdir" ]; then
-		find "$libdir" -maxdepth 1 -type f -name '*.so*' -print0 | while IFS= read -r -d '' so; do
-			patchelf --force-rpath --set-rpath "$rpath" "$so" 2>/dev/null || true
-		done
+		find "$libdir" -maxdepth 1 -type f -name '*.so*' -print0 | \
+			while IFS= read -r -d '' so; do
+				patchelf --force-rpath --set-rpath "$rpath" "$so" \
+					2>/dev/null || true
+			done
 		rm -f "$libdir/libc.so.6" "$libdir/ld-linux-x86-64.so.2"
 	fi
 
 	local dfile="${DESTDIR}/usr/share/applications/com.3u.3utools.desktop"
 	if [ -f "$dfile" ]; then
-		sed -i 's/^Name=.*/Name=3uTools/' "$dfile"
+		vsed -i 's/^Name=.*/Name=3uTools/' "$dfile"
 	fi
 }
