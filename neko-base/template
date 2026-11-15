@@ -4,100 +4,100 @@ version=2026
 revision=2
 metapackage=yes
 short_desc="Void Linux base system meta package"
-maintainer="JavierC <javiercyt@atomicmail.io"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="WTFPL"
 homepage="https://www.neko-void-linux.online/"
 
 # Paquetes base de la distribución Neko (glibc)
-BASE_SYSTEM="
-    base-system
-    linux-firmware-amd
-    linux-firmware-nvidia
-    linux-firmware-intel
-    linux-mainline-headers
-    linux-lts-headers
-    dkms
-    ntfs-3g
-    dnsmasq
-    kasha-installer
-    iptables
-    tlp
-    tlp-pd
-    tlp-rdw
-    intel-ucode
-    at-spi2-core
-    yad
-    git
-    inetutils
-    qemu-ga
-    upower
-    open-vm-tools
-    spice-vdagent
-    elogind
-    bash-completion
-    cryptsetup
-    dbus
-    dialog
-    grub
-    mdadm
-    nano
-    rtkit
-    xdo
-    xsetroot
-    xinit
-    Neko-Wizard
-    neko-fonts
-    neko-icons
-    neko-themes
-    neko-backgrounds
-    xtools
-    tmux
-    xmirror
-    vouru
+_BASE_SYSTEM="
+	base-system
+	linux-firmware-amd
+	linux-firmware-nvidia
+	linux-firmware-intel
+	linux-mainline-headers
+	linux-lts-headers
+	dkms
+	ntfs-3g
+	dnsmasq
+	kasha-installer
+	iptables
+	tlp
+	tlp-pd
+	tlp-rdw
+	intel-ucode
+	at-spi2-core
+	yad
+	git
+	inetutils
+	qemu-ga
+	upower
+	open-vm-tools
+	spice-vdagent
+	elogind
+	bash-completion
+	cryptsetup
+	dbus
+	dialog
+	grub
+	mdadm
+	nano
+	rtkit
+	xdo
+	xsetroot
+	xinit
+	Neko-Wizard
+	neko-fonts
+	neko-icons
+	neko-themes
+	neko-backgrounds
+	xtools
+	tmux
+	xmirror
+	vouru
 "
 
 # Paquetes base para musl
-MUSL_SYSTEM="
-    base-system
-    linux-firmware-amd
-    linux-firmware-intel
-    linux-mainline-headers
-    linux-lts-headers
-    dkms
-    dnsmasq
-    iptables
-    tlp
-    tlp-pd
-    tlp-rdw
-    intel-ucode
-    at-spi2-core
-    yad
-    git
-    inetutils
-    qemu-ga
-    upower
-    open-vm-tools
-    spice-vdagent
-    elogind
-    bash-completion
-    cryptsetup
-    dbus
-    dialog
-    grub
-    mdadm
-    nano
-    rtkit
-    xdo
-    kasha-installer
-    neko-icons
-    neko-themes
-    neko-backgrounds
-    Neko-Wizard
-    xsetroot
-    xinit
-    xtools
-    tmux
-    xmirror
+_MUSL_SYSTEM="
+	base-system
+	linux-firmware-amd
+	linux-firmware-intel
+	linux-mainline-headers
+	linux-lts-headers
+	dkms
+	dnsmasq
+	iptables
+	tlp
+	tlp-pd
+	tlp-rdw
+	intel-ucode
+	at-spi2-core
+	yad
+	git
+	inetutils
+	qemu-ga
+	upower
+	open-vm-tools
+	spice-vdagent
+	elogind
+	bash-completion
+	cryptsetup
+	dbus
+	dialog
+	grub
+	mdadm
+	nano
+	rtkit
+	xdo
+	kasha-installer
+	neko-icons
+	neko-themes
+	neko-backgrounds
+	Neko-Wizard
+	xsetroot
+	xinit
+	xtools
+	tmux
+	xmirror
 "
 
 depends="
@@ -109,8 +109,8 @@ depends="
  void-artwork traceroute ethtool kmod acpid eudev runit-void removed-packages"
 
 case "$XBPS_TARGET_MACHINE" in
-	*-musl) depends+=" musl ${MUSL_SYSTEM}";;
-	*) depends+=" glibc-locales ${BASE_SYSTEM}";;
+	*-musl) depends+=" musl ${_MUSL_SYSTEM}";;
+	*) depends+=" glibc-locales ${_BASE_SYSTEM}";;
 esac
 
 case "$XBPS_TARGET_MACHINE" in

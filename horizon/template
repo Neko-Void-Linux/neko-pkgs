@@ -1,6 +1,6 @@
 # Template file for 'horizon'
 pkgname=horizon
-version=0.2.61
+version=0.2.66
 revision=1
 archs="x86_64"
 build_style=fetch
@@ -11,7 +11,7 @@ maintainer="Dicov <SrDicov@gmail.com>"
 license="MIT"
 homepage="https://playhorizon.dev"
 distfiles="https://github.com/horizon-rust/horizon/releases/download/launcher@${version}/horizon-launcher-linux-x86_64.AppImage"
-checksum=6fdce0ab64c8a72dd4bfa260ded3d254ab6522f90eb460db2a1632a43605d95d
+checksum=93db06bd03a84d3f2fdf3715def9f142e4c4e9a5ba1596ebf3a6cd287cd3b454
 provides="horizon-launcher-${version}_${revision}
  horizon-bin-${version}_${revision}"
 replaces="horizon-launcher>=0 horizon-bin>=0"

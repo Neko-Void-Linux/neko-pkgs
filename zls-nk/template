@@ -1,23 +1,24 @@
+# Template file for 'zls-nk'
 pkgname=zls-nk
 version=0.17.0
 revision=10
 archs="x86_64*"
 hostmakedepends="zig-nk git"
-short_desc="non-official implementation of the Language Server Protocol for Zig in Zig"
-maintainer="JavierC"
+short_desc="Non-official implementation of Language Server Protocol for Zig"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://github.com/zigtools/zls"
 nopie=yes
 
 do_fetch() {
-    git clone -b 0.17.0 --depth 1 https://github.com/zigtools/zls.git ${pkgname}-${version}
+	git clone -b 0.17.0 --depth 1 https://github.com/zigtools/zls.git ${pkgname}-${version}
 }
 
 do_build() {
-    zig build -Doptimize=ReleaseFast -Dcpu=baseline
+	zig build -Doptimize=ReleaseFast -Dcpu=baseline
 }
 
 do_install() {
-    vbin zig-out/bin/zls
-    vlicense ./LICENSE
+	vbin zig-out/bin/zls
+	vlicense ./LICENSE
 }

@@ -1,6 +1,6 @@
 # Template file for 'reaper'
 pkgname=reaper
-version=7.85
+version=7.86
 revision=1
 archs="x86_64"
 create_wrksrc=yes
@@ -13,8 +13,8 @@ short_desc="Digital audio workstation and MIDI sequencer"
 maintainer="Dicov <SrDicov@gmail.com>"
 license="custom:Reaper EULA"
 homepage="https://www.reaper.fm"
-distfiles="https://www.reaper.fm/files/7.x/reaper784_linux_x86_64.tar.xz>reaper-${version}-linux-x86_64.tar.xz"
-checksum=d87b39862bec6a82bbb530731ae1fa36bba4bc9954ff72518a187420eed9ec7d
+distfiles="https://www.reaper.fm/files/7.x/reaper786_linux_x86_64.tar.xz>reaper-${version}-linux-x86_64.tar.xz"
+checksum=c2f9d8616bd1dc6175993b82451e1c6e352c6761e7ae6d72400a3f3dfb03bedb
 replaces="reaper-bin>=0"
 provides="reaper-bin-${version}_${revision}"
 nostrip=yes

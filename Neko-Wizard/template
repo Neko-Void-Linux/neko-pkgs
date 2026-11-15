@@ -7,7 +7,7 @@ build_style=meson
 hostmakedepends="pkg-config meson ninja cmake"
 makedepends="gtk4-devel"
 short_desc="Wizard Post Install for NEKO VOID"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="WTFPL"
 homepage="https://github.com/Neko-Void-Linux/Neko-Wizard"
 distfiles="https://github.com/Neko-Void-Linux/Neko-Wizard/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
@@ -31,16 +31,14 @@ do_install() {
 
 	ln -s ../lib/Neko-Wizard/neko-store "${DESTDIR}/usr/bin/neko-store"
 
-	cat > "${DESTDIR}/usr/share/applications/neko-store.desktop" << 'DESKTOPEOF'
-[Desktop Entry]
-Type=Application
-Name=Neko Wizard
-Comment=WIZARD for INSTALL Software and DRIVERS
-Exec=neko-store
-Icon=system-software-install
-Categories=Utility;
-Terminal=false
-DESKTOPEOF
+	echo "[Desktop Entry]" > "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Type=Application" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Name=Neko Wizard" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Comment=WIZARD for INSTALL Software and DRIVERS" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Exec=neko-store" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Icon=system-software-install" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Categories=Utility;" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
+	echo "Terminal=false" >> "${DESTDIR}/usr/share/applications/neko-store.desktop"
 	chmod 644 "${DESTDIR}/usr/share/applications/neko-store.desktop"
 
 	if [ -f LICENSE ]; then

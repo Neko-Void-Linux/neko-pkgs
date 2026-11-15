@@ -1,7 +1,7 @@
 # Template file for 'tracktion-download-manager'
 pkgname=tracktion-download-manager
 version=2026.10.1.5.3
-revision=1
+revision=2
 _debver="1.5.3"
 _debdir="153"
 archs="x86_64"
@@ -9,11 +9,12 @@ create_wrksrc=yes
 hostmakedepends="binutils tar xz"
 depends="curl alsa-lib xprop"
 short_desc="Tracktion Download Manager"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="custom:Proprietary"
 homepage="http://www.tracktion.com"
 distfiles="https://downloads.tracktion.com/download-mgr/${_debdir}/tracktion_download_manager_v${_debver}.deb"
 checksum=577b8480c9d33a8b5cc213c61e9c3ff90a6e6a0a00efa0cbe7f4c2ec4f99cfa7
+noshlibprovides=yes
 nostrip=yes
 
 do_extract() {

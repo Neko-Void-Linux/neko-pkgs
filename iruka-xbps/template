@@ -1,19 +1,19 @@
+# Template file for 'iruka-xbps'
 pkgname=iruka-xbps
 version=0.2.0
-revision=4
+revision=5
 build_style=meson
-hostmakedepends="git pkg-config gettext"
-makedepends="git gtk+3-devel"
+hostmakedepends="pkg-config gettext"
+makedepends="gtk+3-devel"
 depends="polkit"
 short_desc="Graphical front-end for the XBPS package manager"
-maintainer="JavierC <<www.javierc.online>>"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="WTFPL, BSD-3-Clause"
 homepage="https://github.com/javiercplus/iruka-xbps"
-
-do_fetch(){
-git clone --depth 1 https://github.com/javiercplus/iruka-xbps.git "${pkgname}-${version}"
-}
+_tag=0.2.0_1
+distfiles="https://github.com/javiercplus/iruka-xbps/archive/refs/tags/${_tag}.tar.gz"
+checksum=07850b09be6aea225e8267b73bcb50d2be70b55f2751b93b89263bd7f5f8d08d
 
 post_install() {
-    vlicense LICENSE
+	vlicense LICENSE
 }

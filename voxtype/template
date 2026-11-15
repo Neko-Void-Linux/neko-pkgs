@@ -1,6 +1,6 @@
 # Template file for 'voxtype'
 pkgname=voxtype
-version=1.2.1
+version=1.2.2
 revision=1
 build_style=cargo
 configure_args="--features osd-gtk4"
@@ -13,7 +13,7 @@ maintainer="Dicov <SrDicov@gmail.com>"
 license="MIT"
 homepage="https://github.com/peteonrails/voxtype"
 distfiles="https://github.com/peteonrails/voxtype/archive/refs/tags/v${version}.tar.gz"
-checksum=e20fa6f176f3367d4fae872bd6933ac446c49390c658f499588215ca466851b9
+checksum=59d5ebb3450e47418716f4168a3c21d85056b09c8762bc0aa0c55953bfd62bc2
 replaces="voxtype-bin>=0"
 
 do_install() {

@@ -1,52 +1,57 @@
+# Template file for 'kasha-installer'
 pkgname=kasha-installer
 version=7.4
 revision=9
+_commit=8794984192c0c80eb1f5f5f3c128554ad8217fba
 build_style=gnu-configure
 hostmakedepends="pkg-config xxd"
-makedepends="gtk+3-devel git"
+makedepends="gtk+3-devel"
 depends="bash grub sed cryptsetup xxd"
 short_desc="Modular Linux system installer built with C and GTK+ 3.0"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="BSD-3-Clause"
 homepage="https://github.com/javiercplus/kasha-installer"
+distfiles="https://github.com/javiercplus/kasha-installer/archive/${_commit}.tar.gz"
+checksum=ca3fd4925a24cb7c0b61ccd2bc63a4d6e81928b1d54a7015a4f3269690320340
+
+post_extract() {
+	mv kasha-installer-${_commit}* ${pkgname}-${version}
+}
 
 do_configure() {
-	git clone -b beta https://github.com/javiercplus/kasha-installer.git .
+	:
 }
 
 do_build() {
-	cd ${wrksrc}
-	
 	GTK_CFLAGS=$(pkg-config --cflags gtk+-3.0)
 	GTK_LIBS=$(pkg-config --libs gtk+-3.0)
-	
+
 	HEADER_DIR="include"
-	
+
 	CFLAGS="-fstack-clash-protection -D_FORTIFY_SOURCE=2 -mtune=generic -O2 -pipe -I${HEADER_DIR} ${GTK_CFLAGS}"
-	
+
 	mkdir -p obj
-	
+
 	SOURCES=$(find src -name "*.c")
 	if [ -z "$SOURCES" ]; then
 		echo "ERROR: No se encontraron archivos fuente .c"
 		exit 1
 	fi
-	
+
 	for src in $SOURCES; do
 		obj="obj/$(basename ${src%.c}.o)"
 		${CC} $CFLAGS -c "$src" -o "$obj"
 	done
-	
+
 	${CC} -o neko_installer obj/*.o ${GTK_LIBS}
 }
 
 do_install() {
-	cd ${wrksrc}
-	
 	vbin neko_installer
-	
+
 	if [ -d data ]; then
 		vmkdir usr/share/kasha
 		cp -r data/* ${DESTDIR}/usr/share/kasha/
 	fi
+	vlicense LICENSE
 }

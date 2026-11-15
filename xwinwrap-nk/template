@@ -1,3 +1,4 @@
+# Template file for 'xwinwrap-nk'
 pkgname=xwinwrap-nk
 version=1.0
 revision=3
@@ -9,6 +10,8 @@ license="MIT"
 homepage="https://github.com/javiercplus/xwinwrap"
 distfiles="${homepage}/archive/${version}.tar.gz"
 checksum=4c0c0214b7ee3ceb4611ea2d7aa2ff746f8ed995ecae7b8e2284396be7ce06e1
+replaces="xwinwrap-nk>=0 xwinwrap>=0"
+provides="xwinwrap-${version}_${revision}"
 
 post_patch() {
 	vsed -i Makefile \

@@ -1,3 +1,4 @@
+# Template file for 'neko-icons'
 pkgname=neko-icons
 version=7.8
 revision=7
@@ -7,7 +8,7 @@ _pixelitos_commit=b31fefc71e52defdfdab3b9fb996fc6d6d6300f7
 _pixora_commit=ea994cfa6dc9da1a468405d6bcb6aeffa80aa52e
 create_wrksrc=yes
 short_desc="Colección de iconos Neko"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-icons"
 distfiles="https://github.com/Neko-Void-Linux/neko-icons/archive/${_commit}.tar.gz>neko-icons-${_commit}.tar.gz

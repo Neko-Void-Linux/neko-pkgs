@@ -1,7 +1,7 @@
 # Template file for 'localsend'
 pkgname=localsend
 version=1.18.2
-revision=2
+revision=3
 archs="x86_64"
 create_wrksrc=yes
 depends="gtk+3 desktop-file-utils hicolor-icon-theme"
@@ -14,6 +14,7 @@ checksum=287690a9a8eb6da9c83cc97b3e3030ac67daf32a7331fcf307d0939300658d16
 replaces="localsend-bin>=0"
 provides="localsend-bin-${version}_${revision}"
 nodebug=yes
+noshlibprovides=yes
 nostrip=yes
 
 do_install() {

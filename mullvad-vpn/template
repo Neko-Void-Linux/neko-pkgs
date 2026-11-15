@@ -1,7 +1,7 @@
 # Template file for 'mullvad-vpn'
 pkgname=mullvad-vpn
 version=2026.5
-revision=2
+revision=3
 archs="x86_64"
 hostmakedepends="binutils tar xz curl gnupg2"
 depends="wireguard-tools"
@@ -12,6 +12,7 @@ homepage="https://mullvad.net"
 distfiles="https://github.com/mullvad/mullvadvpn-app/releases/download/${version}/MullvadVPN-${version}_amd64.deb"
 checksum=aa6bd00452588597f50e8ca2f02bb91e9c295c4f01b0ae907354552e7428e7ab
 provides="mullvad-vpn-bin-${version}_${revision}"
+noshlibprovides=yes
 replaces="mullvad-vpn-bin>=0"
 
 do_extract() {

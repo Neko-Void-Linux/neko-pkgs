@@ -1,10 +1,11 @@
+# Template file for 'niri-settings'
 pkgname=niri-settings
 version=2026
 revision=4
 depends="niri python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets qt6-wayland"
 short_desc="Configuration GUI for niri (Wayland compositor)"
-maintainer="JavierC"
-license="GPL-V2" 
+maintainer="JavierC <javiercyt@atomicmail.io>"
+license="GPL-2.0-only"
 homepage="https://github.com/stefonarch/niri-settings"
 distfiles="https://github.com/Neko-Void-Linux/niri-settings/releases/download/${version}/${pkgname}-${version}.tar.gz"
 checksum=616d763fea8657ae2b922f2f75cd7d2bc708c9fcccfcfdf1413e4b60c8c51692

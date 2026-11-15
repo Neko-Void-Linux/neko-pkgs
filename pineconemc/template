@@ -1,7 +1,7 @@
 # Template file for 'pineconemc'
 pkgname=pineconemc
 version=11.1.2
-revision=2
+revision=3
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar zstd"
@@ -19,6 +19,7 @@ conflicts="elyprismlauncher>=0"
 provides="elyprismlauncher-${version}_${revision}
  pineconemc-bin-${version}_${revision}"
 replaces="elyprismlauncher>=0 pineconemc-bin>=0"
+noshlibprovides=yes
 nostrip=yes
 nopie=yes
 

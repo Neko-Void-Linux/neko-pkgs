@@ -1,21 +1,21 @@
+# Template file for 'noctalia-greeter-latest'
 pkgname=noctalia-greeter-latest
 version=1.7.0
 revision=1
 build_style=meson
-hostmakedepends="git pkg-config"
-makedepends="git cairo-devel fontconfig-devel freetype-devel
+hostmakedepends="pkg-config"
+makedepends="cairo-devel fontconfig-devel freetype-devel
  json-c++ libepoxy-devel libglvnd-devel librsvg-devel
  libwebp-devel libjxl-devel libxkbcommon-devel MesaLib-devel
  pango-devel stb wayland-devel wayland-protocols
  tomlplusplus-devel wlroots0.20-devel"
 depends="cage dbus greetd polkit wlr-randr"
 short_desc="Noctalia themed greeter for greetd"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://github.com/noctalia-dev/noctalia-greeter"
-do_fetch(){
-git clone https://github.com/Neko-Void-Linux/noctalia-greeter.git "${pkgname}-${version}"
-}
+distfiles="https://github.com/noctalia-dev/noctalia-greeter/archive/refs/tags/v${version}.tar.gz"
+checksum=5b092784c0147bb6739efc2e8146d2d07e3572a59d7a370e93092f9f56d4fcc8
 
 post_install() {
 	vlicense LICENSE

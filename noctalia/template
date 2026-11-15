@@ -1,20 +1,28 @@
+# Template file for 'noctalia'
 pkgname=noctalia
 version=5.41.1
 revision=12
+_commit=bef615eb4b62976285f35c7a068932cfdf2b4a0a
 build_style=meson
 configure_args="-Dnative_optimizations=false -Db_sanitize=none"
-hostmakedepends="pkg-config git cmake wayland-devel wayland-protocols"
-makedepends="base-devel git cairo-devel fontconfig-devel freetype-devel harfbuzz-devel
+hostmakedepends="pkg-config cmake wayland-devel wayland-protocols"
+makedepends="base-devel cairo-devel fontconfig-devel freetype-devel harfbuzz-devel
 	jemalloc-devel json-c++ libcurl-devel libepoxy-devel libglvnd-devel libmd4c-devel
 	libqalculate-devel librsvg-devel libsodium-devel libwebp-devel libxkbcommon-devel
 	libxml2-devel libsecret-devel libjxl-devel MesaLib-devel pam-devel pango-devel
 	libsndfile-devel pipewire-devel polkit-devel sdbus-c++-devel stb tomlplusplus-devel
 	libical-devel wayland-devel wayland-protocols wireplumber-devel"
 short_desc="Noctalia desktop shell - latest build"
-maintainer="JavierC"
+maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://github.com/noctalia-dev/noctalia"
-patches="disable-native-optimizations.patch"
-do_fetch(){
-git clone --depth 1 https://github.com/Neko-Void-Linux/noctalia.git "${pkgname}-${version}"
+distfiles="https://github.com/Neko-Void-Linux/noctalia/archive/${_commit}.tar.gz"
+checksum=cff3a3b42adcfeeda437c03d4ef9b444ae36fbd5e430e78b30bae175754eee09
+
+post_extract() {
+	mv noctalia-${_commit}* ${pkgname}-${version}
+}
+
+post_install() {
+	vlicense LICENSE
 }
