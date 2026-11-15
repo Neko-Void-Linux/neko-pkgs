@@ -1,7 +1,7 @@
 # Template file for 'zig-nk'
 pkgname=zig-nk
 version=0.17.1
-revision=1
+revision=2
 archs="x86_64*"
 short_desc="Programming language designed for robustness, optimality, and
  clarity"
@@ -12,6 +12,7 @@ distfiles="https://ziglang.org/download/${version}/zig-x86_64-linux-${version}.t
 checksum=3581863e3cbcfd0fce0efc682ce7e9e93da96668a977791d356a26d2a7e9b17a
 provides="zig-${version}_${revision}"
 replaces="zig-nk>=0 zig-nk-bin>=0 zig>=0"
+noshlibprovides=yes
 nopie=yes
 nocross=yes
 

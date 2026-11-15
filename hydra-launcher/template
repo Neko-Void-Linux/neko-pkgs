@@ -1,21 +1,24 @@
+# Template file for 'hydra-launcher'
 pkgname=hydra-launcher
-version=4.4.0
-revision=4
+version=4.4.1
+revision=2
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="bsdtar"
 depends="gtk+3 nss alsa-lib nspr at-spi2-core libsecret libnotify libXtst
  libXScrnSaver eudev-libudev libcups libXrandr libXcomposite libXdamage
- libxkbcommon libgbm mesa-dri xrandr hicolor-icon-theme p7zip
- python3 libtorrent-rasterbar-python3 xdg-utils"
+ libxkbcommon libgbm mesa-dri xrandr hicolor-icon-theme p7zip python3
+ libtorrent-rasterbar-python3 xdg-utils"
 short_desc="Game launcher with built-in bittorrent client"
-maintainer="ANOMALI0x00 <ANOMALI0x00@users.noreply.github.com>"
+maintainer="ANOMALI0x00 <SrDicov@gmail.com>"
 license="MIT"
 homepage="https://github.com/hydralauncher/hydra"
 distfiles="https://github.com/hydralauncher/hydra/releases/download/v${version}/hydralauncher_${version}_amd64.deb"
-checksum=7d27db73e8390afd05b59c2c10da56082b2287ce7a95f68c655861a500c75df6
+checksum=0527fe3fec945b3463f14d7b61a6ff12f76215b9e5d3ba338a677d0c20c92cb8
+provides="hydra-launcher-bin-${version}_${revision}"
+replaces="hydra-launcher-bin>=0"
 nostrip=yes
-noshlibextract=yes
+noshlibprovides=yes
 noverifyrdeps=yes
 nopie=yes
 python_version=ignore

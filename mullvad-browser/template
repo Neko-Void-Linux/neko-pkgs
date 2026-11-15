@@ -1,7 +1,7 @@
 # Template file for 'mullvad-browser'
 pkgname=mullvad-browser
 version=16.0.1
-revision=1
+revision=2
 archs="x86_64"
 create_wrksrc=no
 hostmakedepends="bsdtar"
@@ -15,6 +15,7 @@ checksum=bc9ad8436265574074eca6023c1fafa3ef2c394c36dad7e15ca7faa06ab24c39
 provides="mullvad-browser-bin-${version}_${revision}"
 replaces="mullvad-browser-bin>=0"
 nopie=yes
+noshlibprovides=yes
 nostrip=yes
 
 do_extract() {

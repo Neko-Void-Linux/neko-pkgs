@@ -1,7 +1,7 @@
 # Template file for 'helium-browser-bin'
 pkgname=helium-browser-bin
-version=0.21.2.1
-revision=1
+version=0.21.3.1
+revision=2
 archs="x86_64"
 short_desc="Private, fast, and honest web browser based on ungoogled-chromium"
 maintainer="YuG <SrDicov@gmail.com>"
@@ -10,11 +10,12 @@ homepage="https://github.com/imputnet/helium-linux"
 _realname="helium"
 
 distfiles="https://github.com/imputnet/helium-linux/releases/download/${version}/${_realname}-${version}-x86_64_linux.tar.xz"
-checksum=e55c253e082f78fb5ae094ca465a59e06882fd7c87ebf383165beb3560e0b519
+checksum=88f3c53a237182e872ac3061cc8c129e75aecbce84aead834225d8103096c254
 provides="helium-browser-${version}_${revision}"
 
 
 
+noshlibprovides=yes
 nostrip=yes
 
 do_install() {

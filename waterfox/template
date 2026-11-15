@@ -1,26 +1,23 @@
 # Template file for 'waterfox'
 pkgname=waterfox
 version=6.7.8
-revision=1
+revision=2
 archs="x86_64"
-makedepends="bzip2 wget tar"
 short_desc="Fast and Private Web Browser"
-maintainer="SelvinTY"
+maintainer="Seremegu <Sere@sere.nekoweb.org>"
 license="MPL-2.0"
 homepage="https://www.waterfox.net/"
+changelog="https://www.waterfox.net/docs/releases/G${version}/?update"
+distfiles="https://cdn.waterfox.com/waterfox/releases/${version}/Linux_x86_64/waterfox-${version}.tar.bz2"
+checksum=29b8bcc0265fdea7dcf0471c6ef8e296f48ca6973e039b9d181a93e7b654ef15
+provides="waterfox-bin-${version}_${revision}"
+replaces="waterfox-bin>=0"
+noshlibprovides=yes
 nopie=yes
-wrksrc="waterfox"
 
-do_fetch(){
-	mkdir -p $wrksrc
-	cd $wrksrc
-	wget -O waterfox.tar.bz2 https://cdn.waterfox.com/waterfox/releases/${version}/Linux_x86_64/waterfox-${version}.tar.bz2
-}
+
 do_install() {
-	cd $wrksrc
-	tar -xjf waterfox.tar.bz2
 	vmkdir opt/waterfox
-	cd waterfox
 	vcopy "*" opt/waterfox
 	vmkdir usr/bin
 	ln -s /opt/waterfox/waterfox "${DESTDIR}/usr/bin/waterfox"
