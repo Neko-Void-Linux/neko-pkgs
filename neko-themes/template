@@ -2,7 +2,7 @@
 pkgname=neko-themes
 version=7.8
 revision=4
-archs=x86_64
+archs="x86_64*"
 _commit=d4b2d667a38643bdfef5d5863cd303cef4d1cd76
 _dracula_commit=557273060fbc955457a1a848b4a777abb8046582
 create_wrksrc=yes

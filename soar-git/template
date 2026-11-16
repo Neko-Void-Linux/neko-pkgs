@@ -1,6 +1,6 @@
 # Template file for 'soar-git'
 pkgname=soar-git
-version=0.14.1
+version=0.14.2
 revision=1
 hostmakedepends="cargo"
 short_desc="Portable package manager and downloader for Linux"
@@ -9,7 +9,7 @@ license="MIT"
 homepage="https://github.com/pkgforge/soar"
 changelog="https://github.com/pkgforge/soar/releases"
 distfiles="https://github.com/pkgforge/soar/archive/v${version}.tar.gz"
-checksum=1d25902da726b992200cfd573b9e8ffe34585f5e19ffd3bf6644255716390e34
+checksum=1d9a15865895e1a4e08dc0a24382512a458653e1c959db4bae4760545b3e6a04
 provides="soar-${version}_${revision}"
 
 do_build() {

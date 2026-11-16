@@ -1,6 +1,6 @@
 # Template file for 'labwc-menu-generator'
 pkgname=labwc-menu-generator
-version=0.2.1
+version=0.2.2
 revision=1
 build_style=meson
 hostmakedepends="pkg-config cmake ninja scdoc"
@@ -11,7 +11,7 @@ license="GPL-2.0-only"
 homepage="https://github.com/labwc/labwc-menu-generator"
 changelog="https://raw.githubusercontent.com/labwc/labwc-menu-generator/refs/heads/master/NEWS.md"
 distfiles="https://github.com/labwc/labwc-menu-generator/archive/refs/tags/${version}.tar.gz"
-checksum=be8c336efe655845e9501416f2ba9b3e4668685f88f18974ba8acc2128799a6d
+checksum=4ea0947e5bebddaefd1bcf13933a4348e5a8e4322b7298d7311cb87f285db066
 
 post_patch() {
 	vsed -i "s|'man', 'man1'|'man1'|" data/meson.build

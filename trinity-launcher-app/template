@@ -1,6 +1,6 @@
 # Template file for 'trinity-launcher-app'
 pkgname=trinity-launcher-app
-version=20261102
+version=20261116
 revision=1
 archs="x86_64*"
 create_wrksrc=yes
@@ -11,7 +11,7 @@ maintainer="Dicov <SrDicov@gmail.com>"
 license="BSD-3-Clause"
 homepage="https://github.com/Trinity-LA/Trinity-Launcher"
 distfiles="https://github.com/Trinity-LA/Trinity-Launcher/releases/download/latest/Trinity_Launcher-x86_64.AppImage"
-checksum=18e0e7ff1b2a46dfda90956571c82ea58b52b842d612e74f2441c74a3c782ac9
+checksum=524ba69e32efaaaf75cb135e790621c344fa1c9620bf6b48bbb4d508c8027d33
 provides="trinity-launcher-${version}_${revision} trinity-launcher-ap-${version}_${revision}"
 nostrip=yes
 noverifyrdeps=yes

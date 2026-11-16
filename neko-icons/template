@@ -2,7 +2,7 @@
 pkgname=neko-icons
 version=7.8
 revision=7
-archs=x86_64
+archs="x86_64*"
 _commit=007cd0fa9bfc0a5a31304d372539c8e4fa81b88a
 _pixelitos_commit=b31fefc71e52defdfdab3b9fb996fc6d6d6300f7
 _pixora_commit=ea994cfa6dc9da1a468405d6bcb6aeffa80aa52e
