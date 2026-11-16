@@ -1,7 +1,7 @@
 # Template file for 'pear-desktop'
 pkgname=pear-desktop
-version=3.12.0
-revision=2
+version=3.12.1
+revision=1
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar xz"
@@ -12,7 +12,7 @@ maintainer="datfooldive <datfooldive@gmail.com>"
 license="MIT"
 homepage="https://github.com/pear-devs/pear-desktop"
 distfiles="https://github.com/pear-devs/pear-desktop/releases/download/v${version}/youtube-music_${version}_amd64.deb"
-checksum=cbf8996f565cbe01cd3a37cc9df0e52da3dcc3b889541117b512be7e4f2afde3
+checksum=be08b48dd9d43c8c468e06890dc84cce2950f93d38b4b854d5ccaf0e4127b2d6
 provides="pear-desktop-bin-${version}_${revision}"
 replaces="pear-desktop-bin>=0"
 nostrip=yes
