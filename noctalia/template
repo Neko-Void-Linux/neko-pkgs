@@ -1,8 +1,8 @@
 # Template file for 'noctalia'
 pkgname=noctalia
-version=5.41.1
-revision=12
-_commit=bef615eb4b62976285f35c7a068932cfdf2b4a0a
+version=5.50.0
+revision=1
+_commit=4a4200bbfef87a2d60c5d1ebf3270644e28e9a16
 build_style=meson
 configure_args="-Dnative_optimizations=false -Db_sanitize=none"
 hostmakedepends="pkg-config cmake wayland-devel wayland-protocols"
@@ -17,11 +17,7 @@ maintainer="JavierC <javiercyt@atomicmail.io>"
 license="MIT"
 homepage="https://github.com/noctalia-dev/noctalia"
 distfiles="https://github.com/Neko-Void-Linux/noctalia/archive/${_commit}.tar.gz"
-checksum=cff3a3b42adcfeeda437c03d4ef9b444ae36fbd5e430e78b30bae175754eee09
-
-post_extract() {
-	mv noctalia-${_commit}* ${pkgname}-${version}
-}
+checksum=af8f3170c9c9014f63d2fffbd6a1ed71c824688590cc094626216b9e277d36d5
 
 post_install() {
 	vlicense LICENSE
