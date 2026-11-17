@@ -1,7 +1,7 @@
 # Template file for 'protonvpn-cli'
 pkgname=protonvpn-cli
-version=1.1.0
-revision=2
+version=1.1.1
+revision=1
 archs="x86_64*"
 build_style=python3-module
 makedepends="python3-setuptools"
@@ -12,4 +12,4 @@ maintainer="Voiders <repo@voiders.dev>"
 license="GPL-3.0-or-later"
 homepage="https://protonvpn.com"
 distfiles="https://github.com/ProtonVPN/proton-vpn-cli/archive/refs/tags/v${version}.tar.gz"
-checksum=6911b3a9fe7872db5d0d7e835787007cc9dfa1d09a9ff92f906c1004c6339901
+checksum=b914b50bfbdd447a9c5eb09eed2de00475c729e672410f754070de730d117396

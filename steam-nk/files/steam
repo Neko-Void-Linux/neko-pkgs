@@ -1,0 +1,318 @@
+#!/bin/bash
+
+# Fix the DISPLAY variable if it is incorrectly pointing to Wayland
+if [[ "$DISPLAY" == wayland-* ]] || [ -z "$DISPLAY" ]; then
+    X11_SOCKET_FOUND=0
+    for s in /tmp/.X11-unix/X*; do
+        if [ -e "$s" ]; then
+            DISP_NUM="${s#/tmp/.X11-unix/X}"
+            export DISPLAY=":$DISP_NUM"
+            echo "DISPLAY variable corrected for Xwayland: $DISPLAY"
+            X11_SOCKET_FOUND=1
+            break
+        fi
+    done
+
+    if [ $X11_SOCKET_FOUND -eq 0 ]; then
+        echo "ERROR: No X11 socket found in /tmp/.X11-unix/."
+        echo "Make sure Xwayland is installed and running on your system."
+        exit 1
+    fi
+fi
+
+# Sandbox directory
+SANDBOX_HOME="$HOME/steam_sandbox"
+mkdir -p "$SANDBOX_HOME/.steam"
+mkdir -p "$SANDBOX_HOME/.local/share/Steam"
+mkdir -p "$SANDBOX_HOME/.config"
+mkdir -p "$HOME/.local/share/applications"
+mkdir -p "$HOME/.local/share/icons"
+mkdir -p "$SANDBOX_HOME/.cache/Steam"
+mkdir -p "$SANDBOX_HOME/.cache/mesa_shader_cache"
+
+# Build the bwrap arguments using a safe array
+ARGS=(
+  # --unshare-pid  # Commented out so Xwayland can validate the PID correctly
+
+  --ro-bind /usr /usr
+  --ro-bind-try /usr/lib32 /usr/lib32
+  --ro-bind /lib /lib
+  --ro-bind /lib64 /lib64
+  --symlink usr/lib /lib32
+  --ro-bind /etc /etc
+  --ro-bind /bin /bin
+  --ro-bind /sbin /sbin
+  --ro-bind /sys /sys
+  --dev-bind /dev /dev
+  --proc /proc
+  --bind /tmp /tmp
+  --bind /run /run
+
+  # Mask the conflicting FUSE directory to avoid portal errors
+  --tmpfs "/run/user/$(id -u)/doc"
+
+  --bind "$SANDBOX_HOME" "/home/$USER"
+  --bind-try /run/udev /run/udev
+  --bind-try /run/media /run/media
+  --bind-try /mnt /mnt
+  --bind-try /media /media
+  --bind-try "$HOME/.local/share/applications" "/home/$USER/.local/share/applications"
+  --bind-try "$HOME/.local/share/icons" "/home/$USER/.local/share/icons"
+  --bind-try "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+  --bind-try "$SANDBOX_HOME/.cache/Steam" "/home/$USER/.cache/Steam"
+  --bind-try "$SANDBOX_HOME/.cache/mesa_shader_cache" "/home/$USER/.cache/mesa_shader_cache"
+)
+
+# ----- Expose real home folders inside the sandbox -----
+for dir in "$HOME"/*/ ; do
+    [ -d "$dir" ] || continue
+    dir="${dir%/}"
+    name="$(basename "$dir")"
+    [ "$name" = "steam_sandbox" ] && continue
+    mkdir -p "$SANDBOX_HOME/$name"
+    ARGS+=( --bind "$dir" "/home/$USER/$name" )
+done
+
+# ----- D-Bus management -----
+DBUS_ADDR="${DBUS_SESSION_BUS_ADDRESS:-}"
+DBUS_VALID=0
+if [ -n "$DBUS_ADDR" ]; then
+    case "$DBUS_ADDR" in
+        *unix:path=*)
+            sock="${DBUS_ADDR#*unix:path=}"; sock="${sock%%,*}"
+            if [ -S "$sock" ]; then
+                ARGS+=( --ro-bind "$sock" "$sock" )
+                DBUS_VALID=1
+            fi
+            ;;
+        *abstract=*)
+            DBUS_VALID=1
+            ;;
+    esac
+fi
+
+if [ "$DBUS_VALID" -eq 1 ]; then
+    echo "D-Bus session bus taken from environment: $DBUS_ADDR"
+    ARGS+=( --setenv DBUS_SESSION_BUS_ADDRESS "$DBUS_ADDR" )
+    USE_DBUS_FALLBACK=0
+elif [ -S "/run/user/$(id -u)/bus" ]; then
+    echo "D-Bus socket detected: /run/user/$(id -u)/bus"
+    ARGS+=( --ro-bind "/run/user/$(id -u)/bus" "/run/user/$(id -u)/bus" )
+    ARGS+=( --setenv DBUS_SESSION_BUS_ADDRESS "unix:path=/run/user/$(id -u)/bus" )
+    USE_DBUS_FALLBACK=0
+else
+    echo "No D-Bus socket found. An isolated session will be used."
+    USE_DBUS_FALLBACK=1
+fi
+
+# ----- X11 authority management -----
+X_AUTH_FOUND=0
+XAUTH_SRC=""
+
+if [ -n "$XAUTHORITY" ] && [ -e "$XAUTHORITY" ]; then
+    XAUTH_SRC="$XAUTHORITY"
+    X_AUTH_FOUND=1
+elif command -v xauth >/dev/null 2>&1; then
+    XAUTH_FROM_INFO=$(xauth info 2>/dev/null | awk '/Authority file/ {print $3}')
+    if [ -n "$XAUTH_FROM_INFO" ] && [ -e "$XAUTH_FROM_INFO" ]; then
+        XAUTH_SRC="$XAUTH_FROM_INFO"
+        X_AUTH_FOUND=1
+    fi
+fi
+
+if [ $X_AUTH_FOUND -eq 0 ]; then
+    for candidate in "/run/user/$(id -u)/gdm/Xauthority" "/run/user/$(id -u)/.mutter-Xauthority" "/run/user/$(id -u)/xauth"*; do
+        if [ -e "$candidate" ]; then
+            XAUTH_SRC="$candidate"
+            X_AUTH_FOUND=1
+            break
+        fi
+    done
+fi
+
+if [ $X_AUTH_FOUND -eq 0 ] && [ -e "$HOME/.Xauthority" ]; then
+    XAUTH_SRC="$HOME/.Xauthority"
+    X_AUTH_FOUND=1
+fi
+
+if [ $X_AUTH_FOUND -eq 1 ]; then
+    echo "X11 AUTH FOUND: $XAUTH_SRC"
+    ARGS+=( --ro-bind "$XAUTH_SRC" "/home/$USER/.Xauthority" )
+    ARGS+=( --setenv XAUTHORITY "/home/$USER/.Xauthority" )
+else
+    echo "X11 XAUTH NOT FOUND. Using xhost..."
+    if command -v xhost >/dev/null 2>&1; then
+        xhost +SI:localuser:"$USER" >/dev/null 2>&1
+    else
+        echo "ERROR: 'xhost' is not installed. Steam will not be able to open the window."
+        exit 1
+    fi
+fi
+
+# Environment variables inside the sandbox
+ARGS+=( --setenv HOME "/home/$USER" )
+ARGS+=( --setenv DISPLAY "$DISPLAY" )
+ARGS+=( --setenv XDG_RUNTIME_DIR "/run/user/$(id -u)" )
+ARGS+=( --setenv XDG_DATA_DIRS "/usr/share:/usr/local/share" )
+ARGS+=( --setenv VERSION_ID "rolling" )
+
+# Block GVFS and portals to prevent host services from starting inside bwrap
+ARGS+=( --setenv GIO_USE_VFS "local" )
+ARGS+=( --setenv GIO_USE_PORTALS "0" )
+ARGS+=( --setenv GTK_USE_PORTAL "0" )
+ARGS+=( --setenv GTK_USE_PORTALS "0" )
+
+# ----- Zenity progress bar setup -----
+PROGRESS_PIPE="/tmp/steam_progress_$$.pipe"
+PGID_FILE="/tmp/steam_sandbox_pgid_$$"
+ZENITY_PID=""
+GUI_STARTED=0
+GUI_DONE=0
+UNPACK_SEEN=0
+ZENITY_OK=0
+command -v zenity >/dev/null 2>&1 && ZENITY_OK=1
+
+open_gui() {
+    rm -f "$PROGRESS_PIPE"
+    mkfifo "$PROGRESS_PIPE" 2>/dev/null
+    zenity --progress \
+        --title="Steam" \
+        --text="Updating Steam..." \
+        --percentage=0 \
+        --auto-close \
+        --no-cancel \
+        < "$PROGRESS_PIPE" &
+    ZENITY_PID=$!
+    sleep 0.2
+    if kill -0 "$ZENITY_PID" 2>/dev/null; then
+        exec 3>"$PROGRESS_PIPE"
+        GUI_STARTED=1
+    else
+        ZENITY_OK=0
+        rm -f "$PROGRESS_PIPE"
+    fi
+}
+
+close_gui() {
+    [ "$GUI_STARTED" -eq 1 ] || return 0
+    printf '100\n' >&3 2>/dev/null
+    exec 3>&- 2>/dev/null
+    if [ -n "$ZENITY_PID" ] && kill -0 "$ZENITY_PID" 2>/dev/null; then
+        kill "$ZENITY_PID" 2>/dev/null
+        wait "$ZENITY_PID" 2>/dev/null
+    fi
+    GUI_STARTED=0
+    GUI_DONE=1
+    rm -f "$PROGRESS_PIPE"
+}
+
+cleanup_gui() {
+    if [ -n "$ZENITY_PID" ] && kill -0 "$ZENITY_PID" 2>/dev/null; then
+        kill "$ZENITY_PID" 2>/dev/null
+    fi
+    exec 3>&- 2>/dev/null
+    rm -f "$PROGRESS_PIPE" "$PGID_FILE"
+}
+
+# Hard stop: kill zenity, the sandbox process group (via its pgid) and ours.
+hard_stop() {
+    cleanup_gui
+    if [ -s "$PGID_FILE" ]; then
+        kill -TERM -"$(cat "$PGID_FILE")" 2>/dev/null
+    fi
+    kill -TERM 0 2>/dev/null
+    exit 130
+}
+trap cleanup_gui EXIT
+trap hard_stop INT TERM
+
+# Decide what to run inside the sandbox
+if [ "$USE_DBUS_FALLBACK" -eq 0 ]; then
+    STEAM_CMD=( /usr/lib/steam/bin_steam.sh -no-cef-sandbox -cef-disable-gpu "$@" )
+else
+    echo "D-Bus session not detected. Starting dbus-run-session inside the sandbox..."
+    STEAM_CMD=( dbus-run-session -- /usr/lib/steam/bin_steam.sh -no-cef-sandbox -cef-disable-gpu "$@" )
+fi
+
+STATUS_FILE="$(mktemp)"
+
+# ----- Launcher -----
+# The pty makes Steam use its console update UI (no zenity inside sandbox).
+# CRITICAL: script's stdin must NOT be your terminal, otherwise it puts your
+# tty in raw mode (broken log rendering + dead Ctrl+C). Hence < /dev/null.
+BWRAP_FLAT="bwrap $(printf '%q ' "${ARGS[@]}")$(printf '%q ' "${STEAM_CMD[@]}")"
+SCRIPT_CMD="echo \$\$ > '$PGID_FILE'; exec $BWRAP_FLAT"
+if command -v script >/dev/null 2>&1; then
+    LAUNCH=( script -qec "$SCRIPT_CMD" /dev/null )
+else
+    LAUNCH=( sh -c "$SCRIPT_CMD" )
+fi
+
+# ----- Run Steam and drive the zenity progress bar -----
+IDLE_LIMIT=3600
+while :; do
+    if IFS= read -t "$IDLE_LIMIT" -r line; then
+        rc=0
+    else
+        rc=$?
+        if [ $rc -gt 128 ]; then
+            if [ "$GUI_STARTED" -eq 1 ]; then
+                close_gui
+            fi
+            IDLE_LIMIT=3600
+            continue
+        else
+            break
+        fi
+    fi
+
+    printf '%s\n' "$line" >&2
+
+    if [ "$GUI_DONE" -eq 1 ] || [ "$ZENITY_OK" -eq 0 ]; then
+        IDLE_LIMIT=3600
+        continue
+    fi
+
+    pct=""
+    [[ "$line" =~ \[[[:space:]]*([0-9]+)%\] ]] && pct="${BASH_REMATCH[1]}"
+
+    status_text=""
+    case "$line" in
+        *"Downloading update"*|*"Unpacking update"*|*"Installing update"*|*"Verifying installation"*|*"Update complete"*|*"Download Complete"*)
+            status_text="$line" ;;
+    esac
+    [[ "$line" == *"Unpacking update"* ]] && UNPACK_SEEN=1
+
+    if [ "$GUI_STARTED" -eq 0 ]; then
+        if [ -n "$pct" ] || [[ "$line" == *"Downloading update ("* ]] || [[ "$line" == *"Unpacking update"* ]]; then
+            open_gui
+        fi
+    fi
+
+    if [ "$GUI_STARTED" -eq 1 ]; then
+        [ -n "$pct" ] && printf '%s\n' "$pct" >&3
+        [ -n "$status_text" ] && printf '# %s\n' "${status_text:0:80}" >&3
+        if [ "${pct:-0}" -ge 100 ] \
+           || [[ "$line" == *"Startup - Steam Client launched"* ]] \
+           || [[ "$line" == *"Update complete"* ]] \
+           || [[ "$line" == *"Download Complete"* ]]; then
+            close_gui
+        fi
+    fi
+
+    if [ "$GUI_STARTED" -eq 1 ]; then
+        if [ "$UNPACK_SEEN" -eq 1 ]; then IDLE_LIMIT=120; else IDLE_LIMIT=20; fi
+    else
+        IDLE_LIMIT=3600
+    fi
+done < <(
+    "${LAUNCH[@]}" < /dev/null 2>&1 | sed -u -e 's/\x1b\[[0-9;:]*m//g' -e 's/\r$//'
+    echo "${PIPESTATUS[0]}" > "$STATUS_FILE"
+)
+
+close_gui
+
+rc=0
+[ -s "$STATUS_FILE" ] && rc="$(cat "$STATUS_FILE")"
+rm -f "$STATUS_FILE"
+exit "$rc"
