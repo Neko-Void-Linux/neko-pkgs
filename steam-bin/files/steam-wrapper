@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Forzamos las librerías del sistema para evitar conflictos de libstdc++
+export LD_PRELOAD="/usr/\$LIB/libstdc++.so.6:/usr/\$LIB/libgcc_s.so.1:/usr/\$LIB/libxcb.so.1:${LD_PRELOAD}"
+
+# Decidimos cómo lanzar Steam basándonos en la sesión de D-Bus
+if [ -n "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    exec /usr/lib/steam/bin_steam.sh -no-cef-sandbox -cef-disable-gpu "$@"
+else
+    echo "Sesión de D-Bus no detectada. Iniciando dbus-run-session..."
+    exec dbus-run-session -- /usr/lib/steam/bin_steam.sh -no-cef-sandbox -cef-disable-gpu "$@"
+fi
