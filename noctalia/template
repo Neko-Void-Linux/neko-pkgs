@@ -1,6 +1,6 @@
 # Template file for 'noctalia'
 pkgname=noctalia
-version=5.5.0
+version=5.50.0
 revision=1
 _commit=4a4200bbfef87a2d60c5d1ebf3270644e28e9a16
 build_style=meson
