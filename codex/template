@@ -15,7 +15,7 @@ license="custom:Proprietary"
 homepage="https://developers.openai.com/codex/app"
 distfiles="https://persistent.oaistatic.com/codex-app-prod/linux/deb/pool/main/c/chatgpt/chatgpt_${version}_amd64.deb"
 checksum=8197424cbcea3a7c0d445a544eaa6b99df8b8ef8b1d182e2b743f702753c7a70
-provides="codex-bin-${version}_${revision}"
+provides="codex-bin-${version}_${revision} chatgpt-${version}_${revision}"
 replaces="codex-bin>=0 chatgpt>=0"
 nostrip=yes
 nodebug=yes
