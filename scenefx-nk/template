@@ -1,7 +1,7 @@
-# Template file for 'scenefx-latest'
-pkgname=scenefx-latest
+# Template file for 'scenefx-nk'
+pkgname=scenefx-nk
 version=0.5
-revision=2
+revision=3
 build_style=meson
 configure_args="-Dwerror=false -Db_ndebug=false"
 hostmakedepends="pkg-config wayland-devel scdoc"
@@ -13,14 +13,15 @@ homepage="https://github.com/wlrfx/scenefx"
 changelog="https://github.com/wlrfx/scenefx/releases/"
 distfiles="https://github.com/wlrfx/scenefx/archive/refs/tags/${version}.tar.gz"
 checksum=0fa8ecca0e310f813efd052624c5ed7d9153d6a0fdead5cc957d34c07f9a86c6
-provides="scenefx-${version}_${revision} scenefx-nk-${version}_${revision}"
 
+replaces="scenefx-latest>=0 scenefx>=0"
+provides="scenefx-${version}_${revision} scenefx-latest-${version}_${revision}"
 post_install() {
 	vlicense LICENSE
 }
-scenefx-latest-devel_package() {
-	replaces="scenefx-devel>=0 scenefx-latest-devel>=0"
-	provides="scenefx-devel-${version}_${revision} scenefx-latest-devel-${version}_${revision} scenefx-devel-nk-${version}_${revision} scenefx-nk-devel-${version}_${revision}"
+scenefx-devel-nk_package() {
+	replaces="scenefx-devel>=0 scenefx-latest-devel>=0 scenefx-nk-devel>=0"
+	provides="scenefx-devel-${version}_${revision} scenefx-latest-devel-${version}_${revision}"
 	short_desc+=" - development files"
 	depends="${sourcepkg}>=${version}_${revision}"
 
