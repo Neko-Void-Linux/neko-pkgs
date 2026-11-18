@@ -8,9 +8,9 @@ build_style=meson
 configure_args="-Dtests=disabled -Dnative_optimizations=false -Dbenchmarks=false -Dwerror=false -Dbuild_revision=${_commit:0:7}"
 hostmakedepends="pkg-config wayland-devel glib-devel"
 makedepends="acl-devel cairo-devel fontconfig-devel freetype-devel gdk-pixbuf-devel-nk
- glib-devel glycin-devel harfbuzz-devel json-c++ libarchive-devel libglvnd-devel
- liblzma-devel libpng-devel librsvg-devel libxkbcommon-devel MesaLib-devel
- pango-devel stb tomlplusplus-devel wayland-devel wayland-protocols"
+ glib-devel glycin-devel harfbuzz-devel json-c++ libarchive-devel libcurl-devel
+ libglvnd-devel liblzma-devel libpng-devel librsvg-devel libxkbcommon-devel
+ MesaLib-devel pango-devel stb tomlplusplus-devel wayland-devel wayland-protocols"
 depends="glycin-loaders hicolor-icon-theme xdg-desktop-portal"
 short_desc="Native Wayland file manager"
 maintainer="Dicov <SrDicov@gmail.com>"
