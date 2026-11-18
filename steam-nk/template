@@ -1,7 +1,7 @@
 # Template file for 'steam-nk'
 pkgname=steam-nk
 version=1.0.0.85
-revision=16
+revision=17
 archs="x86_64"
 create_wrksrc=yes
 hostmakedepends="binutils tar xz"
@@ -14,8 +14,6 @@ changelog="https://codeberg.org/Neko-Void/STEAM-ALT-VOID/releases"
 _site="https://codeberg.org/Neko-Void/STEAM-ALT-VOID"
 distfiles="${_site}/releases/download/deb-build/steam_latest.deb"
 checksum=b44634a6a604ca7c8b23809d0f2a921a0348bb2081c8cb8944116d0799872b70
-replaces="steam-bin>=0 steam-nk-bin>=0 steam>=0"
-provides="steam-bin-${version}_${revision} steam-${version}_${revision} steam-nk-bin-${version}_${revision}"
 nostrip=yes
 noshlibprovides=yes
 noverifyrdeps=yes
