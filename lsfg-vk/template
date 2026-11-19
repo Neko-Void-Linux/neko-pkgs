@@ -20,5 +20,6 @@ distfiles="https://git.lsfg-vk.dev/lsfg-vk/snapshot/lsfg-vk-${_ver}.tar.xz"
 checksum=abb688feac00d50f9e59dabb2476998bc1d3f0290fb971407d49cba26dd44b3b
 create_wrksrc=yes
 build_wrksrc="lsfg-vk-${_ver}"
+noshlibprovides=yes
 replaces="lsfg-vk-git>=0"
 provides="lsfg-vk-git-${version}_${revision}"

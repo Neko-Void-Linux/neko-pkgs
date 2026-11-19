@@ -14,6 +14,7 @@ changelog="https://github.com/wlrfx/scenefx/releases/"
 distfiles="https://github.com/wlrfx/scenefx/archive/refs/tags/${version}.tar.gz"
 checksum=0fa8ecca0e310f813efd052624c5ed7d9153d6a0fdead5cc957d34c07f9a86c6
 
+shlib_provides="libscenefx-0.5.so"
 replaces="scenefx-latest>=0 scenefx>=0"
 provides="scenefx-${version}_${revision} scenefx-latest-${version}_${revision}"
 post_install() {

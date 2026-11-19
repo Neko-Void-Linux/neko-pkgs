@@ -19,18 +19,6 @@ homepage="https://github.com/noctalia-dev/luciole"
 distfiles="https://github.com/noctalia-dev/luciole/archive/${_commit}.tar.gz>${pkgname}-${_commit}.tar.gz"
 checksum=12bff2bad3e62b4f06c66909bdad6dbf97e0fddb56bce224b58dc69da99cfefc
 
-post_patch() {
-	vsed -i src/browser/directory_tree.cpp \
-		-e 's/this auto&& self/auto\&\& self/' \
-		-e 's/self[(]child/self(self, child/' \
-		-e 's/append[(]entry/append(append, entry/'
-
-	vsed -i src/browser/directory_model.cpp \
-		-e 's/this auto&& self/auto\&\& self/' \
-		-e 's/self[(]child/self(self, child/' \
-		-e 's/append[(]id/append(append, id/'
-}
-
 post_install() {
 	vlicense LICENSE
 }
