@@ -1,7 +1,7 @@
 # Template file for 'protonvpn-api-core'
 pkgname=protonvpn-api-core
-version=6.1.1
-revision=2
+version=6.1.2
+revision=1
 archs="x86_64*"
 create_wrksrc=yes
 build_wrksrc="python-proton-vpn-api-core-${version}"
@@ -20,7 +20,8 @@ homepage="https://protonvpn.com"
 _protun_version=2.2.1
 distfiles="https://github.com/ProtonVPN/python-proton-vpn-api-core/archive/refs/tags/v${version}.tar.gz
  https://github.com/ProtonVPN/protun/archive/refs/tags/v${_protun_version}.tar.gz"
-checksum="9b8a4eca0c59c53c51e95862fb00c31f146f38d2ee88bb3fbda24ed53fdefa67
+checksum="
+ eea6e3eef40926b8a5500fe375c525c46f2a0f8f9534a73fc2bd633a68b86662
  4bf7eab3255332ffd97e1906a79d048fddb0d1bc40b6caefb899de9106e322cc"
 
 pre_build() {

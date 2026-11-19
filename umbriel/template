@@ -1,0 +1,31 @@
+# Template file for 'umbriel'
+pkgname=umbriel
+version=0.1.0
+revision=6
+_commit=76a086dc91ff5e82f69ab8a191f8cd0ee198a5ba
+archs="x86_64*"
+build_style=meson
+configure_args="-Dtests=disabled -Dharness=disabled -Dtracy=disabled -Dlocaled=disabled"
+hostmakedepends="pkg-config wayland-devel"
+makedepends="cairo-devel eudev-libudev-devel jemalloc-devel json-c++ lcms2-devel
+ libdisplay-info-devel libdrm-devel libei-devel libinput-devel libxcb-devel
+ libxkbcommon-devel MesaLib-devel pango-devel pixman-devel tomlplusplus-devel
+ wayland-devel wayland-protocols wlroots0.20-devel xcb-util-wm-devel"
+depends="dbus xorg-server-xwayland"
+short_desc="Wayland compositor built on wlroots"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="MIT"
+homepage="https://github.com/noctalia-dev/umbriel"
+distfiles="https://github.com/noctalia-dev/umbriel/archive/${_commit}.tar.gz>${pkgname}-${_commit}.tar.gz"
+checksum=bff689261a56677a01f04b6d81a0dac652eb00350edcc94987429afd8fdcb8b8
+
+post_patch() {
+	vsed -i "s|'VCS_TAG', 'unknown'|'VCS_TAG', '${_commit:0:7}'|" \
+		meson.build
+	vsed -i 's/git_program[.]found[(][)]/false/' \
+		meson.build
+}
+
+post_install() {
+	vlicense LICENSE
+}

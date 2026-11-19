@@ -1,0 +1,49 @@
+# Template file for 'jwmkit'
+pkgname=jwmkit
+version=26.5
+revision=2
+build_style=gnu-configure
+depends="python3 python3-gobject gtk+3 alsa-utils jwm"
+short_desc="JWM configuration and management toolkit"
+maintainer="Orphaned <orphan@voidlinux.org>"
+license="BSD-3-Clause"
+homepage="https://codeberg.org/Neko-Void/jwmkit-neko"
+distfiles="https://codeberg.org/Neko-Void/jwmkit-neko/archive/${version}.tar.gz"
+checksum="af0037c3a91b7aa40235ef92eefe06917a842a3d57e11936bb877d430b49af11"
+
+replaces="jwmkit-neko>=0"
+provides="jwmkit-neko-${version}_${revision}"
+do_configure() {
+	:
+}
+
+do_build() {
+	:
+}
+
+do_install() {
+	for f in PYTHON/jwmkit_*; do
+		vbin "$f"
+	done
+
+	vbin BASH/jwmkit_bat_mu
+
+	vmkdir usr/share/pixmaps/jwmkit
+	for f in icons/*; do
+		vinstall "$f" 644 usr/share/pixmaps/jwmkit
+	done
+
+	vmkdir usr/share/doc/jwmkit
+	for f in doc/*; do
+		vinstall "$f" 644 usr/share/doc/jwmkit
+	done
+
+	for f in man1/*.1; do
+		vman "$f"
+	done
+
+	vmkdir etc/jwmkit/restore
+	vinstall BUILD/DATA/COMMON/restore/original.restore 644 etc/jwmkit/restore
+
+	vlicense doc/LICENSE
+}

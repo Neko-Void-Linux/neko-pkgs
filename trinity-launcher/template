@@ -1,0 +1,47 @@
+# Template file for 'trinity-launcher'
+pkgname=trinity-launcher
+version=20261116
+revision=1
+archs="x86_64*"
+create_wrksrc=yes
+build_style=fetch
+depends="hicolor-icon-theme util-linux"
+short_desc="Minecraft Bedrock launcher (Trinity), prebuilt AnyLinux bundle"
+maintainer="Dicov <SrDicov@gmail.com>"
+license="BSD-3-Clause"
+homepage="https://github.com/Trinity-LA/Trinity-Launcher"
+distfiles="https://github.com/Trinity-LA/Trinity-Launcher/releases/download/latest/Trinity_Launcher-x86_64.AppImage"
+checksum=524ba69e32efaaaf75cb135e790621c344fa1c9620bf6b48bbb4d508c8027d33
+replaces="trinity-launcher-ap>=0 trinity-launcher-app>=0"
+provides="trinity-launcher-ap-${version}_${revision} trinity-launcher-app-${version}_${revision}"
+nostrip=yes
+noverifyrdeps=yes
+noshlibprovides=yes
+nodebug=yes
+
+do_extract() {
+	cd "${wrksrc}"
+	local f="${XBPS_SRCDISTDIR}/${pkgname}-${version}/Trinity_Launcher-x86_64.AppImage"
+	chmod +x "$f"
+	"$f" --appimage-extract
+}
+
+do_install() {
+	vmkdir usr/lib/trinity-launcher-ap
+	vcopy squashfs-root/. usr/lib/trinity-launcher-ap
+
+	vmkdir usr/bin
+	ln -s /usr/lib/trinity-launcher-ap/AppRun "${DESTDIR}/usr/bin/trinity-launcher-ap"
+	test -e "${DESTDIR}/usr/lib/trinity-launcher-ap/AppRun"
+	test "$(readlink "${DESTDIR}/usr/bin/trinity-launcher-ap")" = /usr/lib/trinity-launcher-ap/AppRun
+
+	vsed -i "s|^Exec=trinity$|Exec=trinity-launcher-ap|" \
+		squashfs-root/com.trench.trinity.launcher.desktop
+
+	vmkdir usr/share/applications
+	vmkdir usr/share/icons/hicolor/scalable/apps
+	vcopy squashfs-root/com.trench.trinity.launcher.desktop usr/share/applications
+	vcopy squashfs-root/com.trench.trinity.launcher.svg usr/share/icons/hicolor/scalable/apps
+
+	vlicense "${FILESDIR}/LICENSE"
+}

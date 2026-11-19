@@ -1,0 +1,24 @@
+# Template file for 'soar'
+pkgname=soar
+version=0.14.2
+revision=1
+hostmakedepends="cargo"
+short_desc="Portable package manager and downloader for Linux"
+maintainer="Javierc <javiercyt@atomicmail.io>"
+license="MIT"
+homepage="https://github.com/pkgforge/soar"
+changelog="https://github.com/pkgforge/soar/releases"
+distfiles="https://github.com/pkgforge/soar/archive/v${version}.tar.gz"
+checksum=1d9a15865895e1a4e08dc0a24382512a458653e1c959db4bae4760545b3e6a04
+
+replaces="soar-git>=0"
+provides="soar-git-${version}_${revision}"
+do_build() {
+	cargo build --release --locked ${makejobs}
+}
+
+do_install() {
+	vbin target/release/soar
+	vlicense LICENSE
+	vdoc README.md
+}
