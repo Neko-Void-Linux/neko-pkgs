@@ -1,7 +1,7 @@
 # Template file for 'mozc-ut'
 pkgname=mozc-ut
 version=2.31.5851.102
-revision=1
+revision=2
 archs="x86_64*"
 build_wrksrc=mozc/src
 hostmakedepends="gettext ninja pkg-config bazel python3-six which qt6-base"
@@ -9,7 +9,7 @@ makedepends="ibus-devel libzinnia-devel qt6-base-devel libfcitx5-devel"
 depends="tegaki-zinnia-japanese>=0.3 mozc-ut-base-${version}_${revision}"
 short_desc="Mozc Japanese IME with UT dictionary"
 maintainer="Dicov <SrDicov@gmail.com>"
-license="BSD-3-Clause"
+license="BSD-3-Clause AND Apache-2.0 AND CC-BY-SA-4.0"
 homepage="https://github.com/linakichi/void-packages-mozc-ut"
 _commit=6a2e6e292efe4c2048e0c86b0818a4897c4aa5b7
 _abseil=20250512.0
@@ -149,6 +149,9 @@ do_install() {
 	vlicense data/installer/credits_en.html license.html
 	head -n 29 unix/fcitx5/fcitx_key_translator.cc >fcitx.LICENSE
 	vlicense fcitx.LICENSE
+	vlicense "$FILESDIR/CREDITS-UT.txt" CREDITS-UT.txt
+	vlicense "$FILESDIR/LICENSE.CC-BY-SA-4.0" LICENSE.CC-BY-SA-4.0
+	vlicense "$FILESDIR/LICENSE.Apache-2.0" LICENSE.Apache-2.0
 	vbin bazel-bin/unix/emacs/mozc_emacs_helper
 	vinstall unix/emacs/mozc.el 644 usr/share/emacs/site-lisp
 	vinstall bazel-bin/gui/tool/mozc_tool 755 usr/lib/mozc
