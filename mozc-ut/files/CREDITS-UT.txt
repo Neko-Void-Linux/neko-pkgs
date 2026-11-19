@@ -1,0 +1,72 @@
+================================================================================
+Mozc-UT & Extended Dictionary Components - Attribution & Licensing Notice
+================================================================================
+
+This package (mozc-ut / mozc-ut-base) provides the Mozc Japanese Input Method
+enhanced with the Mozc UT Dictionaries (mozcdic-ut), integrating lexical data
+compiled into the mozc_server binary.
+
+The complete software distribution is provided under a combination of open source
+licenses: BSD-3-Clause AND Apache-2.0 AND CC-BY-SA-4.0.
+
+Below are the copyright notices, source attributions, and license conditions
+for each incorporated component:
+
+1. Mozc Engine & Core Tools
+---------------------------
+Copyright 2010-2024 Google LLC
+Copyright 2014-2024 Fcitx contributors
+Homepage: https://github.com/fcitx/mozc
+License: BSD-3-Clause
+License details: see license.html and fcitx.LICENSE
+
+2. Mozc UT Dictionaries & Integration Scripts
+---------------------------------------------
+Copyright (c) UTUMI Hirosi (utuhiro78)
+Homepage: https://utuhiro78.github.io/linuxplayers/mozc-ut.html
+Repository: https://github.com/utuhiro78/merge-ut-dictionaries
+Script: merge_dictionaries.py
+License: Apache License, Version 2.0 (see LICENSE.Apache-2.0)
+
+3. Japanese Wikipedia Word Frequency and Title Data (mozcdic-ut-jawiki)
+-----------------------------------------------------------------------
+Source: Japanese Wikipedia (jawiki)
+Copyright (c) Wikimedia Foundation contributors
+Homepage: https://ja.wikipedia.org/
+Repository: https://github.com/utuhiro78/mozcdic-ut-jawiki
+License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+         / CC BY-SA 3.0 Unported
+License details: see LICENSE.CC-BY-SA-4.0
+
+4. mecab-ipadic-NEologd Dictionary Data (mozcdic-ut-neologd)
+------------------------------------------------------------
+Copyright (c) Toshinori Sato (overlast)
+Homepage: https://github.com/neologd/mecab-ipadic-neologd
+Repository: https://github.com/utuhiro78/mozcdic-ut-neologd
+License: Apache License, Version 2.0 (see LICENSE.Apache-2.0)
+
+5. SudachiDict Dictionary Data (mozcdic-ut-sudachidict)
+-------------------------------------------------------
+Copyright (c) Works Applications Co., Ltd.
+Homepage: https://github.com/WorksApplications/SudachiDict
+Repository: https://github.com/utuhiro78/mozcdic-ut-sudachidict
+License: Apache License, Version 2.0 (see LICENSE.Apache-2.0)
+
+6. Personal Names Dictionary (mozcdic-ut-personal-names)
+--------------------------------------------------------
+Copyright (c) UTUMI Hirosi (utuhiro78)
+Repository: https://github.com/utuhiro78/mozcdic-ut-personal-names
+License: Apache License, Version 2.0 (see LICENSE.Apache-2.0)
+
+7. Place Names Dictionary (mozcdic-ut-place-names)
+--------------------------------------------------
+Derived from Japan Post Postal Code Data (日本郵便 郵便番号データ)
+Repository: https://github.com/utuhiro78/mozcdic-ut-place-names
+License: Public Domain (郵便番号データに限っては日本郵便株式会社は著作権を主張しません)
+
+8. Japanese Usage Dictionary
+----------------------------
+Copyright (c) 2011-2015 Hiroyuki Komatsu
+Homepage: https://github.com/hiroyuki-komatsu/japanese-usage-dictionary
+License: BSD-3-Clause
+================================================================================
