@@ -20,10 +20,8 @@ distfiles="https://github.com/Neko-Void-Linux/noctalia/archive/${_commit}.tar.gz
 checksum=beb9b58899293499aacff1824259317f9445e4d6e70867cdb005c6f963dc4950
 
 post_patch() {
-	vsed -i "s|'VCS_TAG', 'unknown'|'VCS_TAG', 'v${version}'|" \
-		meson.build
-	vsed -i 's|^if git_program.found\(\)|if false|' \
-		meson.build
+	vsed -i meson.build -e 's/git_program.found()/false/'
+	vsed -i meson.build -e "s/'VCS_TAG', 'unknown'/'VCS_TAG', 'v${version}'/"
 }
 
 post_install() {
