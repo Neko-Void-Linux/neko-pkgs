@@ -1,8 +1,8 @@
 # Template file for 'luciole'
 pkgname=luciole
 version=0.1.0
-revision=4
-_commit=98d4e20a540da55bd4222d17ef7ea836e21c76a6
+revision=5
+_commit=b92ac0456751c8047a0501b3b7d3b44fc9f3a227
 archs="x86_64*"
 build_style=meson
 configure_args="-Dtests=disabled -Dnative_optimizations=false -Dbenchmarks=false -Dwerror=false -Dbuild_revision=${_commit:0:7}"
@@ -10,14 +10,15 @@ hostmakedepends="pkg-config wayland-devel glib-devel"
 makedepends="acl-devel cairo-devel fontconfig-devel freetype-devel gdk-pixbuf-devel-nk
  glib-devel glycin-devel harfbuzz-devel json-c++ libarchive-devel libcurl-devel
  libglvnd-devel liblzma-devel libpng-devel librsvg-devel libxkbcommon-devel
- MesaLib-devel pango-devel stb tomlplusplus-devel wayland-devel wayland-protocols"
+ libxml2-devel MesaLib-devel pango-devel stb tomlplusplus-devel wayland-devel
+ wayland-protocols"
 depends="glycin-loaders hicolor-icon-theme xdg-desktop-portal"
 short_desc="Native Wayland file manager"
 maintainer="Dicov <SrDicov@gmail.com>"
 license="MIT"
 homepage="https://github.com/noctalia-dev/luciole"
 distfiles="https://github.com/noctalia-dev/luciole/archive/${_commit}.tar.gz>${pkgname}-${_commit}.tar.gz"
-checksum=12bff2bad3e62b4f06c66909bdad6dbf97e0fddb56bce224b58dc69da99cfefc
+checksum=265e082d6c6ed31081d33ab6b148b20cd7d796f1b073d07c1dd74296f0bbc504
 
 post_install() {
 	vlicense LICENSE

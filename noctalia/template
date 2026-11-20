@@ -1,23 +1,30 @@
 # Template file for 'noctalia'
 pkgname=noctalia
-version=5.50.0
+version=5.6.0
 revision=1
-_commit=4a4200bbfef87a2d60c5d1ebf3270644e28e9a16
 build_style=meson
 configure_args="-Dnative_optimizations=false -Db_sanitize=none"
 hostmakedepends="pkg-config cmake wayland-devel wayland-protocols"
-makedepends="base-devel cairo-devel fontconfig-devel freetype-devel harfbuzz-devel
-	jemalloc-devel json-c++ libcurl-devel libepoxy-devel libglvnd-devel libmd4c-devel
-	libqalculate-devel librsvg-devel libsodium-devel libwebp-devel libxkbcommon-devel
-	libxml2-devel libsecret-devel libjxl-devel MesaLib-devel pam-devel pango-devel
-	libsndfile-devel pipewire-devel polkit-devel sdbus-c++-devel stb tomlplusplus-devel
-	libical-devel wayland-devel wayland-protocols wireplumber-devel"
-short_desc="Noctalia desktop shell - latest build"
-maintainer="JavierC <javiercyt@atomicmail.io>"
+makedepends="base-devel cairo-devel fontconfig-devel freetype-devel
+ harfbuzz-devel jemalloc-devel json-c++ libcurl-devel libepoxy-devel
+ libglvnd-devel libmd4c-devel libqalculate-devel librsvg-devel libsodium-devel
+ libwebp-devel libxkbcommon-devel libxml2-devel libsecret-devel libjxl-devel
+ MesaLib-devel pam-devel pango-devel libsndfile-devel pipewire-devel
+ polkit-devel sdbus-c++-devel stb tomlplusplus-devel libical-devel
+ wayland-devel wayland-protocols wireplumber-devel"
+short_desc="Noctalia - Wayland compositor and desktop environment"
+maintainer="Orphaned <orphan@voidlinux.org>"
 license="MIT"
 homepage="https://github.com/noctalia-dev/noctalia"
-distfiles="https://github.com/Neko-Void-Linux/noctalia/archive/${_commit}.tar.gz"
-checksum=af8f3170c9c9014f63d2fffbd6a1ed71c824688590cc094626216b9e277d36d5
+distfiles="https://github.com/noctalia-dev/noctalia/archive/refs/tags/v${version}.tar.gz"
+checksum=c2f0fcc30bae289ecc39ab495ae68120c5882902371cde14f4f08b8bf14210a1
+
+post_patch() {
+	vsed -i "s|'VCS_TAG', 'unknown'|'VCS_TAG', 'v${version}'|" \
+		meson.build
+	vsed -i 's|^if git_program.found\(\)|if false|' \
+		meson.build
+}
 
 post_install() {
 	vlicense LICENSE
