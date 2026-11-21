@@ -1,6 +1,6 @@
 # Template file for 'concord'
 pkgname=concord
-version=2.7.1
+version=2.7.2
 revision=1
 build_style=cargo
 configure_args="--config profile.release.lto=\"thin\" --config
@@ -14,7 +14,7 @@ license="GPL-3.0-only"
 homepage="https://github.com/chojs23/concord"
 changelog="https://github.com/chojs23/concord/releases"
 distfiles="https://github.com/chojs23/concord/archive/refs/tags/v${version}.tar.gz>${pkgname}-${version}.tar.gz"
-checksum=de1624f460b1fb4148256d7b9141bb1ed6b9cf9b9e3b05fd166798370f35e031
+checksum=f555af799377e684a3f1e4846c8087fb01d24084435efd8d6426382bc0efdb5c
 
 post_install() {
 	vdoc README.md

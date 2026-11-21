@@ -1,6 +1,6 @@
 # Template file for 'orcaslicer'
 pkgname=orcaslicer
-version=2.5.1
+version=2.5.2
 revision=1
 archs="x86_64"
 short_desc="Feature-rich slicer for FDM 3D printers (official AppImage build)"
@@ -8,7 +8,7 @@ maintainer="Christopher <tu_correo@ejemplo.com>"
 license="AGPL-3.0-only"
 homepage="https://www.orcaslicer.com"
 distfiles="https://github.com/OrcaSlicer/OrcaSlicer/releases/download/v${version}/OrcaSlicer_Linux_AppImage_Ubuntu2404_V${version}.AppImage"
-checksum=073b8105c928356141db0ddbce88b81d52c7a9e2442f9baae0a9089c89ff04eb
+checksum=22fa88884dec3fdbd29e90cba9912fcff6fb57a60b1bdc1a6c189c61a6b0a870
 skip_extraction="OrcaSlicer_Linux_AppImage_Ubuntu2404_V${version}.AppImage"
 python_version=ignore
 replaces="orcaslicer-bin>=0"
