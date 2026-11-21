@@ -1,0 +1,7 @@
+case "${ACTION}" in
+post)
+	for kver in /usr/lib/modules/*; do
+		[ -d "${kver}/extra" ] && depmod -a "$(basename "${kver}")"
+	done
+	;;
+esac
