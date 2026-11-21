@@ -6,7 +6,7 @@ maintainer="JavierC <javiercyt@atomicmail.io"
 short_desc="NVIDIA Open Kernel Modules (from source), GSP Firmware and Userspace Drivers (${version})"
 license="GPL-2.0-only, MIT, custom:NVIDIA"
 homepage="https://github.com/NVIDIA/open-gpu-kernel-modules"
-
+# I love nvidia
 hostmakedepends="git curl tar xz kmod"
 makedepends="linux-headers gcc cmake"
 depends="linux-firmware-nvidia"
