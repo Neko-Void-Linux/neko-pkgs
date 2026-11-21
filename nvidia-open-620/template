@@ -15,7 +15,7 @@ noverifyrdeps=yes
 create_wrksrc=yes
 
 hostmakedepends="curl tar xz kmod"
-makedepends="linux-headers gcc cmake libglvnd-devel"
+makedepends="cmake libglvnd-devel"
 depends="linux-firmware-nvidia libglvnd ocl-icd dkms xbps-triggers>=0.121_1"
 conflicts="nvidia nvidia-dkms nvidia-open-dkms nvidia-libs nvidia-libs-32bit nvidia-firmware nvidia-gtklibs nvidia-opencl"
 
@@ -24,9 +24,9 @@ triggers="dkms initramfs-regenerate"
 
 _pkg="NVIDIA-Linux-x86_64-${version}"
 _run_url="https://download.nvidia.com/XFree86/Linux-x86_64/${version}/${_pkg}.run"
-_kernver="$(ls /usr/src | grep '^kernel-headers-' | sed 's/kernel-headers-//' | sort -V | tail -n1)"
 
 do_fetch() {
+	mkdir -p "${wrksrc}"
 	cd "${wrksrc}"
 	curl -fL "${_run_url}" -o "${_pkg}.run"
 }
@@ -42,12 +42,6 @@ pre_build() {
 	# Parche para omitir los headers Tegra faltantes en x86_64 (kernel 7.3+)
 	sed -i '/#include <soc\/tegra\/bpmp-abi.h>/d' "${wrksrc}/${_pkg}/kernel-open/nvidia/nv-clk.c"
 	sed -i '/#include <soc\/tegra\/bpmp.h>/d' "${wrksrc}/${_pkg}/kernel-open/nvidia/nv-clk.c"
-}
-
-do_build() {
-	cd "${wrksrc}/${_pkg}/kernel-open"
-	unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
-	make modules SYSSRC="/usr/src/kernel-headers-${_kernver}" -j"${XBPS_MAKEJOBS}"
 }
 
 _install_libs() {
@@ -89,11 +83,7 @@ _install_libs() {
 do_install() {
 	cd "${wrksrc}/${_pkg}"
 
-	# 1. Módulos del kernel compilados para el kernel actual + fuentes para DKMS
-	for mod in nvidia nvidia-modeset nvidia-drm nvidia-uvm nvidia-peermem; do
-		[ -f "kernel-open/${mod}.ko" ] && vinstall "kernel-open/${mod}.ko" 644 "usr/lib/modules/${_kernver}/extra"
-	done
-
+	# 1. Fuentes del módulo abierto (ya parcheadas) para DKMS
 	vmkdir "usr/src/nvidia-${version}"
 	vcopy "kernel-open/*" "usr/src/nvidia-${version}"
 	cat > "${DESTDIR}/usr/src/nvidia-${version}/dkms.conf" << EOF
