@@ -178,8 +178,8 @@ options nvidia-drm modeset=1 fbdev=1
 EOF
 	chmod 644 "${DESTDIR}/usr/lib/modprobe.d/nvidia.conf"
 
-	vmkdir etc/dracut.conf.d
-	cat > "${DESTDIR}/etc/dracut.conf.d/nvidia.conf" << 'EOF'
+	vmkdir usr/lib/dracut/dracut.conf.d
+	cat > "${DESTDIR}/usr/lib/dracut/dracut.conf.d/nvidia.conf" << 'EOF'
 omit_drivers+=" nouveau nova_core nova_drm "
 install_items+=" /usr/lib/modprobe.d/nvidia.conf "
 EOF
