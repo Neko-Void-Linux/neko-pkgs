@@ -1,11 +1,11 @@
 case "${ACTION}" in
 post)
-	for kver in /usr/lib/modules/*; do
-		if [ -d "${kver}/extra" ]; then
-			ver="$(basename "${kver}")"
-			depmod -a "${ver}"
-			kseries="$(echo "${ver}" | cut -d. -f1,2)"
-			xbps-reconfigure -f "linux${kseries}" 2>/dev/null || true
+	for kdir in /lib/modules/*; do
+		kver="$(basename "${kdir}")"
+		if [ -e "${kdir}/build/Kbuild" ] || [ -e "${kdir}/build/Makefile" ]; then
+			dkms build -m nvidia -v "${VERSION}" -k "${kver}" 2>/dev/null || true
+			dkms install -m nvidia -v "${VERSION}" -k "${kver}" 2>/dev/null || true
+			depmod -a "${kver}"
 		fi
 	done
 	;;
