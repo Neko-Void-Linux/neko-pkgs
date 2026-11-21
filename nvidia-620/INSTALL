@@ -1,7 +1,12 @@
 case "${ACTION}" in
 post)
 	for kver in /usr/lib/modules/*; do
-		[ -d "${kver}/extra" ] && depmod -a "$(basename "${kver}")"
+		if [ -d "${kver}/extra" ]; then
+			ver="$(basename "${kver}")"
+			depmod -a "${ver}"
+			kseries="$(echo "${ver}" | cut -d. -f1,2)"
+			xbps-reconfigure -f "linux${kseries}" 2>/dev/null || true
+		fi
 	done
 	;;
 esac
