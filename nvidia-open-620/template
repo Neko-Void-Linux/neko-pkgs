@@ -36,6 +36,7 @@ do_extract() {
 	chmod +x "${_pkg}.run"
 	./"${_pkg}.run" --extract-only
 	rm -f "${_pkg}.run"
+	chmod -R u+rwX,go+rX "${wrksrc}"
 }
 
 pre_build() {
@@ -187,10 +188,15 @@ EOF
 	# 7. Librerías 64-bit y 32-bit
 	_install_libs usr/lib
 	if [ -d 32 ]; then
-		cd 32
-		_install_libs usr/lib32
+		(
+			cd 32
+			_install_libs usr/lib32
+		)
 	fi
 
-	[ -f LICENSE ] && vlicense LICENSE
-	[ -f kernel-open/COPYING ] && vlicense kernel-open/COPYING
+	if [ -r LICENSE ]; then
+		vlicense LICENSE
+	elif [ -r kernel-open/COPYING ]; then
+		vlicense kernel-open/COPYING
+	fi
 }
