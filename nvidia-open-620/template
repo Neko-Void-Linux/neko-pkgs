@@ -1,7 +1,7 @@
 # Template file for 'nvidia-open-620'
 pkgname=nvidia-open-620
 version=620.73.04
-revision=1
+revision=3
 archs="x86_64"
 short_desc="NVIDIA Open Kernel Modules and Userspace Drivers (64/32-bit)"
 maintainer="JavierC <SrDicov@gmail.com>"
@@ -100,7 +100,7 @@ do_install() {
 		"DEST_MODULE_LOCATION[3]=\"/kernel/drivers/video\"" \
 		"BUILT_MODULE_NAME[4]=\"nvidia-peermem\"" \
 		"DEST_MODULE_LOCATION[4]=\"/kernel/drivers/video\"" \
-		"MAKE[0]=\"make -j\$(nproc) modules KERNEL_UNAME=\${kernelver}\"" \
+		"MAKE[0]=\"env -u KERNELRELEASE make -j\$(nproc) modules SYSSRC=/lib/modules/\${kernelver}/build\"" \
 		"CLEAN=\"make clean\"" \
 		"AUTOINSTALL=\"yes\"" \
 		> "${DESTDIR}/usr/src/nvidia-${version}/dkms.conf"
