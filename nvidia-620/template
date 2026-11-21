@@ -1,0 +1,91 @@
+pkgname=nvidia-620
+version=620.73.04
+revision=1
+archs="x86_64"
+maintainer="JavierC <javiercyt@atomicmail.io"
+short_desc="NVIDIA Open Kernel Modules (from source), GSP Firmware and Userspace Drivers (${version})"
+license="GPL-2.0-only, MIT, custom:NVIDIA"
+homepage="https://github.com/NVIDIA/open-gpu-kernel-modules"
+
+hostmakedepends="git curl tar xz kmod"
+makedepends="linux-headers gcc cmake"
+depends="linux-firmware-nvidia"
+conflicts="nvidia nvidia-dkms nvidia-open-dkms nvidia-libs"
+nostrip=yes
+noshlibprovides=yes
+skiprdeps="/usr/lib /usr/lib32 /lib/firmware"
+
+_runfile="NVIDIA-Linux-x86_64-${version}.run"
+_run_url="https://download.nvidia.com/XFree86/Linux-x86_64/${version}/${_runfile}"
+_git_url="https://github.com/NVIDIA/open-gpu-kernel-modules.git"
+_kernver="$(ls /usr/src | grep '^kernel-headers-' | sed 's/kernel-headers-//' | sort -V | tail -n1)"
+
+do_fetch() {
+	mkdir -p "${wrksrc}"
+	cd "${wrksrc}"
+	git clone --depth 1 -b "${version}" "${_git_url}" open-gpu-kernel-modules
+	curl -fL "${_run_url}" -o "${_runfile}"
+}
+
+do_extract() {
+	cd "${wrksrc}"
+	sh "./${_runfile}" --extract-only --target "${wrksrc}/run-extracted"
+}
+
+pre_build() {
+	sed -i '/#include <soc\/tegra\/bpmp-abi.h>/d' "${wrksrc}/open-gpu-kernel-modules/kernel-open/nvidia/nv-clk.c"
+	sed -i '/#include <soc\/tegra\/bpmp.h>/d' "${wrksrc}/open-gpu-kernel-modules/kernel-open/nvidia/nv-clk.c"
+}
+
+do_build() {
+	cd "${wrksrc}/open-gpu-kernel-modules"
+	make modules SYSSRC="/usr/src/kernel-headers-${_kernver}" -j"${XBPS_MAKEJOBS}"
+}
+
+do_install() {
+	local _kmod="${wrksrc}/open-gpu-kernel-modules/kernel-open"
+	local _run="${wrksrc}/run-extracted"
+
+	for mod in nvidia nvidia-modeset nvidia-drm nvidia-uvm nvidia-peermem; do
+		vinstall "${_kmod}/${mod}.ko" 644 "usr/lib/modules/${_kernver}/extra"
+	done
+
+	vmkdir "usr/lib/firmware/nvidia/${version}"
+	vcopy "${_run}/firmware/*.bin" "usr/lib/firmware/nvidia/${version}/"
+
+	for bin in nvidia-smi nvidia-debugdump nvidia-persistenced nvidia-modprobe nvidia-settings; do
+		[ -f "${_run}/${bin}" ] && vbin "${_run}/${bin}"
+	done
+
+	for lib in "${_run}"/*.so.${version}; do
+		vinstall "${lib}" 755 usr/lib
+	done
+
+	cd "${DESTDIR}/usr/lib"
+	for lib in *.so.${version}; do
+		base="${lib%.${version}}"
+		ln -sf "${lib}" "${base}.1"
+		ln -sf "${lib}" "${base}"
+	done
+
+	vinstall "${_run}/nvidia_icd.json" 644 usr/share/vulkan/icd.d
+	vinstall "${_run}/nvidia_layers.json" 644 usr/share/vulkan/implicit_layer.d
+	[ -f "${_run}/10_nvidia.json" ] && vinstall "${_run}/10_nvidia.json" 644 usr/share/glvnd/egl_vendor.d
+	[ -f "${_run}/15_nvidia_gbm.json" ] && vinstall "${_run}/15_nvidia_gbm.json" 644 usr/share/egl/egl_external_platform.d
+	[ -f "${_run}/10_nvidia_wayland.json" ] && vinstall "${_run}/10_nvidia_wayland.json" 644 usr/share/egl/egl_external_platform.d
+
+	vmkdir usr/lib/gbm
+	ln -sf "../libnvidia-allocator.so.${version}" "${DESTDIR}/usr/lib/gbm/nvidia-drm_gbm.so"
+	vmkdir etc/modprobe.d
+	cat > "${DESTDIR}/etc/modprobe.d/nvidia.conf" << 'EOF'
+blacklist nouveau
+options nouveau modeset=0
+options nvidia-drm modeset=1 fbdev=1
+EOF
+
+	vmkdir etc/dracut.conf.d
+	cat > "${DESTDIR}/etc/dracut.conf.d/nvidia.conf" << 'EOF'
+omit_drivers+=" nouveau "
+install_items+=" /etc/modprobe.d/nvidia.conf "
+EOF
+}
