@@ -1,7 +1,7 @@
 # Template file for 'nvidia-open-620'
 pkgname=nvidia-open-620
 version=620.73.04
-revision=1
+revision=3
 archs="x86_64"
 maintainer="JavierC"
 short_desc="NVIDIA Open Kernel Modules, GSP Firmware and Userspace Drivers (64/32-bit) (${version})"
