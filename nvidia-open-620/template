@@ -3,8 +3,8 @@ pkgname=nvidia-open-620
 version=620.73.04
 revision=3
 archs="x86_64"
-maintainer="JavierC"
-short_desc="NVIDIA Open Kernel Modules, GSP Firmware and Userspace Drivers (64/32-bit) (${version})"
+short_desc="NVIDIA Open Kernel Modules and Userspace Drivers (64/32-bit)"
+maintainer="JavierC <SrDicov@gmail.com>"
 license="GPL-2.0-only, MIT, custom:NVIDIA"
 homepage="https://www.nvidia.com"
 
@@ -36,6 +36,7 @@ do_extract() {
 	chmod +x "${_pkg}.run"
 	./"${_pkg}.run" --extract-only
 	rm -f "${_pkg}.run"
+	chmod -R u+rwX,go+rX "${wrksrc}"
 }
 
 pre_build() {
@@ -86,23 +87,23 @@ do_install() {
 	# 1. Fuentes del módulo abierto (ya parcheadas) para DKMS
 	vmkdir "usr/src/nvidia-${version}"
 	vcopy "kernel-open/*" "usr/src/nvidia-${version}"
-	cat > "${DESTDIR}/usr/src/nvidia-${version}/dkms.conf" << EOF
-PACKAGE_NAME="nvidia"
-PACKAGE_VERSION="${version}"
-BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/video"
-BUILT_MODULE_NAME[1]="nvidia-modeset"
-DEST_MODULE_LOCATION[1]="/kernel/drivers/video"
-BUILT_MODULE_NAME[2]="nvidia-drm"
-DEST_MODULE_LOCATION[2]="/kernel/drivers/video"
-BUILT_MODULE_NAME[3]="nvidia-uvm"
-DEST_MODULE_LOCATION[3]="/kernel/drivers/video"
-BUILT_MODULE_NAME[4]="nvidia-peermem"
-DEST_MODULE_LOCATION[4]="/kernel/drivers/video"
-MAKE[0]="env -u KERNELRELEASE make -j\$(nproc) modules SYSSRC=/lib/modules/\${kernelver}/build"
-CLEAN="make clean"
-AUTOINSTALL="yes"
-EOF
+	printf '%s\n' \
+		"PACKAGE_NAME=\"nvidia\"" \
+		"PACKAGE_VERSION=\"${version}\"" \
+		"BUILT_MODULE_NAME[0]=\"nvidia\"" \
+		"DEST_MODULE_LOCATION[0]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[1]=\"nvidia-modeset\"" \
+		"DEST_MODULE_LOCATION[1]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[2]=\"nvidia-drm\"" \
+		"DEST_MODULE_LOCATION[2]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[3]=\"nvidia-uvm\"" \
+		"DEST_MODULE_LOCATION[3]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[4]=\"nvidia-peermem\"" \
+		"DEST_MODULE_LOCATION[4]=\"/kernel/drivers/video\"" \
+		"MAKE[0]=\"env -u KERNELRELEASE make -j\$(nproc) modules SYSSRC=/lib/modules/\${kernelver}/build\"" \
+		"CLEAN=\"make clean\"" \
+		"AUTOINSTALL=\"yes\"" \
+		> "${DESTDIR}/usr/src/nvidia-${version}/dkms.conf"
 
 	# 2. Firmware GSP (todos los .bin de 620.73.04)
 	vmkdir "usr/lib/firmware/nvidia/${version}"
@@ -179,15 +180,23 @@ EOF
 	chmod 644 "${DESTDIR}/usr/lib/modprobe.d/nvidia.conf"
 
 	vmkdir usr/lib/dracut/dracut.conf.d
-	cat > "${DESTDIR}/usr/lib/dracut/dracut.conf.d/nvidia.conf" << 'EOF'
-omit_drivers+=" nouveau nova_core nova_drm "
-install_items+=" /usr/lib/modprobe.d/nvidia.conf "
-EOF
+	printf '%s\n' \
+		'omit_drivers+=" nouveau nova_core nova_drm "' \
+		'install_items+=" /usr/lib/modprobe.d/nvidia.conf "' \
+		> "${DESTDIR}/usr/lib/dracut/dracut.conf.d/nvidia.conf"
 
 	# 7. Librerías 64-bit y 32-bit
 	_install_libs usr/lib
 	if [ -d 32 ]; then
-		cd 32
-		_install_libs usr/lib32
+		(
+			cd 32
+			_install_libs usr/lib32
+		)
+	fi
+
+	if [ -r LICENSE ]; then
+		vlicense LICENSE
+	elif [ -r kernel-open/COPYING ]; then
+		vlicense kernel-open/COPYING
 	fi
 }
