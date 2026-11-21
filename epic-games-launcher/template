@@ -1,0 +1,34 @@
+# Template file for 'epic-games-launcher'
+pkgname=epic-games-launcher
+version=0.120.0
+revision=1
+archs="x86_64"
+_download="https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb"
+create_wrksrc=yes
+hostmakedepends="binutils tar"
+depends="libayatana-appindicator hicolor-icon-theme xdg-utils"
+short_desc="Official Epic Games Launcher for Linux"
+maintainer="JavierC <SrDicov@gmail.com>"
+license="custom:Proprietary"
+homepage="https://launcher.epicgames.com"
+distfiles="${_download}>${pkgname}-${version}.x86_64.deb"
+checksum=9d5a8de058f47aac4581c0661879ccd4b68bd54943aa94e8e09db8bb641df109
+nostrip=yes
+noshlibprovides=yes
+provides="epic-games-launcher-bin-${version}_${revision}"
+conflicts="epic-games-launcher-bin>=0"
+replaces="epic-games-launcher-bin>=0"
+
+do_extract() {
+	ar x "${XBPS_SRCDISTDIR}/${pkgname}-${version}/${pkgname}-${version}.x86_64.deb" data.tar.gz
+	tar -xzf data.tar.gz -C "${wrksrc}"
+	rm -f data.tar.gz
+}
+
+do_install() {
+	vcopy usr/bin usr
+	vcopy usr/lib usr
+	vcopy usr/share usr
+	ln -sf EpicGamesLauncher "${DESTDIR}/usr/bin/epic-games-launcher"
+	vlicense usr/lib/epic-games-launcher/resources/ThirdPartyNotices.txt LICENSE
+}
