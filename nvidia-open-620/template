@@ -99,7 +99,7 @@ BUILT_MODULE_NAME[3]="nvidia-uvm"
 DEST_MODULE_LOCATION[3]="/kernel/drivers/video"
 BUILT_MODULE_NAME[4]="nvidia-peermem"
 DEST_MODULE_LOCATION[4]="/kernel/drivers/video"
-MAKE[0]="make -j\$(nproc) modules KERNEL_UNAME=\${kernelver}"
+MAKE[0]="env -u KERNELRELEASE make -j\$(nproc) modules SYSSRC=/lib/modules/\${kernelver}/build"
 CLEAN="make clean"
 AUTOINSTALL="yes"
 EOF
