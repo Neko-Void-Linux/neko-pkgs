@@ -1,16 +1,17 @@
+# Template file for 'nvidia-620'
 pkgname=nvidia-620
 version=620.73.04
 revision=1
 archs="x86_64"
 maintainer="JavierC"
-short_desc="NVIDIA Open Kernel Modules, GSP Firmware and Userspace Drivers (${version})"
+short_desc="NVIDIA Open Kernel Modules, GSP Firmware and Userspace Drivers (64/32-bit) (${version})"
 license="GPL-2.0-only, MIT, custom:NVIDIA"
 homepage="https://www.nvidia.com"
 
 hostmakedepends="curl tar xz kmod"
 makedepends="linux-headers gcc cmake"
 depends="linux-firmware-nvidia"
-conflicts="nvidia nvidia-dkms nvidia-open-dkms nvidia-libs"
+conflicts="nvidia nvidia-dkms nvidia-open-dkms nvidia-libs nvidia-libs-32bit"
 nostrip=yes
 noshlibprovides=yes
 skiprdeps="/usr/lib /usr/lib32 /lib/firmware"
@@ -56,7 +57,7 @@ do_install() {
 	vmkdir "usr/lib/firmware/nvidia/${version}"
 	vcopy "${_run}/firmware/*.bin" "usr/lib/firmware/nvidia/${version}/"
 
-	# 3. Instalar binarios principales y librerías de usuario (64-bit)
+	# 3. Binarios principales y librerías 64-bit
 	for bin in nvidia-smi nvidia-debugdump nvidia-persistenced nvidia-modprobe nvidia-settings; do
 		[ -f "${_run}/${bin}" ] && vbin "${_run}/${bin}"
 	done
@@ -72,7 +73,22 @@ do_install() {
 		ln -sf "${lib}" "${base}"
 	done
 
-	# 4. ICDs de Vulkan, EGL y GBM para Wayland (Niri)
+	# 4. Librerías 32-bit para Steam / Wine / Proton / DXVK
+	if [ -d "${_run}/32" ]; then
+		for lib in "${_run}/32"/*.so.${version}; do
+			[ -f "${lib}" ] && vinstall "${lib}" 755 usr/lib32
+		done
+
+		cd "${DESTDIR}/usr/lib32"
+		for lib in *.so.${version}; do
+			[ -f "${lib}" ] || continue
+			base="${lib%.${version}}"
+			ln -sf "${lib}" "${base}.1"
+			ln -sf "${lib}" "${base}"
+		done
+	fi
+
+	# 5. ICDs de Vulkan, EGL y GBM para Wayland (Niri)
 	vinstall "${_run}/nvidia_icd.json" 644 usr/share/vulkan/icd.d
 	vinstall "${_run}/nvidia_layers.json" 644 usr/share/vulkan/implicit_layer.d
 	[ -f "${_run}/10_nvidia.json" ] && vinstall "${_run}/10_nvidia.json" 644 usr/share/glvnd/egl_vendor.d
@@ -82,7 +98,18 @@ do_install() {
 	vmkdir usr/lib/gbm
 	ln -sf "../libnvidia-allocator.so.${version}" "${DESTDIR}/usr/lib/gbm/nvidia-drm_gbm.so"
 
-	# 5. Configuración modprobe y dracut integrada
+	# 6. Wrapper prime-run para gráficos híbridos (Intel + Quadro)
+	vmkdir usr/bin
+	cat > "${DESTDIR}/usr/bin/prime-run" << 'EOF'
+#!/bin/sh
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export __VK_LAYER_NV_optimus=NVIDIA_only
+exec "$@"
+EOF
+	chmod 755 "${DESTDIR}/usr/bin/prime-run"
+
+	# 7. Configuración modprobe y dracut integrada
 	vmkdir etc/modprobe.d
 	cat > "${DESTDIR}/etc/modprobe.d/nvidia.conf" << 'EOF'
 blacklist nouveau
@@ -93,7 +120,6 @@ EOF
 	vmkdir etc/dracut.conf.d
 	cat > "${DESTDIR}/etc/dracut.conf.d/nvidia.conf" << 'EOF'
 omit_drivers+=" nouveau "
-install_items+=" /etc/modprobe.d/nv
-idia.conf "
+install_items+=" /etc/modprobe.d/nvidia.conf "
 EOF
 }
