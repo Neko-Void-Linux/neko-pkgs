@@ -1,6 +1,5 @@
-# Template file for 'neko-themes'
 pkgname=neko-themes
-version=7.8
+version=7.9
 revision=4
 archs="x86_64*"
 _commit=d4b2d667a38643bdfef5d5863cd303cef4d1cd76
@@ -10,9 +9,9 @@ short_desc="Colección de temas"
 maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-themes"
-distfiles="https://github.com/Neko-Void-Linux/neko-themes/archive/${_commit}.tar.gz>neko-themes-${_commit}.tar.gz
+distfiles="https://github.com/Neko-Void-Linux/neko-themes/releases/download/7.5/neko-themes-7.5.tar.gz
  https://github.com/Neko-Void-Linux/Dracula/archive/${_dracula_commit}.tar.gz>Dracula-${_dracula_commit}.tar.gz"
-checksum="60b65d39ca70b8af5a81af630f6fdba546a34f8dd8bbc02ef6d17b6a1059f0d6
+checksum="555dba7bffda623f7a5025087c8f2245a2f321e81dcb86b29aa65ee91c4efac7
  bedf8cad3bfa2af2baaecc42d6ab817c60f701e9f6ef0128e083d3ec8bedda72"
 
 do_build() {
