@@ -9,7 +9,7 @@ short_desc="Colección de temas"
 maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/Neko-Void-Linux/neko-themes"
-distfiles="github.com/Neko-Void-Linux/neko-themes/archive/${_commit}.tar.gz
+distfiles="https://github.com/Neko-Void-Linux/neko-themes/archive/${_commit}.tar.gz
  https://github.com/Neko-Void-Linux/Dracula/archive/${_dracula_commit}.tar.gz>Dracula-${_dracula_commit}.tar.gz"
 checksum="1eeda9258097fd5d3bbb615ec0a0a94d2c0290109d155e880085b786b3c5cdf6
  bedf8cad3bfa2af2baaecc42d6ab817c60f701e9f6ef0128e083d3ec8bedda72"
