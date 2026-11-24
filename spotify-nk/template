@@ -1,46 +1,55 @@
 # Template file for 'spotify-nk'
 pkgname=spotify-nk
-version=1.3.4
-revision=2
-_subver=258.gc60b10b0946a
+version=1.3.8.620
+revision=1
 archs="x86_64"
+_subver=g39b276d5d7ac
+_site="https://repository.spotify.com/pool/non-free/s/spotify-client"
 create_wrksrc=yes
-hostmakedepends="libcurl"
+hostmakedepends="bsdtar"
 depends="libcurl libayatana-appindicator libatomic"
 short_desc="Proprietary music streaming client"
 maintainer="JavierC <javiercplus@gmail.com>"
 license="custom:Proprietary"
 homepage="https://www.spotify.com"
-distfiles="http://repository.spotify.com/pool/non-free/s/spotify-client/spotify-client_${version}.${_subver}_amd64.deb"
-checksum=20f327441d11b202c82e65b69ec990ef631eb66605da15f41076c049acb718e4
-replaces="spotify-app-bin>=0 spotify-app>=0"
-provides="spotify-app-${version}_${revision} spotify-app-bin-${version}_${revision}"
-noshlibprovides=yes
+distfiles="${_site}/spotify-client_${version}.${_subver}_amd64.deb"
+checksum=35a0c40059c379ca6af97505918c27dffab467392da65b5e2b51273486589a77
 nostrip=yes
+noshlibprovides=yes
+provides="spotify-app-${version}_${revision} spotify-app-bin-${version}_${revision}"
+replaces="spotify-app-bin>=0 spotify-app>=0"
+
+do_extract() {
+	local d="${XBPS_SRCDISTDIR}/${pkgname}-${version}"
+
+	bsdtar -xf "$d/spotify-client_${version}.${_subver}_amd64.deb"
+	bsdtar -xf data.tar.gz -C "${wrksrc}"
+	rm -f control.tar.* debian-binary data.tar.*
+}
 
 do_install() {
 	vbin "${FILESDIR}/spotify"
 
 	vmkdir usr/share/spotify
-	vmkdir usr/share/applications
-	vmkdir usr/libexec/
-	vcopy usr/share/spotify usr/libexec/
+	vmkdir usr/libexec
+	vcopy usr/share/spotify usr/libexec
 
 	ln -s "../../libexec/spotify/icons" "${DESTDIR}/usr/share/spotify/"
 
-	# install icons
 	for _s in 16 22 24 32 48 64 128 256 512; do
 		vmkdir "usr/share/icons/hicolor/${_s}x${_s}/apps"
+		icon="usr/share/icons/hicolor/${_s}x${_s}/apps/spotify-client.png"
 		ln -sf "/usr/share/spotify/icons/spotify-linux-${_s}.png" \
-			"${DESTDIR}/usr/share/icons/hicolor/${_s}x${_s}/apps/spotify-client.png"
+			"${DESTDIR}/${icon}"
 	done
 
 	vmkdir usr/share/applications
-	mv "${DESTDIR}/usr/libexec/spotify/spotify.desktop" \
-		"${DESTDIR}/usr/share/applications/spotify.desktop"
+	vinstall "${DESTDIR}/usr/libexec/spotify/spotify.desktop" 644 \
+		usr/share/applications
+	rm -f "${DESTDIR}/usr/libexec/spotify/spotify.desktop"
 
-	# provide dynamic libraries
-	ln -s /usr/lib/libcurl.so.4 ${DESTDIR}/usr/libexec/spotify/libcurl-gnutls.so.4
+	ln -s /usr/lib/libcurl.so.4 \
+		"${DESTDIR}/usr/libexec/spotify/libcurl-gnutls.so.4"
 
-	vlicense ${FILESDIR}/EULA
+	vlicense "${FILESDIR}/EULA"
 }
