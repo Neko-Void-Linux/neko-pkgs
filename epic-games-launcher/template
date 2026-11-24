@@ -1,6 +1,6 @@
 # Template file for 'epic-games-launcher'
 pkgname=epic-games-launcher
-version=0.120.0
+version=0.121.0
 revision=1
 archs="x86_64"
 _download="https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncher-x86_64.deb"
@@ -12,7 +12,7 @@ maintainer="JavierC <SrDicov@gmail.com>"
 license="custom:Proprietary"
 homepage="https://launcher.epicgames.com"
 distfiles="${_download}>${pkgname}-${version}.x86_64.deb"
-checksum=9d5a8de058f47aac4581c0661879ccd4b68bd54943aa94e8e09db8bb641df109
+checksum=dea58cddea018842f8eea6c9549fea9c9b778bcf45875de005f68dec175e9289
 nostrip=yes
 noshlibprovides=yes
 provides="epic-games-launcher-bin-${version}_${revision}"
