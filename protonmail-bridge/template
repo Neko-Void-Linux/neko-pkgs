@@ -1,4 +1,3 @@
-# Template file for 'protonmail-bridge'
 pkgname=protonmail-bridge
 version=3.27.2
 revision=1
@@ -20,9 +19,6 @@ distfiles="https://github.com/ProtonMail/proton-bridge/archive/refs/tags/v${vers
 checksum=720ced16f25b6f92758f2117edc9ccd7511c66202097ba6b1630ab29d6b097b6
 
 post_patch() {
-	# Distributions must not fetch gRPC/Protobuf/Sentry through vcpkg.
-	# The upstream build option BRIDGE_USE_SYSTEM_DEPS is not released yet,
-	# so add it here. Once it is part of a release this patch is skipped.
 	if ! grep -q BRIDGE_USE_SYSTEM_DEPS \
 		internal/frontend/bridge-gui/BridgeSetup.cmake; then
 		patch -Np1 -i "${FILESDIR}/system-deps.patch"
@@ -35,10 +31,10 @@ post_patch() {
 
 do_build() {
 	export GO111MODULE=on CGO_ENABLED=1
-	# Void's Go is built with -trimpath and needs GOROOT set explicitly.
+	
 	[ -d /usr/lib/go ] && export GOROOT=/usr/lib/go
 	export GOFLAGS="-mod=mod"
-	# do_build runs inside the extracted source tree.
+	
 	export GOCACHE="${PWD}/.gocache"
 	export GOPATH="${PWD}/.gopath"
 	export CGO_CFLAGS="${CFLAGS}"
@@ -47,12 +43,8 @@ do_build() {
 	export CGO_LDFLAGS="${LDFLAGS}"
 	export PATH="/usr/lib/qt6/bin:${PATH}"
 
-	# internal/bridge/credits.go is generated from go.mod and gitignored; the CLI
-	# frontend needs it.
 	(cd utils && ./credits.sh bridge)
 
-	# Build the daemon (and CLI) without Proton's signed launcher: distribution
-	# packages run the bridge binary directly from /usr/lib/protonmail/bridge.
 	local ldflags="-X github.com/ProtonMail/proton-bridge/v3/internal/constants.Version=${version}"
 	ldflags+=" -X github.com/ProtonMail/proton-bridge/v3/internal/constants.Revision=unknown"
 	ldflags+=" -X github.com/ProtonMail/proton-bridge/v3/internal/constants.Tag=v${version}"
@@ -61,9 +53,7 @@ do_build() {
 	go build -tags libsqlite3 -trimpath -buildmode=pie -ldflags "${ldflags}" \
 		-o bridge ./cmd/Desktop-Bridge/
 
-	# Link the GUI against the system Qt instead of bundling it. DeployLinux.cmake
-	# copies Qt and its QML plugins next to the binary, which is wrong for a
-	# distribution package.
+	
 	: > internal/frontend/bridge-gui/bridge-gui/DeployLinux.cmake
 	cmake -S internal/frontend/bridge-gui/bridge-gui -B build -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
