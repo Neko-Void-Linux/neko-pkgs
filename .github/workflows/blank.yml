@@ -1,0 +1,84 @@
+name: TEST PKGss
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Nombre del paquete a construir'
+        required: true
+        default: 'mullvad-vpn'
+      repo_url:
+        description: 'URL del repositorio del paquete'
+        required: true
+        default: 'https://github.com/Neko-Void-Linux/neko-pkgs.git'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    container:
+      image: 'ghcr.io/void-linux/void-mklive:20250116R1'
+      options: --privileged
+
+    steps:
+      - name: Fix SSL and install tools
+        run: |
+          xbps-install -Syu --repository=https://repo-de.voidlinux.org/current/ xbps
+          xbps-install -Suyd --repository=https://repo-de.voidlinux.org/current/
+          xbps-install -y --repository=https://repo-de.voidlinux.org/current/ wget nodejs ca-certificates ntp git base-devel xtools sudo rsync openssh sshpass python3 python3-pip tar
+
+          groupadd -f xbuilder
+          useradd -m -s /bin/bash -G xbuilder builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Copy template
+        run: |
+          git clone --depth 1 https://github.com/void-linux/void-packages.git /tmp/void-packages
+          cd /tmp/void-packages
+
+          REPO_URL="${{ github.event.inputs.repo_url }}"
+          REPO_URL="${REPO_URL:-https://github.com/${{ github.repository_owner }}/neko-pkgs.git}"
+          git clone --depth 1 "$REPO_URL" /tmp/custompkgs
+          cp -rf /tmp/custompkgs/* /tmp/void-packages/srcpkgs/
+          echo "#nnothing" >> common/build-style/none.sh
+          cat << 'EOF' >> common/shlibs
+          libscenefx-0.5.so scenefx-nk-0.5_1
+          libQt6Pas.so.6 libqt6pas-6.2.10_1
+          libcrypto.so.1.1 libssl1.1-1.1.1w_1
+          EOF
+          chown -R builder:builder /tmp/void-packages
+
+      - name: Build package
+        run: |
+          su - builder -c "cd /tmp/void-packages && ./xbps-src binary-bootstrap"
+          su - builder -c "cd /tmp/void-packages && ./xbps-src pkg ${{ github.event.inputs.package_name }}"
+
+      - name: Generate index
+        run: |
+          cd /tmp/void-packages/hostdir/binpkgs
+          if ls *.xbps 1> /dev/null 2>&1; then
+            echo "Sin clave privada XBPS_PRIVATE_KEY, generando índice repodata sin firmar..."
+            xbps-rindex -a *.xbps
+          else
+            echo "No se encontraron paquetes .xbps generados."
+            exit 1
+          fi
+
+      - name: Compress packages for artifact
+        run: |
+          cd /tmp/void-packages/hostdir/binpkgs
+          VERSION=$(date +"%Y%m%d")
+          tar -czvf /tmp/${{ github.event.inputs.package_name }}-$VERSION.tar.gz .
+
+      - name: Upload artifact to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.package_name }}-binpkgs
+          path: /tmp/${{ github.event.inputs.package_name }}-*.tar.gz
+          retention-days: 14
