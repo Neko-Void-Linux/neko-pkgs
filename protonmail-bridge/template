@@ -1,26 +1,40 @@
-# Template file for 'protonmail-bridge'
 pkgname=protonmail-bridge
 version=3.27.2
 revision=1
-archs="x86_64*"
-hostmakedepends="go pkg-config cmake ninja protobuf"
+archs="x86_64"
+wrksrc="proton-bridge-${version}"
+hostmakedepends="go pkgconf cmake ninja protobuf"
 makedepends="qt6-base-devel qt6-declarative-devel qt6-svg-devel
  grpc-devel protobuf-devel sentry-native-devel abseil-cpp-devel
  re2-devel c-ares-devel zlib-devel libfido2-devel libcbor-devel
  openssl-devel sqlite-devel libsecret-devel MesaLib-devel libglvnd-devel"
-depends="hicolor-icon-theme"
+depends="qt6-base qt6-declarative qt6-svg grpc protobuf sentry-native
+ libfido2 libcbor openssl sqlite libsecret hicolor-icon-theme"
 short_desc="Proton Mail Bridge for e-mail clients"
-maintainer="SrDicov <SrDicov@gmail.com>"
+maintainer="veroes21 <veroes21@users.noreply.github.com>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/ProtonMail/proton-bridge"
 changelog="https://raw.githubusercontent.com/ProtonMail/proton-bridge/master/Changelog.md"
-distfiles="https://github.com/ProtonMail/proton-bridge/archive/refs/tags/v${version}.tar.gz>${pkgname}-${version}.tar.gz"
+distfiles="https://github.com/ProtonMail/proton-bridge/archive/refs/tags/v${version}.tar.gz"
 checksum=720ced16f25b6f92758f2117edc9ccd7511c66202097ba6b1630ab29d6b097b6
+
+post_patch() {
+	if ! grep -q BRIDGE_USE_SYSTEM_DEPS \
+		internal/frontend/bridge-gui/BridgeSetup.cmake; then
+		patch -Np1 -i "${FILESDIR}/system-deps.patch"
+	fi
+	if ! grep -q PROTOBUF_INCLUDE_ARGS \
+		internal/frontend/bridge-gui/bridgepp/CMakeLists.txt; then
+		patch -Np1 -i "${FILESDIR}/protobuf-include.patch"
+	fi
+}
 
 do_build() {
 	export GO111MODULE=on CGO_ENABLED=1
+	
 	[ -d /usr/lib/go ] && export GOROOT=/usr/lib/go
 	export GOFLAGS="-mod=mod"
+	
 	export GOCACHE="${PWD}/.gocache"
 	export GOPATH="${PWD}/.gopath"
 	export CGO_CFLAGS="${CFLAGS}"
@@ -39,6 +53,7 @@ do_build() {
 	go build -tags libsqlite3 -trimpath -buildmode=pie -ldflags "${ldflags}" \
 		-o bridge ./cmd/Desktop-Bridge/
 
+	
 	: > internal/frontend/bridge-gui/bridge-gui/DeployLinux.cmake
 	cmake -S internal/frontend/bridge-gui/bridge-gui -B build -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -59,12 +74,22 @@ do_install() {
 	vinstall bridge 755 usr/lib/protonmail/bridge
 	vinstall build/bridge-gui 755 usr/lib/protonmail/bridge
 
-	vbin "${FILESDIR}/protonmail-bridge"
-	vbin "${FILESDIR}/protonmail-bridge-core"
+	vmkdir usr/bin
+	cat > "${DESTDIR}/usr/bin/protonmail-bridge" <<-'EOF'
+	#!/bin/sh
+	exec /usr/lib/protonmail/bridge/bridge-gui "$@"
+	EOF
+	chmod 755 "${DESTDIR}/usr/bin/protonmail-bridge"
+	cat > "${DESTDIR}/usr/bin/protonmail-bridge-core" <<-'EOF'
+	#!/bin/sh
+	exec /usr/lib/protonmail/bridge/bridge "$@"
+	EOF
+	chmod 755 "${DESTDIR}/usr/bin/protonmail-bridge-core"
 
 	vinstall dist/proton-bridge.desktop 644 usr/share/applications
 	vinstall dist/bridge.svg 644 usr/share/icons/hicolor/scalable/apps \
 		protonmail-bridge.svg
 
+	vlicense LICENSE
 	vdoc README.md Changelog.md
 }
