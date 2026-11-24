@@ -1,7 +1,7 @@
 # Template file for 'kyoz'
 pkgname=kyoz
 version=2026.3
-revision=4
+revision=5
 hostmakedepends="zig-nk"
 short_desc="Wrapper for xbps package manager"
 maintainer="JavierC <javiercyt@atomicmail.io>"
