@@ -1,0 +1,207 @@
+# Template file for 'nvidia-610-nonfree'
+pkgname=nvidia-610-nonfree
+version=610.57.04
+revision=1
+archs="x86_64"
+short_desc="NVIDIA Proprietary Kernel Modules and Userspace Drivers (64/32-bit)"
+maintainer="JavierC <SrDicov@gmail.com>"
+license="custom:NVIDIA"
+homepage="https://www.nvidia.com"
+
+nopie=yes
+nostrip=yes
+noshlibprovides=yes
+noverifyrdeps=yes
+create_wrksrc=yes
+
+hostmakedepends="curl tar xz kmod"
+makedepends="cmake libglvnd-devel"
+depends="linux-firmware-nvidia libglvnd ocl-icd dkms xbps-triggers>=0.121_1"
+conflicts="nvidia nvidia-dkms nvidia-open-dkms nvidia-open-620 nvidia-libs nvidia-libs-32bit nvidia-firmware nvidia-gtklibs nvidia-opencl"
+
+dkms_modules="nvidia ${version}"
+triggers="dkms initramfs-regenerate"
+
+_pkg="NVIDIA-Linux-x86_64-${version}"
+_run_url="https://download.nvidia.com/XFree86/Linux-x86_64/${version}/${_pkg}.run"
+
+do_fetch() {
+	mkdir -p "${wrksrc}"
+	cd "${wrksrc}"
+	curl -fL "${_run_url}" -o "${_pkg}.run"
+}
+
+do_extract() {
+	cd "${wrksrc}"
+	chmod +x "${_pkg}.run"
+	./"${_pkg}.run" --extract-only
+	rm -f "${_pkg}.run"
+	chmod -R u+rwX,go+rX "${wrksrc}"
+}
+
+pre_build() {
+	# Parche para omitir los headers Tegra faltantes en x86_64 (kernel 7.3+)
+	if [ -f "${wrksrc}/${_pkg}/kernel/nvidia/nv-clk.c" ]; then
+		sed -i '/#include <soc\/tegra\/bpmp-abi.h>/d' "${wrksrc}/${_pkg}/kernel/nvidia/nv-clk.c"
+		sed -i '/#include <soc\/tegra\/bpmp.h>/d' "${wrksrc}/${_pkg}/kernel/nvidia/nv-clk.c"
+	fi
+}
+
+_install_libs() {
+	local libdir=$1
+
+	# GLX / GLVND
+	vinstall libGLX_nvidia.so.${version} 755 ${libdir}
+	ln -sf libGLX_nvidia.so.${version} ${DESTDIR}/${libdir}/libGLX_nvidia.so.0
+	ln -sf libGLX_nvidia.so.${version} ${DESTDIR}/${libdir}/libGLX_indirect.so.0
+
+	# OpenGL / EGL / Vulkan core
+	for lib in libnvidia-glcore libnvidia-eglcore libnvidia-glsi libnvidia-glvkspirv libnvidia-tls libnvidia-gpucomp; do
+		[ -f "${lib}.so.${version}" ] && vinstall "${lib}.so.${version}" 755 ${libdir}
+	done
+
+	vinstall libEGL_nvidia.so.${version} 755 ${libdir}
+	ln -sf libEGL_nvidia.so.${version} ${DESTDIR}/${libdir}/libEGL_nvidia.so.0
+
+	vinstall libGLESv1_CM_nvidia.so.${version} 755 ${libdir}
+	ln -sf libGLESv1_CM_nvidia.so.${version} ${DESTDIR}/${libdir}/libGLESv1_CM_nvidia.so.1
+
+	vinstall libGLESv2_nvidia.so.${version} 755 ${libdir}
+	ln -sf libGLESv2_nvidia.so.${version} ${DESTDIR}/${libdir}/libGLESv2_nvidia.so.2
+
+	# VDPAU
+	vinstall libvdpau_nvidia.so.${version} 755 ${libdir}/vdpau
+	ln -sf libvdpau_nvidia.so.${version} ${DESTDIR}/${libdir}/vdpau/libvdpau_nvidia.so.1
+
+	# NVML / Encode / FBC / CUDA / CUVID / OpticalFlow / PTX / Allocator
+	for lib in libnvidia-ml libnvidia-encode libnvidia-fbc libcuda libnvcuvid libnvidia-opticalflow libnvidia-ptxjitcompiler libnvidia-allocator; do
+		if [ -f "${lib}.so.${version}" ]; then
+			vinstall "${lib}.so.${version}" 755 ${libdir}
+			ln -sf "${lib}.so.${version}" ${DESTDIR}/${libdir}/${lib}.so.1
+			ln -sf "${lib}.so.1" ${DESTDIR}/${libdir}/${lib}.so
+		fi
+	done
+}
+
+do_install() {
+	cd "${wrksrc}/${_pkg}"
+
+	# 1. Fuentes del módulo propietario (kernel/) para DKMS
+	vmkdir "usr/src/nvidia-${version}"
+	vcopy "kernel/*" "usr/src/nvidia-${version}"
+	printf '%s\n' \
+		"PACKAGE_NAME=\"nvidia\"" \
+		"PACKAGE_VERSION=\"${version}\"" \
+		"BUILT_MODULE_NAME[0]=\"nvidia\"" \
+		"DEST_MODULE_LOCATION[0]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[1]=\"nvidia-modeset\"" \
+		"DEST_MODULE_LOCATION[1]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[2]=\"nvidia-drm\"" \
+		"DEST_MODULE_LOCATION[2]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[3]=\"nvidia-uvm\"" \
+		"DEST_MODULE_LOCATION[3]=\"/kernel/drivers/video\"" \
+		"BUILT_MODULE_NAME[4]=\"nvidia-peermem\"" \
+		"DEST_MODULE_LOCATION[4]=\"/kernel/drivers/video\"" \
+		"MAKE[0]=\"env -u KERNELRELEASE make -j\$(nproc) modules SYSSRC=/lib/modules/\${kernelver}/build\"" \
+		"CLEAN=\"make clean\"" \
+		"AUTOINSTALL=\"yes\"" \
+		> "${DESTDIR}/usr/src/nvidia-${version}/dkms.conf"
+
+	# 2. Firmware GSP (todos los .bin de 610.57.04)
+	if [ -d firmware ]; then
+		vmkdir "usr/lib/firmware/nvidia/${version}"
+		vcopy "firmware/*.bin" "usr/lib/firmware/nvidia/${version}/"
+	fi
+
+	# 3. Xorg / GLX / Wayland / GBM
+	vinstall nvidia_drv.so 755 usr/lib/xorg/modules/drivers
+	vinstall libglxserver_nvidia.so.${version} 755 usr/lib/nvidia/xorg
+	ln -sf libglxserver_nvidia.so.${version} ${DESTDIR}/usr/lib/nvidia/xorg/libglxserver_nvidia.so
+	ln -sf libglxserver_nvidia.so.${version} ${DESTDIR}/usr/lib/nvidia/xorg/libglxserver_nvidia.so.1
+
+	for eglw in libnvidia-egl-wayland.so.* libnvidia-egl-gbm.so.*; do
+		[ -f "${eglw}" ] && vinstall "${eglw}" 755 usr/lib
+	done
+	(
+		cd "${DESTDIR}/usr/lib"
+		for f in libnvidia-egl-wayland.so.*.* libnvidia-egl-gbm.so.*.*; do
+			[ -f "$f" ] && ln -sf "$f" "${f%.*.*}.1"
+		done
+	)
+
+	vmkdir usr/share/glvnd/egl_vendor.d
+	vmkdir usr/share/egl/egl_external_platform.d
+	[ -f 10_nvidia.json ] && vinstall 10_nvidia.json 644 usr/share/glvnd/egl_vendor.d
+	[ -f 15_nvidia_gbm.json ] && vinstall 15_nvidia_gbm.json 644 usr/share/egl/egl_external_platform.d
+	[ -f 10_nvidia_wayland.json ] && vinstall 10_nvidia_wayland.json 644 usr/share/egl/egl_external_platform.d
+
+	vmkdir usr/lib/gbm
+	ln -sf /usr/lib/libnvidia-allocator.so.${version} ${DESTDIR}/usr/lib/gbm/nvidia-drm_gbm.so
+
+	# 4. Vulkan / OpenCL / RayTracing / NGX (DLSS en Wine) / OptiX / NVVM
+	vinstall nvidia_icd.json 644 usr/share/vulkan/icd.d
+	vinstall nvidia_layers.json 644 usr/share/vulkan/implicit_layer.d
+	vinstall nvidia.icd 644 etc/OpenCL/vendors
+
+	for extra_lib in libnvidia-opencl libnvidia-rtcore libnvidia-ngx libnvoptix libnvidia-nvvm libnvidia-cfg; do
+		if [ -f "${extra_lib}.so.${version}" ]; then
+			vinstall "${extra_lib}.so.${version}" 755 usr/lib
+			ln -sf "${extra_lib}.so.${version}" ${DESTDIR}/usr/lib/${extra_lib}.so.1
+			ln -sf "${extra_lib}.so.${version}" ${DESTDIR}/usr/lib/${extra_lib}.so
+		fi
+	done
+	[ -f libnvidia-api.so.1 ] && vinstall libnvidia-api.so.1 755 usr/lib
+	[ -f _nvngx.dll ] && vinstall _nvngx.dll 755 usr/lib/nvidia/wine
+	[ -f nvngx.dll ] && vinstall nvngx.dll 755 usr/lib/nvidia/wine
+	[ -f nvoptix.bin ] && vinstall nvoptix.bin 644 usr/share/nvidia
+
+	# 5. Utilidades CLI y GUI
+	for bin in nvidia-smi nvidia-debugdump nvidia-persistenced nvidia-settings nvidia-xconfig nvidia-cuda-mps-control nvidia-cuda-mps-server nvidia-ngx-updater nvidia-powerd; do
+		[ -f "${bin}" ] && vbin "${bin}"
+	done
+	[ -f nvidia-modprobe ] && vinstall nvidia-modprobe 4755 usr/bin
+	[ -f nvidia-bug-report.sh ] && vbin nvidia-bug-report.sh nvidia-bug-report
+
+	# 6. Wrapper prime-run + Blacklist nouveau/nova + dracut
+	vmkdir usr/bin
+	cat > "${DESTDIR}/usr/bin/prime-run" << 'EOF'
+#!/bin/sh
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export __VK_LAYER_NV_optimus=NVIDIA_only
+exec "$@"
+EOF
+	chmod 755 "${DESTDIR}/usr/bin/prime-run"
+
+	vmkdir usr/lib/modprobe.d
+	cat > "${DESTDIR}/usr/lib/modprobe.d/nvidia.conf" << 'EOF'
+blacklist nouveau
+blacklist nova_core
+blacklist nova_drm
+options nouveau modeset=0
+options nvidia-drm modeset=1 fbdev=1
+EOF
+	chmod 644 "${DESTDIR}/usr/lib/modprobe.d/nvidia.conf"
+
+	vmkdir usr/lib/dracut/dracut.conf.d
+	printf '%s\n' \
+		'add_drivers+=" nvidia nvidia_modeset nvidia_uvm nvidia_drm "' \
+		'omit_drivers+=" nouveau nova_core nova_drm "' \
+		'install_items+=" /usr/lib/modprobe.d/nvidia.conf "' \
+		> "${DESTDIR}/usr/lib/dracut/dracut.conf.d/nvidia.conf"
+
+	# 7. Librerías 64-bit y 32-bit
+	_install_libs usr/lib
+	if [ -d 32 ]; then
+		(
+			cd 32
+			_install_libs usr/lib32
+		)
+	fi
+
+	if [ -r LICENSE ]; then
+		vlicense LICENSE
+	elif [ -r kernel/COPYING ]; then
+		vlicense kernel/COPYING
+	fi
+}
