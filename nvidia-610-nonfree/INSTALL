@@ -1,0 +1,12 @@
+case "${ACTION}" in
+post)
+	for kdir in /lib/modules/*; do
+		kver="$(basename "${kdir}")"
+		if [ -e "${kdir}/build/Kbuild" ] || [ -e "${kdir}/build/Makefile" ]; then
+			dkms build -m nvidia -v "${VERSION}" -k "${kver}" 2>/dev/null || true
+			dkms install -m nvidia -v "${VERSION}" -k "${kver}" 2>/dev/null || true
+			depmod -a "${kver}"
+		fi
+	done
+	;;
+esac
