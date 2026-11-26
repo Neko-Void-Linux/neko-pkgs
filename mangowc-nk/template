@@ -1,6 +1,6 @@
 # Template file for 'mangowc-nk'
 pkgname=mangowc-nk
-version=0.18.3
+version=0.19.2
 revision=3
 archs="x86_64*"
 build_style=meson
@@ -15,9 +15,9 @@ maintainer="JavierC <javiercyt@atomicmail.io>"
 license="GPL-3.0-or-later"
 homepage="https://github.com/mangowm/mango"
 changelog="https://github.com/mangowm/mango/releases"
-_sha="6d9637e8ae1522b65723497a41e6cfb36e66668d"
+_sha="621fe07ac75701b94ec0d62188311fb5ca086f11"
 distfiles="https://github.com/Neko-Void-Linux/mango/archive/${_sha}.tar.gz"
-checksum=1e7d2df3854838aeef35b914ab49ad24c600e3ddaac5cc977cebda89608f10ba
+checksum=51f33dfd36dbc46a51ce22db2104145dcd6f407b7cd2165c3e9851d7b3b113af
 create_wrksrc=yes
 build_wrksrc="mango-${_sha}"
 build_options="xwayland"
